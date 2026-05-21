@@ -26,7 +26,7 @@
 
         .container {
             width: 100%;
-            max-width: 600px;
+            max-width: 550px;
             background: var(--card-bg);
             padding: 30px;
             border-radius: 12px;
@@ -38,7 +38,7 @@
             color: var(--primary);
             text-align: center;
             margin-bottom: 5px;
-            font-size: 28px;
+            font-size: 26px;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
@@ -47,7 +47,7 @@
             text-align: center;
             color: var(--text-secondary);
             margin-bottom: 30px;
-            font-size: 14px;
+            font-size: 13px;
         }
 
         .form-group {
@@ -86,47 +86,46 @@
         }
 
         .result-box {
-            background: rgba(229, 169, 60, 0.1);
+            background: rgba(229, 169, 60, 0.08);
             border: 1px solid var(--primary);
             padding: 20px;
             border-radius: 8px;
-            margin-top: 30px;
+            margin-top: 25px;
             text-align: center;
         }
 
         .result-box h2 {
             margin: 0 0 10px 0;
-            font-size: 16px;
+            font-size: 15px;
             color: var(--text-secondary);
             text-transform: uppercase;
         }
 
         .time-highlight {
-            font-size: 36px;
+            font-size: 34px;
             font-weight: bold;
             color: var(--primary);
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
 
         .details {
             font-size: 14px;
             color: var(--text-secondary);
             line-height: 1.6;
-        }
-
-        .warning {
-            color: #ef4444;
-            font-weight: bold;
+            text-align: left;
+            background: rgba(0,0,0,0.2);
+            padding: 15px;
+            border-radius: 6px;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Fractal God Progress</h1>
-    <div class="subtitle">Descubra quanto tempo falta para o prestígio máximo</div>
+    <h1>Fractal God Timeline</h1>
+    <div class="subtitle">Cálculo focado estritamente nas travas temporais (Relics e Pristines)</div>
 
-    <!-- Nível Atual -->
+    <!-- Título Atual -->
     <div class="form-group">
         <label for="currentTitle">Seu Título Atual de Fractal</label>
         <select id="currentTitle" oninput="calculate()">
@@ -138,100 +137,88 @@
         </select>
     </div>
 
-    <!-- Inventário -->
+    <!-- Inventário Essencial -->
     <div class="grid-inputs">
         <div class="form-group">
             <label for="pristine">Pristine Relics Atuais</label>
             <input type="number" id="pristine" value="0" min="0" oninput="calculate()">
         </div>
         <div class="form-group">
-            <label for="matrices">Matrices (IFM) Atuais</label>
-            <input type="number" id="matrices" value="0" min="0" oninput="calculate()">
-        </div>
-    </div>
-
-    <div class="grid-inputs">
-        <div class="form-group">
             <label for="relics">Fractal Relics Atuais</label>
             <input type="number" id="relics" value="0" min="0" oninput="calculate()">
         </div>
-        <div class="form-group">
-            <label for="gold">Ouro no Banco</label>
-            <input type="number" id="gold" value="0" min="0" oninput="calculate()">
-        </div>
     </div>
 
-    <!-- Ritmo de Jogo -->
+    <!-- Ganhos Diários -->
     <div class="form-group">
-        <label for="dailyPristine">Pristine Relics ganhas por dia (Ex: CMs + T4 = 15)</label>
+        <label for="dailyPristine">Pristine Relics ganhas por dia (Padrão CMs+T4 = 15)</label>
         <input type="number" id="dailyPristine" value="15" min="1" oninput="calculate()">
     </div>
 
-    <!-- Resultados -->
+    <!-- Painel de Resultados -->
     <div class="result-box">
-        <h2>Tempo Restante Estimado</h2>
+        <h2>Tempo Restante</h2>
         <div class="time-highlight" id="timeResult">0 dias</div>
         <div class="details" id="missingResources">
-            Selecione seus dados para calcular.
+            Insira os dados para calcular o progresso líquido.
         </div>
     </div>
 </div>
 
 <script>
-    // Custos totais acumulados do zero até o final para cada nível inicial
-    // Índice representa o título atual do jogador (0 a 4)
-    const totalRequirements = [
-        { pristine: 3200, matrices: 1200, relics: 44000, gold: 1600 }, // Começando do zero
-        { pristine: 2400, matrices: 1000, relics: 36000, gold: 1200 }, // Já é Initiate
-        { pristine: 1600, matrices: 800,  relics: 28000, gold: 800 },  // Já é Adept
-        { pristine: 800,  matrices: 500,  relics: 18000, gold: 400 },  // Já é Expert
-        { pristine: 400,  matrices: 300,  relics: 10000, gold: 200 }   // Já é Champion
+    // Custos LÍQUIDOS totais acumulados para chegar até o FRACTAL GOD partindo de cada nível.
+    // Inclui o custo base em moedas + a conversão de Pristines necessária para gerar as matrizes faltantes (1 matriz = 15 pristines).
+    const progressionData = [
+        { level: 0, title: "Nenhum",           reqPristine: 3200 + (1200 * 15), reqRelics: 13600 }, // Total: 21.200 Pristines
+        { level: 1, title: "Fractal Initiate",  reqPristine: 3000 + (1000 * 15), reqRelics: 12800 }, // Total: 18.000 Pristines
+        { level: 2, title: "Fractal Adept",     reqPristine: 2800 + (800 * 15),  reqRelics: 12000 }, // Total: 14.800 Pristines
+        { level: 3, title: "Fractal Expert",    reqPristine: 2600 + (500 * 15),  reqRelics: 11000 }, // Total: 10.100 Pristines
+        { level: 4, title: "Fractal Champion",  reqPristine: 400 + (300 * 15),   reqRelics: 10000 }  // Total: 4.900 Pristines
     ];
 
     function calculate() {
-        // Obter valores dos inputs
         const currentTitle = parseInt(document.getElementById('currentTitle').value);
         const currentPristine = parseInt(document.getElementById('pristine').value) || 0;
-        const currentMatrices = parseInt(document.getElementById('matrices').value) || 0;
         const currentRelics = parseInt(document.getElementById('relics').value) || 0;
-        const currentGold = parseInt(document.getElementById('gold').value) || 0;
         const dailyRate = parseInt(document.getElementById('dailyPristine').value) || 1;
 
-        // Buscar meta necessária baseada no nível atual
-        const target = totalRequirements[currentTitle];
+        // Puxa a meta líquida com base em onde o jogador está hoje
+        const target = progressionData[currentTitle];
 
-        // Calcular o que falta (Garantindo que não fique negativo)
-        const missingPristine = Math.max(0, target.pristine - currentPristine);
-        const missingMatrices = Math.max(0, target.matrices - currentMatrices);
-        const missingRelics = Math.max(0, target.relics - currentRelics);
-        const missingGold = Math.max(0, target.gold - currentGold);
+        // Subtrai o inventário do custo necessário total
+        const missingPristine = Math.max(0, target.reqPristine - currentPristine);
+        const missingRelics = Math.max(0, target.reqRelics - currentRelics);
 
-        // Cálculo do tempo baseado no gargalo temporal real (Pristines)
+        // O real limitador diário do jogo: Pristine Fractal Relics
         const daysRemaining = Math.ceil(missingPristine / dailyRate);
         const weeks = (daysRemaining / 7).toFixed(1);
 
-        // Atualizar a tela
-        if (missingPristine === 0 && currentTitle === 4) {
-            document.getElementById('timeResult').innerText = "Você já pode pegar!";
-            document.getElementById('missingResources').innerHTML = "Parabéns! Você tem as Pristines necessárias para o Fractal God.";
+        // Resposta visual caso já tenha atingido a meta
+        if (missingPristine === 0) {
+            document.getElementById('timeResult').innerText = "Pronto para o God!";
+            document.getElementById('missingResources').innerHTML = `
+                <strong>Meta atingida!</strong><br>
+                Você já possui a quantidade de moedas temporais necessárias para converter e comprar o título máximo.
+            `;
             return;
         }
 
+        // Exibe o tempo estimado na tela
         document.getElementById('timeResult').innerText = `${daysRemaining} dias (~${weeks} semanas)`;
         
+        // Detalhamento matemático correto das moedas líquidas que precisam entrar na conta
         document.getElementById('missingResources').innerHTML = `
-            <strong>Ainda faltam para a meta:</strong><br>
-            • ${missingPristine.toLocaleString()} Pristine Relics<br>
-            • ${missingMatrices.toLocaleString()} Integrated Matrices<br>
-            • ${missingRelics.toLocaleString()} Fractal Relics comuns<br>
-            • ${missingGold.toLocaleString()} de Ouro<br>
-            <small style="display:block; margin-top:10px; color: var(--text-secondary);">
-                *O tempo é calculado estritamente pelas Pristine Relics necessárias, que costumam ditar o limite diário da conta.
+            <strong>Moedas líquidas necessárias até o God:</strong><br>
+            • <strong>${missingPristine.toLocaleString()}</strong> Pristine Relics faltantes<br>
+            • <strong>${missingRelics.toLocaleString()}</strong> Fractal Relics comuns faltantes<br>
+            <br>
+            <small style="color: var(--text-secondary); display: block; font-size: 12px; line-height: 1.4;">
+                *Nota: Este cálculo converte preventivamente a necessidade das Integrated Matrices pendentes em Pristines (na taxa padrão de 15:1), garantindo uma projeção de dias realista mesmo se você não comprar matrizes prontas com ouro.
             </small>
         `;
     }
 
-    // Executa uma vez ao abrir a página
+    // Inicializa a calculadora
     calculate();
 </script>
 
