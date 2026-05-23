@@ -15,6 +15,7 @@
             --text: #ffffff;
             --text-secondary: #a0a0b2;
             --border: #29292e;
+            --tier-bg: #222226;
         }
 
         body {
@@ -113,12 +114,41 @@
         }
 
         .details {
-            background: rgba(0,0,0,0.2);
             border-radius: 8px;
-            padding: 18px;
             line-height: 1.8;
             color: var(--text-secondary);
             font-size: 14px;
+        }
+
+        .tier-card {
+            background: var(--tier-bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 12px;
+        }
+
+        .tier-card.completed {
+            border-color: #22c55e;
+            background: rgba(34, 197, 94, 0.05);
+        }
+
+        .tier-header {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            color: var(--text);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 5px;
+            margin-bottom: 8px;
+        }
+
+        .tier-header .status {
+            color: var(--primary);
+        }
+
+        .tier-card.completed .tier-header .status {
+            color: #22c55e;
         }
 
         .resource {
@@ -126,17 +156,11 @@
             font-weight: bold;
         }
 
-        .section-title {
-            color: var(--primary);
-            font-weight: bold;
-            margin-top: 10px;
-            margin-bottom: 8px;
-        }
-
         small {
             display: block;
             margin-top: 15px;
             line-height: 1.5;
+            text-align: center;
         }
     </style>
 </head>
@@ -148,379 +172,168 @@
     <h1>Fractal God Timeline</h1>
 
     <div class="subtitle">
-        Baseado nos custos oficiais da wiki do Guild Wars 2
+        Cálculo passo a passo baseado na progressão linear de upgrades da Wiki de GW2
     </div>
 
     <!-- Título Atual -->
-
     <div class="form-group">
-
-        <label for="currentTitle">
-            Seu título atual
-        </label>
-
+        <label for="currentTitle">Seu título atual</label>
         <select id="currentTitle" oninput="calculate()">
-
-            <option value="0">
-                Nenhum
-            </option>
-
-            <option value="1">
-                Fractal Savant
-            </option>
-
-            <option value="2">
-                Fractal Prodigy
-            </option>
-
-            <option value="3">
-                Fractal Champion
-            </option>
-
-            <option value="4">
-                Fractal God
-            </option>
-
+            <option value="0">Nenhum</option>
+            <option value="1">Fractal Savant</option>
+            <option value="2">Fractal Prodigy</option>
+            <option value="3">Fractal Champion</option>
+            <option value="4">Fractal God</option>
         </select>
-
     </div>
 
     <!-- Recursos atuais -->
-
     <div class="grid-inputs">
-
         <div class="form-group">
-
-            <label for="pristine">
-                Pristine Fractal Relics atuais
-            </label>
-
-            <input
-                type="number"
-                id="pristine"
-                value="0"
-                min="0"
-                oninput="calculate()"
-            >
-
+            <label for="pristine">Pristine Fractal Relics atuais</label>
+            <input type="number" id="pristine" value="0" min="0" oninput="calculate()">
         </div>
-
         <div class="form-group">
-
-            <label for="relics">
-                Fractal Relics atuais
-            </label>
-
-            <input
-                type="number"
-                id="relics"
-                value="0"
-                min="0"
-                oninput="calculate()"
-            >
-
+            <label for="relics">Fractal Relics atuais</label>
+            <input type="number" id="relics" value="0" min="0" oninput="calculate()">
         </div>
-
     </div>
 
     <!-- Matrices -->
-
     <div class="grid-inputs">
-
         <div class="form-group">
-
-            <label for="matrices">
-                Integrated Fractal Matrices atuais
-            </label>
-
-            <input
-                type="number"
-                id="matrices"
-                value="0"
-                min="0"
-                oninput="calculate()"
-            >
-
+            <label for="matrices">Integrated Fractal Matrices atuais</label>
+            <input type="number" id="matrices" value="0" min="0" oninput="calculate()">
         </div>
-
         <div class="form-group">
-
-            <label for="dailyMatrices">
-                Integrated Matrices por dia
-            </label>
-
-            <input
-                type="number"
-                id="dailyMatrices"
-                value="12"
-                min="1"
-                oninput="calculate()"
-            >
-
+            <label for="dailyMatrices">Integrated Matrices por dia</label>
+            <input type="number" id="dailyMatrices" value="12" min="1" oninput="calculate()">
         </div>
-
     </div>
 
     <!-- Pristine diária -->
-
     <div class="form-group">
-
-        <label for="dailyPristine">
-            Pristine Fractal Relics por dia
-        </label>
-
-        <input
-            type="number"
-            id="dailyPristine"
-            value="15"
-            min="1"
-            oninput="calculate()"
-        >
-
+        <label for="dailyPristine">Pristine Fractal Relics por dia</label>
+        <input type="number" id="dailyPristine" value="15" min="1" oninput="calculate()">
     </div>
 
     <!-- Resultado -->
-
     <div class="result-box">
-
-        <h2>
-            Tempo estimado restante
-        </h2>
-
-        <div
-            class="time-highlight"
-            id="timeResult"
-        >
-            0 dias
+        <h2>Tempo Total Restante até o Fractal God</h2>
+        <div class="time-highlight" id="timeResult">0 dias</div>
+        
+        <div class="details" id="missingResources">
+            <!-- Os cards de cada etapa vão surgir aqui via JavaScript -->
         </div>
-
-        <div
-            class="details"
-            id="missingResources"
-        >
-            Insira seus dados para calcular.
-        </div>
-
     </div>
 
 </div>
 
 <script>
-
-    // Custos RESTANTES até Fractal God
-    // Baseado na wiki oficial
-
-    const progressionData = [
-
-        {
-            level: 0,
-            title: "Nenhum",
-            reqPristine: 3200,
-            reqRelics: 160000,
-            reqMatrices: 850
-        },
-
-        {
-            level: 1,
-            title: "Fractal Savant",
-            reqPristine: 3200,
-            reqRelics: 135000,
-            reqMatrices: 775
-        },
-
-        {
-            level: 2,
-            title: "Fractal Prodigy",
-            reqPristine: 2000,
-            reqRelics: 100000,
-            reqMatrices: 625
-        },
-
-        {
-            level: 3,
-            title: "Fractal Champion",
-            reqPristine: 2000,
-            reqRelics: 55000,
-            reqMatrices: 400
-        },
-
-        {
-            level: 4,
-            title: "Fractal God",
-            reqPristine: 0,
-            reqRelics: 0,
-            reqMatrices: 0
-        }
+    // Custos EXATOS e INDIVIDUAIS de cada degrau de upgrade
+    const tierData = [
+        { level: 1, name: "Nenhum ➔ Fractal Savant",     pristine: 0,    relics: 25000,  matrices: 75  },
+        { level: 2, name: "Savant ➔ Fractal Prodigy",    pristine: 1200, relics: 35000,  matrices: 150 },
+        { level: 3, name: "Prodigy ➔ Fractal Champion",  pristine: 0,    relics: 45000,  matrices: 225 },
+        { level: 4, name: "Champion ➔ Fractal God",     pristine: 2000, relics: 55000,  matrices: 400 }
     ];
 
     function calculate() {
+        const currentTitle = parseInt(document.getElementById('currentTitle').value);
+        
+        // Clona ou armazena os recursos em tempo real que o jogador inseriu para usarmos como "carteira"
+        let wallet = {
+            pristine: parseInt(document.getElementById('pristine').value) || 0,
+            relics: parseInt(document.getElementById('relics').value) || 0,
+            matrices: parseInt(document.getElementById('matrices').value) || 0
+        };
 
-        const currentTitle =
-            parseInt(
-                document.getElementById('currentTitle').value
-            );
+        const dailyPristine = parseInt(document.getElementById('dailyPristine').value) || 1;
+        const dailyMatrices = parseInt(document.getElementById('dailyMatrices').value) || 1;
 
-        const currentPristine =
-            parseInt(
-                document.getElementById('pristine').value
-            ) || 0;
+        let totalDaysRemaining = 0;
+        let htmlOutput = "";
 
-        const currentRelics =
-            parseInt(
-                document.getElementById('relics').value
-            ) || 0;
+        // Varre todas as etapas da progressão sequencialmente
+        for (let i = 0; i < tierData.length; i++) {
+            const tier = tierData[i];
 
-        const currentMatrices =
-            parseInt(
-                document.getElementById('matrices').value
-            ) || 0;
-
-        const dailyPristine =
-            parseInt(
-                document.getElementById('dailyPristine').value
-            ) || 1;
-
-        const dailyMatrices =
-            parseInt(
-                document.getElementById('dailyMatrices').value
-            ) || 1;
-
-        const target =
-            progressionData[currentTitle];
-
-        // Recursos faltantes
-
-        const missingPristine =
-            Math.max(
-                0,
-                target.reqPristine - currentPristine
-            );
-
-        const missingRelics =
-            Math.max(
-                0,
-                target.reqRelics - currentRelics
-            );
-
-        const missingMatrices =
-            Math.max(
-                0,
-                target.reqMatrices - currentMatrices
-            );
-
-        // Dias necessários
-
-        const pristineDays =
-            Math.ceil(
-                missingPristine / dailyPristine
-            );
-
-        const matrixDays =
-            Math.ceil(
-                missingMatrices / dailyMatrices
-            );
-
-        // Verdadeiro gargalo
-
-        const daysRemaining =
-            Math.max(
-                pristineDays,
-                matrixDays
-            );
-
-        const weeks =
-            (daysRemaining / 7).toFixed(1);
-
-        // Concluído
-
-        if (
-            missingPristine === 0 &&
-            missingRelics === 0 &&
-            missingMatrices === 0
-        ) {
-
-            document.getElementById('timeResult').innerText =
-                "Fractal God alcançado!";
-
-            document.getElementById('missingResources').innerHTML = `
-                <strong>Parabéns!</strong><br>
-                Você já possui todos os recursos necessários.
-            `;
-
-            return;
-        }
-
-        // Resultado
-
-        document.getElementById('timeResult').innerText =
-            `${daysRemaining} dias (~${weeks} semanas)`;
-
-        document.getElementById('missingResources').innerHTML = `
-
-            <div class="section-title">
-                Recursos restantes
-            </div>
-
-            • <span class="resource">
-                ${missingPristine.toLocaleString()}
-            </span>
-            Pristine Fractal Relics
-
-            <br>
-
-            • <span class="resource">
-                ${missingRelics.toLocaleString()}
-            </span>
-            Fractal Relics
-
-            <br>
-
-            • <span class="resource">
-                ${missingMatrices.toLocaleString()}
-            </span>
-            Integrated Fractal Matrices
-
-            <br><br>
-
-            <div class="section-title">
-                Gargalos de tempo
-            </div>
-
-            • Pristines:
-            <span class="resource">
-                ${pristineDays} dias
-            </span>
-
-            <br>
-
-            • Matrices:
-            <span class="resource">
-                ${matrixDays} dias
-            </span>
-
-            <br><br>
-
-            <div class="section-title">
-                Gargalo principal
-            </div>
-
-            ${
-                pristineDays > matrixDays
-                ? "Pristine Fractal Relics"
-                : matrixDays > pristineDays
-                    ? "Integrated Fractal Matrices"
-                    : "Ambos igualmente"
+            // Se o jogador já passou desse nível, o card fica verde e zerado
+            if (currentTitle >= tier.level) {
+                htmlOutput += `
+                    <div class="tier-card completed">
+                        <div class="tier-header">
+                            <span>${tier.name}</span>
+                            <span class="status">✓ Concluído</span>
+                        </div>
+                        <div>Você já domina este tier ou passou dele!</div>
+                    </div>
+                `;
+                continue;
             }
 
+            // Descobre o custo líquido abatendo o que sobrou na carteira do jogador
+            const neededPristine = Math.max(0, tier.pristine - wallet.pristine);
+            const neededRelics = Math.max(0, tier.relics - wallet.relics);
+            const neededMatrices = Math.max(0, tier.matrices - wallet.matrices);
+
+            // Atualiza a carteira: se sobrou moedas após pagar o tier, o excesso vai pro próximo
+            wallet.pristine = Math.max(0, wallet.pristine - tier.pristine);
+            wallet.relics = Math.max(0, wallet.relics - tier.relics);
+            wallet.matrices = Math.max(0, wallet.matrices - tier.matrices);
+
+            // Calcula o tempo de trava temporal específico DESTA etapa isolada
+            const pristineDays = Math.ceil(neededPristine / dailyPristine);
+            const matrixDays = Math.ceil(neededMatrices / dailyMatrices);
+            const tierDays = Math.max(pristineDays, matrixDays);
+
+            // Acumula os dias para o cronômetro mestre lá de cima
+            totalDaysRemaining += tierDays;
+
+            // Determina qual recurso é o gargalo específico da etapa atual
+            let stepGate = "Nenhum (Apenas Relics)";
+            if (pristineDays > matrixDays && pristineDays > 0) stepGate = "Pristine Relics";
+            else if (matrixDays > pristineDays && matrixDays > 0) stepGate = "Integrated Matrices";
+            else if (pristineDays === matrixDays && pristineDays > 0) stepGate = "Pristines e Matrices";
+
+            // Monta o visual estruturado do card parcial
+            htmlOutput += `
+                <div class="tier-card">
+                    <div class="tier-header">
+                        <span>${tier.name}</span>
+                        <span class="status">${tierDays > 0 ? `+${tierDays} dias` : 'Pronto para comprar'}</span>
+                    </div>
+                    <strong>Falta estocar nesta etapa:</strong><br>
+                    • Pristines: <span class="resource">${neededPristine.toLocaleString()}</span> | 
+                    • Relics: <span class="resource">${neededRelics.toLocaleString()}</span> | 
+                    • Matrices: <span class="resource">${neededMatrices.toLocaleString()}</span><br>
+                    <small style="text-align: left; margin-top: 5px; color: var(--text-secondary); font-size: 12px;">
+                        Gargalo desta etapa: <span style="color: var(--primary); font-weight:600;">${stepGate}</span>
+                    </small>
+                </div>
+            `;
+        }
+
+        // Exibe o tempo macro na parte de cima
+        const totalWeeks = (totalDaysRemaining / 7).toFixed(1);
+        if (totalDaysRemaining === 0 && currentTitle < 4) {
+            document.getElementById('timeResult').innerText = "Pronto para virar Deus!";
+        } else if (currentTitle === 4) {
+            document.getElementById('timeResult').innerText = "Fractal God!";
+        } else {
+            document.getElementById('timeResult').innerText = `${totalDaysRemaining} dias (~${totalWeeks} semanas)`;
+        }
+
+        // Injeta os cards parciais criados dinamicamente
+        document.getElementById('missingResources').innerHTML = htmlOutput + `
             <small>
-                O cálculo usa o maior timegate entre
-                Pristine Fractal Relics e Integrated Fractal Matrices.
+                *O cronômetro mestre soma os gargalos parciais considerando que você acumula os recursos em ordem linear de conquistas.
             </small>
         `;
     }
 
+    // Executa na inicialização da página
     calculate();
-
 </script>
 
 </body>
