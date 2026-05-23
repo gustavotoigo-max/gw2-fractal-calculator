@@ -36,6 +36,22 @@
             border-radius: 12px;
             border: 1px solid var(--border);
             box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+            position: relative; /* Necessário para posicionar o seletor de idiomas */
+        }
+
+        /* Posicionamento do Seletor de Idiomas */
+        .language-picker {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: auto;
+            padding: 6px 10px;
+            font-size: 14px;
+            background: var(--bg-color);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text);
+            cursor: pointer;
         }
 
         h1 {
@@ -44,6 +60,7 @@
             margin-bottom: 8px;
             font-size: 30px;
             letter-spacing: 1px;
+            padding-top: 15px; /* Espaço para não trombar com o idioma em telas móveis */
         }
 
         .subtitle {
@@ -98,7 +115,6 @@
             gap: 15px;
         }
 
-        /* Seção de Checkboxes */
         .farm-section {
             background: var(--tier-bg);
             border: 1px solid var(--border);
@@ -118,6 +134,7 @@
             .checkbox-group {
                 grid-template-columns: 1fr 1fr;
             }
+            h1 { padding-top: 0; }
         }
 
         .checkbox-item {
@@ -245,17 +262,25 @@
 
 <div class="container">
 
-    <h1>Fractal God Timeline</h1>
+    <!-- Seletor de Idiomas no Canto Superior Direito -->
+    <select id="langPicker" class="language-picker" onchange="changeLanguage()">
+        <option value="pt">🇧🇷 Português</option>
+        <option value="en">🇺🇸 English</option>
+        <option value="es">🇪🇸 Español</option>
+        <option value="fr">🇫🇷 Français</option>
+    </select>
 
-    <div class="subtitle">
+    <h1 id="lblMainTitle">Fractal God Timeline</h1>
+
+    <div class="subtitle" id="lblSubtitle">
         Cálculo passo a passo baseado na progressão linear de upgrades da Wiki de GW2
     </div>
 
     <!-- Título Atual -->
     <div class="form-group">
-        <label for="currentTitle">Seu título atual</label>
+        <label for="currentTitle" id="lblCurrentTitle">Seu título atual</label>
         <select id="currentTitle" oninput="calculate()">
-            <option value="0">Nenhum</option>
+            <option value="0" id="optNone">Nenhum</option>
             <option value="1">Fractal Savant</option>
             <option value="2">Fractal Prodigy</option>
             <option value="3">Fractal Champion</option>
@@ -264,27 +289,27 @@
     </div>
 
     <!-- Recursos atuais -->
-    <h3>Seu Inventário Atual</h3>
+    <h3 id="lblSectionInventory">Seu Inventário Atual</h3>
     <div class="grid-inputs">
         <div class="form-group">
-            <label for="pristine">Pristine Fractal Relics atuais</label>
+            <label for="pristine" id="lblPristineCart">Pristine Fractal Relics atuais</label>
             <input type="number" id="pristine" value="0" min="0" oninput="calculate()">
         </div>
         <div class="form-group">
-            <label for="relics">Fractal Relics atuais</label>
+            <label for="relics" id="lblRelicsCart">Fractal Relics atuais</label>
             <input type="number" id="relics" value="0" min="0" oninput="calculate()">
         </div>
     </div>
     <div class="form-group">
-        <label for="matrices">Integrated Fractal Matrices atuais</label>
+        <label for="matrices" id="lblMatricesCart">Integrated Fractal Matrices atuais</label>
         <input type="number" id="matrices" value="0" min="0" oninput="calculate()">
     </div>
 
     <!-- Filtros de Farm Ativo -->
-    <h3>Sua Rotina Diária de Farm</h3>
+    <h3 id="lblSectionRoutine">Sua Rotina Diária de Farm</h3>
     <div class="farm-section">
         <div class="checkbox-group">
-            <div class="sub-group-title">Dailies Padrão</div>
+            <div class="sub-group-title" id="lblSubDailies">Dailies Padrão</div>
             <label class="checkbox-item">
                 <input type="checkbox" id="farmT4" checked onchange="updateDailyInputs()">
                 <div>
@@ -295,12 +320,12 @@
             <label class="checkbox-item">
                 <input type="checkbox" id="farmRecs" checked onchange="updateDailyInputs()">
                 <div>
-                    <span>Recomendadas (Recs)</span>
+                    <span id="lblRecsCheck">Recomendadas (Recs)</span>
                     <span class="desc">+3 Pristines | ~60 Relics</span>
                 </div>
             </label>
 
-            <div class="sub-group-title">Challenge Modes (CMs)</div>
+            <div class="sub-group-title" id="lblSubCMs">Challenge Modes (CMs)</div>
             <label class="checkbox-item">
                 <input type="checkbox" id="cmNightmare" checked onchange="updateDailyInputs()">
                 <div>
@@ -347,29 +372,29 @@
     </div>
 
     <!-- Ganhos diários calculated/manuais -->
-    <h3>Ganhos Diários Calculados</h3>
+    <h3 id="lblSectionGains">Ganhos Diários Calculados</h3>
     <div class="grid-inputs">
         <div class="form-group">
-            <label for="dailyPristine">Pristine Relics / dia</label>
+            <label for="dailyPristine" id="lblPristineDay">Pristine Relics / dia</label>
             <input type="number" id="dailyPristine" value="27" min="0" oninput="calculate()">
         </div>
         <div class="form-group">
-            <label for="dailyMatrices">Integrated Matrices / dia</label>
+            <label for="dailyMatrices" id="lblMatricesDay">Integrated Matrices / dia</label>
             <input type="number" id="dailyMatrices" value="6" min="0" oninput="calculate()">
         </div>
     </div>
     <div class="form-group">
-        <label for="dailyRelics">Fractal Relics Normais / dia (Estimativa)</label>
+        <label for="dailyRelics" id="lblRelicsDay">Fractal Relics Normais / dia (Estimativa)</label>
         <input type="number" id="dailyRelics" value="725" min="0" oninput="calculate()">
     </div>
 
     <!-- Resultado -->
     <div class="result-box">
-        <h2>Tempo Total Restante até o Fractal God</h2>
+        <h2 id="lblResultTitle">Tempo Total Restante até o Fractal God</h2>
         <div class="time-highlight" id="timeResult">0 dias</div>
         
         <div class="details" id="missingResources">
-            <!-- Os cards de cada etapa e o versionamento vão surgir aqui via JavaScript -->
+            <!-- Os cards de cada etapa e a versão vão surgir aqui via JavaScript -->
         </div>
     </div>
 
@@ -377,10 +402,196 @@
 
 <script>
     // ======= CONFIGURAÇÃO DE VERSIONAMENTO E CRÉDITOS =======
-    const SITE_VERSION = "v1.1.3"; 
+    const SITE_VERSION = "v1.3.0"; 
     const USER_NICK    = "Nahar.5349";       // Mude aqui para o seu Nick do jogo
-    const USER_EMAIL   = "x";     // Mude aqui para o seu E-mail
     // ========================================================
+
+    // Banco de traduções para os 4 idiomas
+    const translations = {
+        pt: {
+            mainTitle: "Fractal God Timeline",
+            subtitle: "Cálculo passo a passo baseado na progressão linear de upgrades da Wiki de GW2",
+            currentTitle: "Seu título atual",
+            none: "Nenhum",
+            secInventory: "Seu Inventário Atual",
+            pristineCart: "Pristine Fractal Relics atuais",
+            relicsCart: "Fractal Relics atuais",
+            matricesCart: "Integrated Fractal Matrices atuais",
+            secRoutine: "Sua Rotina Diária de Farm",
+            subDailies: "Dailies Padrão",
+            recsCheck: "Recomendadas (Recs)",
+            subCMs: "Challenge Modes (CMs)",
+            secGains: "Ganhos Diários Calculados",
+            pristineDay: "Pristine Relics / dia",
+            matricesDay: "Integrated Matrices / dia",
+            relicsDay: "Fractal Relics Normais / dia (Estimativa)",
+            resultTitle: "Tempo Total Restante até o Fractal God",
+            lblCompleted: "✓ Concluído",
+            lblAlreadyDone: "Você já domina este tier ou passou dele!",
+            lblNeedStock: "Falta estocar nesta etapa:",
+            lblGate: "Gargalo desta etapa:",
+            lblReadyBuy: "Pronto para comprar",
+            lblInfDays: "Infinitos dias (Sem farm ativo)",
+            lblNoFarmActive: "Falta ativar uma fonte de farm!",
+            lblGateNone: "Nenhum",
+            lblGateReady: "Nenhum (Pronto!)",
+            lblGateNormal: "Fractal Relics Normais",
+            lblGateBoth: "Pristines e Matrices",
+            lblGatePristine: "Pristine Relics",
+            lblGateMatrix: "Integrated Matrices",
+            lblReadyGod: "Pronto para virar Deus!",
+            lblIsGod: "Fractal God!",
+            lblUnfTime: "Tempo Indeterminado",
+            lblDays: "dias",
+            lblWeeks: "semanas",
+            lblFootnote: "*O cronômetro mestre soma os gargalos parciais considerando que você acumula os recursos em ordem linear de conquistas.",
+            lblDevBy: "Desenvolvido por:"
+        },
+        en: {
+            mainTitle: "Fractal God Timeline",
+            subtitle: "Step-by-step calculation based on the linear progression of upgrades from the GW2 Wiki",
+            currentTitle: "Your current title",
+            none: "None",
+            secInventory: "Your Current Inventory",
+            pristineCart: "Current Pristine Fractal Relics",
+            relicsCart: "Current Fractal Relics",
+            matricesCart: "Current Integrated Fractal Matrices",
+            secRoutine: "Your Daily Farm Routine",
+            subDailies: "Standard Dailies",
+            recsCheck: "Recommended (Recs)",
+            subCMs: "Challenge Modes (CMs)",
+            secGains: "Calculated Daily Earnings",
+            pristineDay: "Pristine Relics / day",
+            matricesDay: "Integrated Matrices / day",
+            relicsDay: "Normal Fractal Relics / day (Estimated)",
+            resultTitle: "Total Time Remaining until Fractal God",
+            lblCompleted: "✓ Completed",
+            lblAlreadyDone: "You already own this tier or have passed it!",
+            lblNeedStock: "Missing resources in this step:",
+            lblGate: "Bottleneck of this step:",
+            lblReadyBuy: "Ready to buy",
+            lblInfDays: "Infinite days (No active farm)",
+            lblNoFarmActive: "You need to activate a farm source!",
+            lblGateNone: "None",
+            lblGateReady: "None (Ready!)",
+            lblGateNormal: "Normal Fractal Relics",
+            lblGateBoth: "Pristines and Matrices",
+            lblGatePristine: "Pristine Relics",
+            lblGateMatrix: "Integrated Matrices",
+            lblReadyGod: "Ready to become God!",
+            lblIsGod: "Fractal God!",
+            lblUnfTime: "Undetermined Time",
+            lblDays: "days",
+            lblWeeks: "weeks",
+            lblFootnote: "*The master timer sums the partial bottlenecks assuming you accumulate resources in a linear order of achievements.",
+            lblDevBy: "Developed by:"
+        },
+        es: {
+            mainTitle: "Fractal God Timeline",
+            subtitle: "Cálculo paso a paso basado en la progresión lineal de mejoras de la GW2 Wiki",
+            currentTitle: "Tu título actual",
+            none: "Ninguno",
+            secInventory: "Tu Inventario Actual",
+            pristineCart: "Pristine Fractal Relics actuales",
+            relicsCart: "Fractal Relics actuales",
+            matricesCart: "Integrated Fractal Matrices actuales",
+            secRoutine: "Tu Rutina Diaria de Farm",
+            subDailies: "Dailies Estándar",
+            recsCheck: "Recomendadas (Recs)",
+            subCMs: "Challenge Modes (CMs)",
+            secGains: "Ganancias Diarias Calculadas",
+            pristineDay: "Pristine Relics / día",
+            matricesDay: "Integrated Matrices / día",
+            relicsDay: "Fractal Relics Normales / día (Estimado)",
+            resultTitle: "Tiempo Total Restante hasta Fractal God",
+            lblCompleted: "✓ Completado",
+            lblAlreadyDone: "¡Ya dominas este nivel o lo has superado!",
+            lblNeedStock: "Falta acumular en esta etapa:",
+            lblGate: "Cuello de botella de esta etapa:",
+            lblReadyBuy: "Listo para comprar",
+            lblInfDays: "Días infinitos (Sin farm activo)",
+            lblNoFarmActive: "¡Falta activar una fuente de farm!",
+            lblGateNone: "Ninguno",
+            lblGateReady: "Ninguno (¡Listo!)",
+            lblGateNormal: "Fractal Relics Normales",
+            lblGateBoth: "Pristines y Matrices",
+            lblGatePristine: "Pristine Relics",
+            lblGateMatrix: "Integrated Matrices",
+            lblReadyGod: "¡Listo para convertirte en Dios!",
+            lblIsGod: "¡Fractal God!",
+            lblUnfTime: "Tiempo Indeterminado",
+            lblDays: "días",
+            lblWeeks: "semanas",
+            lblFootnote: "*El temporizador maestro suma los cuellos de botella parciales asumiendo que acumulas recursos en orden lineal de logros.",
+            lblDevBy: "Desarrollado por:"
+        },
+        fr: {
+            mainTitle: "Fractal God Timeline",
+            subtitle: "Calcul étape par étape basé sur la progression linéaire des améliorations du Wiki GW2",
+            currentTitle: "Votre titre actuel",
+            none: "Aucun",
+            secInventory: "Votre Inventaire Actuel",
+            pristineCart: "Pristine Fractal Relics actuels",
+            relicsCart: "Fractal Relics actuels",
+            matricesCart: "Integrated Fractal Matrices actuels",
+            secRoutine: "Votre Routine de Farm Quotidienne",
+            subDailies: "Dailies Standards",
+            recsCheck: "Recommandées (Recs)",
+            subCMs: "Challenge Modes (CMs)",
+            secGains: "Gains Quotidiens Calculés",
+            pristineDay: "Pristine Relics / jour",
+            matricesDay: "Integrated Matrices / jour",
+            relicsDay: "Fractal Relics Normaux / jour (Estimation)",
+            resultTitle: "Temps Total Restant jusqu'à Fractal God",
+            lblCompleted: "✓ Terminé",
+            lblAlreadyDone: "Vous maîtrisez déjà ce niveau ou l'avez dépassé !",
+            lblNeedStock: "Ressources manquantes pour cette étape :",
+            lblGate: "Goulot d'étranglement de cette étape :",
+            lblReadyBuy: "Prêt à acheter",
+            lblInfDays: "Jours infinis (Pas de farm actif)",
+            lblNoFarmActive: "Il faut activer une source de farm !",
+            lblGateNone: "Aucun",
+            lblGateReady: "Aucun (Prêt !)",
+            lblGateNormal: "Fractal Relics Normaux",
+            lblGateBoth: "Pristines et Matrices",
+            lblGatePristine: "Pristine Relics",
+            lblGateMatrix: "Integrated Matrices",
+            lblReadyGod: "Prêt à devenir un Dieu !",
+            lblIsGod: "Fractal God !",
+            lblUnfTime: "Temps Indéterminé",
+            lblDays: "jours",
+            lblWeeks: "semaines",
+            lblFootnote: "*Le minuteur maître additionne les goulots d'étranglement partiels en supposant que vous accumulez les ressources dans l'ordre linéaire des succès.",
+            lblDevBy: "Développé par :"
+        }
+    };
+
+    // Altera os textos estáticos da interface dependendo do idioma escolhido
+    function changeLanguage() {
+        const lang = document.getElementById('langPicker').value;
+        const text = translations[lang];
+
+        document.getElementById('lblMainTitle').innerText = text.mainTitle;
+        document.getElementById('lblSubtitle').innerText = text.subtitle;
+        document.getElementById('lblCurrentTitle').innerText = text.currentTitle;
+        document.getElementById('optNone').innerText = text.none;
+        document.getElementById('lblSectionInventory').innerText = text.secInventory;
+        document.getElementById('lblPristineCart').innerText = text.pristineCart;
+        document.getElementById('lblRelicsCart').innerText = text.relicsCart;
+        document.getElementById('lblMatricesCart').innerText = text.matricesCart;
+        document.getElementById('lblSectionRoutine').innerText = text.secRoutine;
+        document.getElementById('lblSubDailies').innerText = text.subDailies;
+        document.getElementById('lblRecsCheck').innerText = text.recsCheck;
+        document.getElementById('lblSubCMs').innerText = text.subCMs;
+        document.getElementById('lblSectionGains').innerText = text.secGains;
+        document.getElementById('lblPristineDay').innerText = text.pristineDay;
+        document.getElementById('lblMatricesDay').innerText = text.matricesDay;
+        document.getElementById('lblRelicsDay').innerText = text.relicsDay;
+        document.getElementById('lblResultTitle').innerText = text.resultTitle;
+
+        // Força a atualização dos cálculos para traduzir os cards dinâmicos
+        calculate();
+    }
 
     // Custos EXATOS e INDIVIDUAIS de cada degrau de upgrade
     const tierData = [
@@ -390,13 +601,11 @@
         { level: 4, name: "Champion ➔ Fractal God",     pristine: 2000, relics: 55000,  matrices: 400 }
     ];
 
-    // Atualiza as caixas de entrada de recursos diários baseado nos checkboxes marcados
     function updateDailyInputs() {
         let pristineSum = 0;
         let matrixSum = 0;
         let relicsSum = 0;
 
-        // Dailies normais
         if (document.getElementById('farmT4').checked) {
             pristineSum += 12;
             relicsSum += 325;
@@ -406,7 +615,6 @@
             relicsSum += 60;
         }
 
-        // CMs individuais
         if (document.getElementById('cmNightmare').checked) { pristineSum += 2; matrixSum += 1; relicsSum += 50; }
         if (document.getElementById('cmShattered').checked) { pristineSum += 2; matrixSum += 1; relicsSum += 50; }
         if (document.getElementById('cmSunqua').checked)    { pristineSum += 2; matrixSum += 1; relicsSum += 57; }
@@ -414,19 +622,19 @@
         if (document.getElementById('cmLonely').checked)    { pristineSum += 2; matrixSum += 1; relicsSum += 65; }
         if (document.getElementById('cmKinfall').checked)   { pristineSum += 2; matrixSum += 1; relicsSum += 57; }
 
-        // Injeta os valores calculados nas caixas de texto
         document.getElementById('dailyPristine').value = pristineSum;
         document.getElementById('dailyMatrices').value = matrixSum;
         document.getElementById('dailyRelics').value = relicsSum;
 
-        // Roda a matemática principal da progressão
         calculate();
     }
 
     function calculate() {
+        const lang = document.getElementById('langPicker').value;
+        const text = translations[lang];
+
         const currentTitle = parseInt(document.getElementById('currentTitle').value);
         
-        // Clona os recursos inseridos para simular os gastos sem alterar os inputs originais
         let wallet = {
             pristine: parseInt(document.getElementById('pristine').value) || 0,
             relics: parseInt(document.getElementById('relics').value) || 0,
@@ -440,30 +648,26 @@
         let totalDaysRemaining = 0;
         let htmlOutput = "";
 
-        // Varre todas as etapas da progressão sequencialmente
         for (let i = 0; i < tierData.length; i++) {
             const tier = tierData[i];
 
-            // Se o jogador já passou desse nível, o card fica verde e limpo
             if (currentTitle >= tier.level) {
                 htmlOutput += `
                     <div class="tier-card completed">
                         <div class="tier-header">
                             <span>${tier.name}</span>
-                            <span class="status">✓ Concluído</span>
+                            <span class="status">${text.lblCompleted}</span>
                         </div>
-                        <div>Você já domina este tier ou passou dele!</div>
+                        <div>${text.lblAlreadyDone}</div>
                     </div>
                 `;
                 continue;
             }
 
-            // Descobre o custo líquido abatendo o saldo disponível na carteira simulada
             const neededPristine = Math.max(0, tier.pristine - wallet.pristine);
             const neededRelics = Math.max(0, tier.relics - wallet.relics);
             const neededMatrices = Math.max(0, tier.matrices - wallet.matrices);
 
-            // textAtualiza a carteira
             wallet.pristine = Math.max(0, wallet.pristine - tier.pristine);
             wallet.relics = Math.max(0, wallet.relics - tier.relics);
             wallet.matrices = Math.max(0, wallet.matrices - tier.matrices);
@@ -478,22 +682,22 @@
                 totalDaysRemaining += tierDays;
             }
 
-            let stepGate = "Nenhum";
+            let stepGate = text.lblGateNone;
             if (tierDays === 0) {
-                stepGate = "Nenhum (Pronto!)";
+                stepGate = text.lblGateReady;
             } else if (tierDays === relicsDays) {
-                stepGate = "Fractal Relics Normais";
+                stepGate = text.lblGateNormal;
             } else if (tierDays === pristineDays && tierDays === matrixDays) {
-                stepGate = "Pristines e Matrices";
+                stepGate = text.lblGateBoth;
             } else if (tierDays === pristineDays) {
-                stepGate = "Pristine Relics";
+                stepGate = text.lblGatePristine;
             } else if (tierDays === matrixDays) {
-                stepGate = "Integrated Matrices";
+                stepGate = text.lblGateMatrix;
             }
 
-            let daysLabel = `+${tierDays} dias`;
-            if (tierDays === Infinity) { daysLabel = "Infinitos dias (Sem farm ativo)"; stepGate = "Falta ativar uma fonte de farm!"; }
-            else if (tierDays === 0) { daysLabel = "Pronto para comprar"; }
+            let daysLabel = `+${tierDays} ${text.lblDays}`;
+            if (tierDays === Infinity) { daysLabel = text.lblInfDays; stepGate = text.lblNoFarmActive; }
+            else if (tierDays === 0) { daysLabel = text.lblReadyBuy; }
 
             htmlOutput += `
                 <div class="tier-card">
@@ -501,12 +705,12 @@
                         <span>${tier.name}</span>
                         <span class="status">${daysLabel}</span>
                     </div>
-                    <strong>Falta estocar nesta etapa:</strong><br>
+                    <strong>${text.lblNeedStock}</strong><br>
                     • Pristines: <span class="resource">${neededPristine.toLocaleString()}</span> | 
                     • Relics: <span class="resource">${neededRelics.toLocaleString()}</span> | 
                     • Matrices: <span class="resource">${neededMatrices.toLocaleString()}</span><br>
                     <small style="text-align: left; margin-top: 5px; color: var(--text-secondary); font-size: 12px;">
-                        Gargalo desta etapa: <span style="color: var(--primary); font-weight:600;">${stepGate}</span>
+                        ${text.lblGate} <span style="color: var(--primary); font-weight:600;">${stepGate}</span>
                     </small>
                 </div>
             `;
@@ -514,30 +718,30 @@
 
         const totalWeeks = (totalDaysRemaining / 7).toFixed(1);
         if (totalDaysRemaining === 0 && currentTitle < 4) {
-            document.getElementById('timeResult').innerText = "Pronto para virar Deus!";
+            document.getElementById('timeResult').innerText = text.lblReadyGod;
         } else if (currentTitle === 4) {
-            document.getElementById('timeResult').innerText = "Fractal God!";
+            document.getElementById('timeResult').innerText = text.lblIsGod;
         } else if (totalDaysRemaining === Infinity || isNaN(totalDaysRemaining)) {
-            document.getElementById('timeResult').innerText = "Tempo Indeterminado";
+            document.getElementById('timeResult').innerText = text.lblUnfTime;
         } else {
-            document.getElementById('timeResult').innerText = `${totalDaysRemaining} dias (~${totalWeeks} semanas)`;
+            document.getElementById('timeResult').innerText = `${totalDaysRemaining} ${text.lblDays} (~${totalWeeks} ${text.lblWeeks})`;
         }
 
-        // Injeta os cards parciais criados dinamicamente com as notas explicativas, versão e seus créditos logo abaixo
         document.getElementById('missingResources').innerHTML = htmlOutput + `
             <small>
-                *O cronômetro mestre soma os gargalos parciais considerando que você acumula os recursos em ordem linear de conquistas.
+                ${text.lblFootnote}
             </small>
             
             <div style="text-align: center; margin-top: 25px; font-size: 10px; color: var(--text-secondary); opacity: 0.4; letter-spacing: 0.5px; line-height: 1.5;">
                 <div>${SITE_VERSION}</div>
-                <div style="margin-top: 4px;">Desenvolvido por: <strong>${USER_NICK}</strong> (${USER_EMAIL})</div>
+                <div style="margin-top: 4px;">${text.lblDevBy} <strong>${USER_NICK}</strong> (${USER_EMAIL})</div>
             </div>
         `;
     }
 
-    // Inicializa calculando com os padrões marcados
+    // Inicialização do script com a rotina e carregamento do idioma padrão (pt)
     updateDailyInputs();
+    changeLanguage();
 </script>
 
 </body>
