@@ -53,6 +53,15 @@
             font-size: 13px;
         }
 
+        h3 {
+            color: var(--primary);
+            font-size: 16px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 6px;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+
         .form-group {
             margin-bottom: 20px;
         }
@@ -87,6 +96,73 @@
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 15px;
+        }
+
+        /* Seção de Checkboxes */
+        .farm-section {
+            background: var(--tier-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 18px;
+            margin-bottom: 25px;
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        @media(min-width: 480px) {
+            .checkbox-group {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            background: var(--bg-color);
+            padding: 10px 14px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        .checkbox-item:hover {
+            border-color: #444;
+        }
+
+        .checkbox-item input {
+            width: auto;
+            margin-right: 12px;
+            transform: scale(1.2);
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .checkbox-item span {
+            font-size: 14px;
+            color: var(--text);
+        }
+
+        .checkbox-item .desc {
+            font-size: 11px;
+            color: var(--text-secondary);
+            display: block;
+            margin-top: 2px;
+        }
+
+        .sub-group-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            color: var(--primary);
+            font-weight: bold;
+            margin-top: 10px;
+            margin-bottom: 8px;
+            grid-column: 1 / -1;
         }
 
         .result-box {
@@ -188,6 +264,7 @@
     </div>
 
     <!-- Recursos atuais -->
+    <h3>Seu Inventário Atual</h3>
     <div class="grid-inputs">
         <div class="form-group">
             <label for="pristine">Pristine Fractal Relics atuais</label>
@@ -198,23 +275,92 @@
             <input type="number" id="relics" value="0" min="0" oninput="calculate()">
         </div>
     </div>
+    <div class="form-group">
+        <label for="matrices">Integrated Fractal Matrices atuais</label>
+        <input type="number" id="matrices" value="0" min="0" oninput="calculate()">
+    </div>
 
-    <!-- Matrices -->
-    <div class="grid-inputs">
-        <div class="form-group">
-            <label for="matrices">Integrated Fractal Matrices atuais</label>
-            <input type="number" id="matrices" value="0" min="0" oninput="calculate()">
-        </div>
-        <div class="form-group">
-            <label for="dailyMatrices">Integrated Matrices por dia</label>
-            <input type="number" id="dailyMatrices" value="12" min="1" oninput="calculate()">
+    <!-- Filtros de Farm Ativo -->
+    <h3>Sua Rotina Diária de Farm</h3>
+    <div class="farm-section">
+        <div class="checkbox-group">
+            <div class="sub-group-title">Dailies Padrão</div>
+            <label class="checkbox-item">
+                <input type="checkbox" id="farmT4" checked onchange="updateDailyInputs()">
+                <div>
+                    <span>Fractals T4</span>
+                    <span class="desc">+12 Pristines | ~325 Relics</span>
+                </div>
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" id="farmRecs" checked onchange="updateDailyInputs()">
+                <div>
+                    <span>Recomendadas (Recs)</span>
+                    <span class="desc">+3 Pristines | ~60 Relics</span>
+                </div>
+            </label>
+
+            <div class="sub-group-title">Challenge Modes (CMs)</div>
+            <label class="checkbox-item">
+                <input type="checkbox" id="cmNightmare" checked onchange="updateDailyInputs()">
+                <div>
+                    <span>97 - Nightmare</span>
+                    <span class="desc">+2 Pristines | +1 Matrix | ~50 Relics</span>
+                </div>
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" id="cmShattered" checked onchange="updateDailyInputs()">
+                <div>
+                    <span>98 - Shattered Obs.</span>
+                    <span class="desc">+2 Pristines | +1 Matrix | ~50 Relics</span>
+                </div>
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" id="cmSunqua" checked onchange="updateDailyInputs()">
+                <div>
+                    <span>99 - Sunqua Peak</span>
+                    <span class="desc">+2 Pristines | +1 Matrix | ~55 Relics</span>
+                </div>
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" id="cmSilent" checked onchange="updateDailyInputs()">
+                <div>
+                    <span>100 - Silent Surf</span>
+                    <span class="desc">+2 Pristines | +1 Matrix | ~65 Relics</span>
+                </div>
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" id="cmLonely" checked onchange="updateDailyInputs()">
+                <div>
+                    <span>103 - Lonely Tower</span>
+                    <span class="desc">+2 Pristines | +1 Matrix | ~65 Relics</span>
+                </div>
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" id="cmKinfall" checked onchange="updateDailyInputs()">
+                <div>
+                    <span>105 - Kinfall</span>
+                    <span class="desc">+2 Pristines | +1 Matrix | ~55 Relics</span>
+                </div>
+            </label>
         </div>
     </div>
 
-    <!-- Pristine diária -->
+    <!-- Ganhos diários calculated/manuais -->
+    <h3>Ganhos Diários Calculados</h3>
+    <div class="grid-inputs">
+        <div class="form-group">
+            <label for="dailyPristine">Pristine Relics / dia</label>
+            <input type="number" id="dailyPristine" value="27" min="0" oninput="calculate()">
+        </div>
+        <div class="form-group">
+            <label for="dailyMatrices">Integrated Matrices / dia</label>
+            <input type="number" id="dailyMatrices" value="6" min="0" oninput="calculate()">
+        </div>
+    </div>
     <div class="form-group">
-        <label for="dailyPristine">Pristine Fractal Relics por dia</label>
-        <input type="number" id="dailyPristine" value="15" min="1" oninput="calculate()">
+        <label for="dailyRelics">Fractal Relics Normais / dia (Estimativa)</label>
+        <input type="number" id="dailyRelics" value="725" min="0" oninput="calculate()">
     </div>
 
     <!-- Resultado -->
@@ -231,7 +377,7 @@
 
 <script>
     // ======= CONFIGURAÇÃO DE VERSIONAMENTO =======
-    const SITE_VERSION = "v1.0.3"; // Mude o texto aqui para atualizar a versão facilmente!
+    const SITE_VERSION = "v1.2.0"; // Versão com suporte a rotinas de farm automatizadas
     // =============================================
 
     // Custos EXATOS e INDIVIDUAIS de cada degrau de upgrade
@@ -242,18 +388,52 @@
         { level: 4, name: "Champion ➔ Fractal God",     pristine: 2000, relics: 55000,  matrices: 400 }
     ];
 
+    // Atualiza as caixas de entrada de recursos diários baseado nos checkboxes marcados
+    function updateDailyInputs() {
+        let pristineSum = 0;
+        let matrixSum = 0;
+        let relicsSum = 0;
+
+        // Dailies normais
+        if (document.getElementById('farmT4').checked) {
+            pristineSum += 12;
+            relicsSum += 325; // Média entre 250 e 400
+        }
+        if (document.getElementById('farmRecs').checked) {
+            pristineSum += 3;
+            relicsSum += 60;  // Média entre 40 e 80
+        }
+
+        // CMs individuais
+        if (document.getElementById('cmNightmare').checked) { pristineSum += 2; matrixSum += 1; relicsSum += 50; }
+        if (document.getElementById('cmShattered').checked) { pristineSum += 2; matrixSum += 1; relicsSum += 50; }
+        if (document.getElementById('cmSunqua').checked)    { pristineSum += 2; matrixSum += 1; relicsSum += 57; } // Média de 45-70
+        if (document.getElementById('cmSilent').checked)    { pristineSum += 2; matrixSum += 1; relicsSum += 65; } // Média de 50-80
+        if (document.getElementById('cmLonely').checked)    { pristineSum += 2; matrixSum += 1; relicsSum += 65; } // Média de 50-80
+        if (document.getElementById('cmKinfall').checked)   { pristineSum += 2; matrixSum += 1; relicsSum += 57; } // Média de 45-70
+
+        // Injeta os valores calculados nas caixas de texto
+        document.getElementById('dailyPristine').value = pristineSum;
+        document.getElementById('dailyMatrices').value = matrixSum;
+        document.getElementById('dailyRelics').value = relicsSum;
+
+        // Roda a matemática principal da progressão
+        calculate();
+    }
+
     function calculate() {
         const currentTitle = parseInt(document.getElementById('currentTitle').value);
         
-        // Clona ou armazena os recursos em tempo real que o jogador inseriu para usarmos como "carteira"
+        // Clona os recursos inseridos para simular os gastos sem alterar os inputs originais
         let wallet = {
             pristine: parseInt(document.getElementById('pristine').value) || 0,
             relics: parseInt(document.getElementById('relics').value) || 0,
             matrices: parseInt(document.getElementById('matrices').value) || 0
         };
 
-        const dailyPristine = parseInt(document.getElementById('dailyPristine').value) || 1;
-        const dailyMatrices = parseInt(document.getElementById('dailyMatrices').value) || 1;
+        const dailyPristine = parseInt(document.getElementById('dailyPristine').value) || 0;
+        const dailyMatrices = parseInt(document.getElementById('dailyMatrices').value) || 0;
+        const dailyRelics = parseInt(document.getElementById('dailyRelics').value) || 0;
 
         let totalDaysRemaining = 0;
         let htmlOutput = "";
@@ -262,7 +442,7 @@
         for (let i = 0; i < tierData.length; i++) {
             const tier = tierData[i];
 
-            // Se o jogador já passou desse nível, o card fica verde e zerado
+            // Se o jogador já passou desse nível, o card fica verde e limpo
             if (currentTitle >= tier.level) {
                 htmlOutput += `
                     <div class="tier-card completed">
@@ -276,36 +456,54 @@
                 continue;
             }
 
-            // Descobre o custo líquido abatendo o que sobrou na carteira do jogador
+            // Descobre o custo líquido abatendo o saldo disponível na carteira simulada
             const neededPristine = Math.max(0, tier.pristine - wallet.pristine);
             const neededRelics = Math.max(0, tier.relics - wallet.relics);
             const neededMatrices = Math.max(0, tier.matrices - wallet.matrices);
 
-            // Atualiza a carteira: se sobrou moedas após pagar o tier, o excesso vai pro próximo
+            // Atualiza a carteira: se sobrou moedas após pagar o tier, o excesso vai pro próximo degrau
             wallet.pristine = Math.max(0, wallet.pristine - tier.pristine);
             wallet.relics = Math.max(0, wallet.relics - tier.relics);
             wallet.matrices = Math.max(0, wallet.matrices - tier.matrices);
 
-            // Calcula o tempo de trava temporal específico DESTA etapa isolada
-            const pristineDays = Math.ceil(neededPristine / dailyPristine);
-            const matrixDays = Math.ceil(neededMatrices / dailyMatrices);
-            const tierDays = Math.max(pristineDays, matrixDays);
+            // Evita divisão por zero caso o cara zere todos os checkboxes por diversão
+            const pristineDays = dailyPristine > 0 ? Math.ceil(neededPristine / dailyPristine) : (neededPristine > 0 ? Infinity : 0);
+            const matrixDays = dailyMatrices > 0 ? Math.ceil(neededMatrices / dailyMatrices) : (neededMatrices > 0 ? Infinity : 0);
+            const relicsDays = dailyRelics > 0 ? Math.ceil(neededRelics / dailyRelics) : (neededRelics > 0 ? Infinity : 0);
 
-            // Acumula os dias para o cronômetro mestre lá de cima
-            totalDaysRemaining += tierDays;
+            // O gargalo real da etapa atual é o recurso que demorar mais dias para juntar
+            const tierDays = Math.max(pristineDays, matrixDays, relicsDays);
 
-            // Determina qual recurso é o gargalo específico da etapa atual
-            let stepGate = "Nenhum (Apenas Relics)";
-            if (pristineDays > matrixDays && pristineDays > 0) stepGate = "Pristine Relics";
-            else if (matrixDays > pristineDays && matrixDays > 0) stepGate = "Integrated Matrices";
-            else if (pristineDays === matrixDays && pristineDays > 0) stepGate = "Pristines e Matrices";
+            // Acumula os dias se o valor for válido
+            if(tierDays !== Infinity) {
+                totalDaysRemaining += tierDays;
+            }
+
+            // Descobre dinamicamente qual recurso está travando essa etapa específica
+            let stepGate = "Nenhum";
+            if (tierDays === 0) {
+                stepGate = "Nenhum (Pronto!)";
+            } else if (tierDays === relicsDays) {
+                stepGate = "Fractal Relics Normais";
+            } else if (tierDays === pristineDays && tierDays === matrixDays) {
+                stepGate = "Pristines e Matrices";
+            } else if (tierDays === pristineDays) {
+                stepGate = "Pristine Relics";
+            } else if (tierDays === matrixDays) {
+                stepGate = "Integrated Matrices";
+            }
+
+            // Se o usuário desmarcar tudo e faltar item, avisa que travou
+            let daysLabel = `+${tierDays} dias`;
+            if (tierDays === Infinity) { daysLabel = "Infinitos dias (Sem farm ativo)"; stepGate = "Falta ativar uma fonte de farm!"; }
+            else if (tierDays === 0) { daysLabel = "Pronto para comprar"; }
 
             // Monta o visual estruturado do card parcial
             htmlOutput += `
                 <div class="tier-card">
                     <div class="tier-header">
                         <span>${tier.name}</span>
-                        <span class="status">${tierDays > 0 ? `+${tierDays} dias` : 'Pronto para comprar'}</span>
+                        <span class="status">${daysLabel}</span>
                     </div>
                     <strong>Falta estocar nesta etapa:</strong><br>
                     • Pristines: <span class="resource">${neededPristine.toLocaleString()}</span> | 
@@ -324,6 +522,8 @@
             document.getElementById('timeResult').innerText = "Pronto para virar Deus!";
         } else if (currentTitle === 4) {
             document.getElementById('timeResult').innerText = "Fractal God!";
+        } else if (totalDaysRemaining === Infinity || isNaN(totalDaysRemaining)) {
+            document.getElementById('timeResult').innerText = "Tempo Indeterminado";
         } else {
             document.getElementById('timeResult').innerText = `${totalDaysRemaining} dias (~${totalWeeks} semanas)`;
         }
@@ -339,8 +539,8 @@
         `;
     }
 
-    // Executa na inicialização da página
-    calculate();
+    // Inicializa calculando com os padrões marcados
+    updateDailyInputs();
 </script>
 
 </body>
