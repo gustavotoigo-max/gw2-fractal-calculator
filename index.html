@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -28,7 +29,7 @@
 
         .container {
             width: 100%;
-            max-width: 650px;
+            max-width: 700px;
             background: var(--card-bg);
             padding: 30px;
             border-radius: 12px;
@@ -40,7 +41,7 @@
             text-align: center;
             color: var(--primary);
             margin-bottom: 8px;
-            font-size: 28px;
+            font-size: 30px;
             letter-spacing: 1px;
         }
 
@@ -105,7 +106,7 @@
 
         .time-highlight {
             text-align: center;
-            font-size: 36px;
+            font-size: 38px;
             font-weight: bold;
             color: var(--primary);
             margin-bottom: 20px;
@@ -114,7 +115,7 @@
         .details {
             background: rgba(0,0,0,0.2);
             border-radius: 8px;
-            padding: 15px;
+            padding: 18px;
             line-height: 1.8;
             color: var(--text-secondary);
             font-size: 14px;
@@ -123,6 +124,13 @@
         .resource {
             color: var(--text);
             font-weight: bold;
+        }
+
+        .section-title {
+            color: var(--primary);
+            font-weight: bold;
+            margin-top: 10px;
+            margin-bottom: 8px;
         }
 
         small {
@@ -144,6 +152,7 @@
     </div>
 
     <!-- Título Atual -->
+
     <div class="form-group">
 
         <label for="currentTitle">
@@ -176,7 +185,8 @@
 
     </div>
 
-    <!-- Recursos -->
+    <!-- Recursos atuais -->
+
     <div class="grid-inputs">
 
         <div class="form-group">
@@ -213,7 +223,46 @@
 
     </div>
 
-    <!-- Ganho diário -->
+    <!-- Matrices -->
+
+    <div class="grid-inputs">
+
+        <div class="form-group">
+
+            <label for="matrices">
+                Integrated Fractal Matrices atuais
+            </label>
+
+            <input
+                type="number"
+                id="matrices"
+                value="0"
+                min="0"
+                oninput="calculate()"
+            >
+
+        </div>
+
+        <div class="form-group">
+
+            <label for="dailyMatrices">
+                Integrated Matrices por dia
+            </label>
+
+            <input
+                type="number"
+                id="dailyMatrices"
+                value="12"
+                min="1"
+                oninput="calculate()"
+            >
+
+        </div>
+
+    </div>
+
+    <!-- Pristine diária -->
+
     <div class="form-group">
 
         <label for="dailyPristine">
@@ -231,6 +280,7 @@
     </div>
 
     <!-- Resultado -->
+
     <div class="result-box">
 
         <h2>
@@ -258,7 +308,7 @@
 <script>
 
     // Custos RESTANTES até Fractal God
-    // Valores oficiais da wiki
+    // Baseado na wiki oficial
 
     const progressionData = [
 
@@ -320,13 +370,25 @@
                 document.getElementById('relics').value
             ) || 0;
 
-        const dailyRate =
+        const currentMatrices =
+            parseInt(
+                document.getElementById('matrices').value
+            ) || 0;
+
+        const dailyPristine =
             parseInt(
                 document.getElementById('dailyPristine').value
             ) || 1;
 
+        const dailyMatrices =
+            parseInt(
+                document.getElementById('dailyMatrices').value
+            ) || 1;
+
         const target =
             progressionData[currentTitle];
+
+        // Recursos faltantes
 
         const missingPristine =
             Math.max(
@@ -341,17 +403,36 @@
             );
 
         const missingMatrices =
-            target.reqMatrices;
+            Math.max(
+                0,
+                target.reqMatrices - currentMatrices
+            );
+
+        // Dias necessários
+
+        const pristineDays =
+            Math.ceil(
+                missingPristine / dailyPristine
+            );
+
+        const matrixDays =
+            Math.ceil(
+                missingMatrices / dailyMatrices
+            );
+
+        // Verdadeiro gargalo
 
         const daysRemaining =
-            Math.ceil(
-                missingPristine / dailyRate
+            Math.max(
+                pristineDays,
+                matrixDays
             );
 
         const weeks =
             (daysRemaining / 7).toFixed(1);
 
-        // Já concluiu
+        // Concluído
+
         if (
             missingPristine === 0 &&
             missingRelics === 0 &&
@@ -369,16 +450,16 @@
             return;
         }
 
+        // Resultado
+
         document.getElementById('timeResult').innerText =
             `${daysRemaining} dias (~${weeks} semanas)`;
 
         document.getElementById('missingResources').innerHTML = `
 
-            <strong>
-                Recursos restantes até Fractal God:
-            </strong>
-
-            <br><br>
+            <div class="section-title">
+                Recursos restantes
+            </div>
 
             • <span class="resource">
                 ${missingPristine.toLocaleString()}
@@ -399,9 +480,41 @@
             </span>
             Integrated Fractal Matrices
 
+            <br><br>
+
+            <div class="section-title">
+                Gargalos de tempo
+            </div>
+
+            • Pristines:
+            <span class="resource">
+                ${pristineDays} dias
+            </span>
+
+            <br>
+
+            • Matrices:
+            <span class="resource">
+                ${matrixDays} dias
+            </span>
+
+            <br><br>
+
+            <div class="section-title">
+                Gargalo principal
+            </div>
+
+            ${
+                pristineDays > matrixDays
+                ? "Pristine Fractal Relics"
+                : matrixDays > pristineDays
+                    ? "Integrated Fractal Matrices"
+                    : "Ambos igualmente"
+            }
+
             <small>
-                O tempo estimado considera apenas a obtenção
-                diária de Pristine Fractal Relics.
+                O cálculo usa o maior timegate entre
+                Pristine Fractal Relics e Integrated Fractal Matrices.
             </small>
         `;
     }
