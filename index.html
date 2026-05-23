@@ -369,16 +369,18 @@
         <div class="time-highlight" id="timeResult">0 dias</div>
         
         <div class="details" id="missingResources">
-            <!-- Os cards de cada etapa e a versão vão surgir aqui via JavaScript -->
+            <!-- Os cards de cada etapa e o versionamento vão surgir aqui via JavaScript -->
         </div>
     </div>
 
 </div>
 
 <script>
-    // ======= CONFIGURAÇÃO DE VERSIONAMENTO =======
-    const SITE_VERSION = "v1.2.0"; // Versão com suporte a rotinas de farm automatizadas
-    // =============================================
+    // ======= CONFIGURAÇÃO DE VERSIONAMENTO E CRÉDITOS =======
+    const SITE_VERSION = "v1.1.2"; 
+    const USER_NICK    = "SeuNickAqui";       // Mude aqui para o seu Nick do jogo
+    const USER_EMAIL   = "seu@email.com";     // Mude aqui para o seu E-mail
+    // ========================================================
 
     // Custos EXATOS e INDIVIDUAIS de cada degrau de upgrade
     const tierData = [
@@ -397,20 +399,20 @@
         // Dailies normais
         if (document.getElementById('farmT4').checked) {
             pristineSum += 12;
-            relicsSum += 325; // Média entre 250 e 400
+            relicsSum += 325;
         }
         if (document.getElementById('farmRecs').checked) {
             pristineSum += 3;
-            relicsSum += 60;  // Média entre 40 e 80
+            relicsSum += 60;
         }
 
         // CMs individuais
         if (document.getElementById('cmNightmare').checked) { pristineSum += 2; matrixSum += 1; relicsSum += 50; }
         if (document.getElementById('cmShattered').checked) { pristineSum += 2; matrixSum += 1; relicsSum += 50; }
-        if (document.getElementById('cmSunqua').checked)    { pristineSum += 2; matrixSum += 1; relicsSum += 57; } // Média de 45-70
-        if (document.getElementById('cmSilent').checked)    { pristineSum += 2; matrixSum += 1; relicsSum += 65; } // Média de 50-80
-        if (document.getElementById('cmLonely').checked)    { pristineSum += 2; matrixSum += 1; relicsSum += 65; } // Média de 50-80
-        if (document.getElementById('cmKinfall').checked)   { pristineSum += 2; matrixSum += 1; relicsSum += 57; } // Média de 45-70
+        if (document.getElementById('cmSunqua').checked)    { pristineSum += 2; matrixSum += 1; relicsSum += 57; }
+        if (document.getElementById('cmSilent').checked)    { pristineSum += 2; matrixSum += 1; relicsSum += 65; }
+        if (document.getElementById('cmLonely').checked)    { pristineSum += 2; matrixSum += 1; relicsSum += 65; }
+        if (document.getElementById('cmKinfall').checked)   { pristineSum += 2; matrixSum += 1; relicsSum += 57; }
 
         // Injeta os valores calculados nas caixas de texto
         document.getElementById('dailyPristine').value = pristineSum;
@@ -461,25 +463,21 @@
             const neededRelics = Math.max(0, tier.relics - wallet.relics);
             const neededMatrices = Math.max(0, tier.matrices - wallet.matrices);
 
-            // Atualiza a carteira: se sobrou moedas após pagar o tier, o excesso vai pro próximo degrau
+            // textAtualiza a carteira
             wallet.pristine = Math.max(0, wallet.pristine - tier.pristine);
             wallet.relics = Math.max(0, wallet.relics - tier.relics);
             wallet.matrices = Math.max(0, wallet.matrices - tier.matrices);
 
-            // Evita divisão por zero caso o cara zere todos os checkboxes por diversão
             const pristineDays = dailyPristine > 0 ? Math.ceil(neededPristine / dailyPristine) : (neededPristine > 0 ? Infinity : 0);
             const matrixDays = dailyMatrices > 0 ? Math.ceil(neededMatrices / dailyMatrices) : (neededMatrices > 0 ? Infinity : 0);
             const relicsDays = dailyRelics > 0 ? Math.ceil(neededRelics / dailyRelics) : (neededRelics > 0 ? Infinity : 0);
 
-            // O gargalo real da etapa atual é o recurso que demorar mais dias para juntar
             const tierDays = Math.max(pristineDays, matrixDays, relicsDays);
 
-            // Acumula os dias se o valor for válido
             if(tierDays !== Infinity) {
                 totalDaysRemaining += tierDays;
             }
 
-            // Descobre dinamicamente qual recurso está travando essa etapa específica
             let stepGate = "Nenhum";
             if (tierDays === 0) {
                 stepGate = "Nenhum (Pronto!)";
@@ -493,12 +491,10 @@
                 stepGate = "Integrated Matrices";
             }
 
-            // Se o usuário desmarcar tudo e faltar item, avisa que travou
             let daysLabel = `+${tierDays} dias`;
             if (tierDays === Infinity) { daysLabel = "Infinitos dias (Sem farm ativo)"; stepGate = "Falta ativar uma fonte de farm!"; }
             else if (tierDays === 0) { daysLabel = "Pronto para comprar"; }
 
-            // Monta o visual estruturado do card parcial
             htmlOutput += `
                 <div class="tier-card">
                     <div class="tier-header">
@@ -516,7 +512,6 @@
             `;
         }
 
-        // Exibe o tempo macro na parte de cima
         const totalWeeks = (totalDaysRemaining / 7).toFixed(1);
         if (totalDaysRemaining === 0 && currentTitle < 4) {
             document.getElementById('timeResult').innerText = "Pronto para virar Deus!";
@@ -528,13 +523,15 @@
             document.getElementById('timeResult').innerText = `${totalDaysRemaining} dias (~${totalWeeks} semanas)`;
         }
 
-        // Injeta os cards parciais criados dinamicamente com o texto descritivo e o versionamento discretamente abaixo dele
+        // Injeta os cards parciais criados dinamicamente com as notas explicativas, versão e seus créditos logo abaixo
         document.getElementById('missingResources').innerHTML = htmlOutput + `
             <small>
                 *O cronômetro mestre soma os gargalos parciais considerando que você acumula os recursos em ordem linear de conquistas.
             </small>
-            <div style="text-align: center; margin-top: 25px; font-size: 10px; color: var(--text-secondary); opacity: 0.4; letter-spacing: 0.5px;">
-                ${SITE_VERSION}
+            
+            <div style="text-align: center; margin-top: 25px; font-size: 10px; color: var(--text-secondary); opacity: 0.4; letter-spacing: 0.5px; line-height: 1.5;">
+                <div>${SITE_VERSION}</div>
+                <div style="margin-top: 4px;">Desenvolvido por: <strong>${USER_NICK}</strong> (${USER_EMAIL})</div>
             </div>
         `;
     }
