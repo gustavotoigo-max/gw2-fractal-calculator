@@ -223,13 +223,17 @@
         <div class="time-highlight" id="timeResult">0 dias</div>
         
         <div class="details" id="missingResources">
-            <!-- Os cards de cada etapa vão surgir aqui via JavaScript -->
+            <!-- Os cards de cada etapa e a versão vão surgir aqui via JavaScript -->
         </div>
     </div>
 
 </div>
 
 <script>
+    // ======= CONFIGURAÇÃO DE VERSIONAMENTO =======
+    const SITE_VERSION = "v1.0.3"; // Mude o texto aqui para atualizar a versão facilmente!
+    // =============================================
+
     // Custos EXATOS e INDIVIDUAIS de cada degrau de upgrade
     const tierData = [
         { level: 1, name: "Nenhum ➔ Fractal Savant",     pristine: 0,    relics: 25000,  matrices: 75  },
@@ -324,11 +328,14 @@
             document.getElementById('timeResult').innerText = `${totalDaysRemaining} dias (~${totalWeeks} semanas)`;
         }
 
-        // Injeta os cards parciais criados dinamicamente
+        // Injeta os cards parciais criados dinamicamente com o texto descritivo e o versionamento discretamente abaixo dele
         document.getElementById('missingResources').innerHTML = htmlOutput + `
             <small>
                 *O cronômetro mestre soma os gargalos parciais considerando que você acumula os recursos em ordem linear de conquistas.
             </small>
+            <div style="text-align: center; margin-top: 25px; font-size: 10px; color: var(--text-secondary); opacity: 0.4; letter-spacing: 0.5px;">
+                ${SITE_VERSION}
+            </div>
         `;
     }
 
