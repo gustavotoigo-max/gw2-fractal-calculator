@@ -36,10 +36,9 @@
             border-radius: 12px;
             border: 1px solid var(--border);
             box-shadow: 0 8px 24px rgba(0,0,0,0.45);
-            position: relative; /* Necessário para posicionar o seletor de idiomas */
+            position: relative;
         }
 
-        /* Posicionamento do Seletor de Idiomas */
         .language-picker {
             position: absolute;
             top: 20px;
@@ -60,7 +59,7 @@
             margin-bottom: 8px;
             font-size: 30px;
             letter-spacing: 1px;
-            padding-top: 15px; /* Espaço para não trombar com o idioma em telas móveis */
+            padding-top: 15px;
         }
 
         .subtitle {
@@ -262,7 +261,6 @@
 
 <div class="container">
 
-    <!-- Seletor de Idiomas no Canto Superior Direito -->
     <select id="langPicker" class="language-picker" onchange="changeLanguage()">
         <option value="pt">🇧🇷 Português</option>
         <option value="en">🇺🇸 English</option>
@@ -276,7 +274,6 @@
         Cálculo passo a passo baseado na progressão linear de upgrades da Wiki de GW2
     </div>
 
-    <!-- Título Atual -->
     <div class="form-group">
         <label for="currentTitle" id="lblCurrentTitle">Seu título atual</label>
         <select id="currentTitle" oninput="calculate()">
@@ -288,7 +285,6 @@
         </select>
     </div>
 
-    <!-- Recursos atuais -->
     <h3 id="lblSectionInventory">Seu Inventário Atual</h3>
     <div class="grid-inputs">
         <div class="form-group">
@@ -305,7 +301,6 @@
         <input type="number" id="matrices" value="0" min="0" oninput="calculate()">
     </div>
 
-    <!-- Filtros de Farm Ativo -->
     <h3 id="lblSectionRoutine">Sua Rotina Diária de Farm</h3>
     <div class="farm-section">
         <div class="checkbox-group">
@@ -327,51 +322,50 @@
 
             <div class="sub-group-title" id="lblSubCMs">Challenge Modes (CMs)</div>
             <label class="checkbox-item">
+                <input type="checkbox" id="cmKinfall" checked onchange="updateDailyInputs()">
+                <div>
+                    <span>95 - Kinfall</span>
+                    <span class="desc">+2 Pristines | +1 Matrix | ~57 Relics</span>
+                </div>
+            </label>
+            <label class="checkbox-item">
                 <input type="checkbox" id="cmNightmare" checked onchange="updateDailyInputs()">
                 <div>
-                    <span>97 - Nightmare</span>
+                    <span>96 - Nightmare</span>
                     <span class="desc">+2 Pristines | +1 Matrix | ~50 Relics</span>
                 </div>
             </label>
             <label class="checkbox-item">
                 <input type="checkbox" id="cmShattered" checked onchange="updateDailyInputs()">
                 <div>
-                    <span>98 - Shattered Obs.</span>
+                    <span>97 - Shattered Obs.</span>
                     <span class="desc">+2 Pristines | +1 Matrix | ~50 Relics</span>
                 </div>
             </label>
             <label class="checkbox-item">
                 <input type="checkbox" id="cmSunqua" checked onchange="updateDailyInputs()">
                 <div>
-                    <span>99 - Sunqua Peak</span>
-                    <span class="desc">+2 Pristines | +1 Matrix | ~55 Relics</span>
+                    <span>98 - Sunqua Peak</span>
+                    <span class="desc">+2 Pristines | +1 Matrix | ~57 Relics</span>
                 </div>
             </label>
             <label class="checkbox-item">
                 <input type="checkbox" id="cmSilent" checked onchange="updateDailyInputs()">
                 <div>
-                    <span>100 - Silent Surf</span>
+                    <span>99 - Silent Surf</span>
                     <span class="desc">+2 Pristines | +1 Matrix | ~65 Relics</span>
                 </div>
             </label>
             <label class="checkbox-item">
                 <input type="checkbox" id="cmLonely" checked onchange="updateDailyInputs()">
                 <div>
-                    <span>103 - Lonely Tower</span>
+                    <span>100 - Lonely Tower</span>
                     <span class="desc">+2 Pristines | +1 Matrix | ~65 Relics</span>
-                </div>
-            </label>
-            <label class="checkbox-item">
-                <input type="checkbox" id="cmKinfall" checked onchange="updateDailyInputs()">
-                <div>
-                    <span>105 - Kinfall</span>
-                    <span class="desc">+2 Pristines | +1 Matrix | ~55 Relics</span>
                 </div>
             </label>
         </div>
     </div>
 
-    <!-- Ganhos diários calculated/manuais -->
     <h3 id="lblSectionGains">Ganhos Diários Calculados</h3>
     <div class="grid-inputs">
         <div class="form-group">
@@ -388,13 +382,12 @@
         <input type="number" id="dailyRelics" value="725" min="0" oninput="calculate()">
     </div>
 
-    <!-- Resultado -->
     <div class="result-box">
         <h2 id="lblResultTitle">Tempo Total Restante até o Fractal God</h2>
         <div class="time-highlight" id="timeResult">0 dias</div>
         
         <div class="details" id="missingResources">
-            <!-- Os cards de cada etapa e a versão vão surgir aqui via JavaScript -->
+            <!-- Os cards parciais surgem aqui via JS -->
         </div>
     </div>
 
@@ -402,12 +395,11 @@
 
 <script>
     // ======= CONFIGURAÇÃO DE VERSIONAMENTO E CRÉDITOS =======
-    const SITE_VERSION = "v1.3.0"; 
-    const USER_NICK    = "Nahar.5349";       // Mude aqui para o seu Nick do jogo
-    const USER_EMAIL   = "."
+    const SITE_VERSION = "v1.2.1"; 
+    const USER_NICK    = "Nahar.5349";       
+    const USER_EMAIL   = " ";     
     // ========================================================
 
-    // Banco de traduções para os 4 idiomas
     const translations = {
         pt: {
             mainTitle: "Fractal God Timeline",
@@ -536,7 +528,7 @@
             relicsCart: "Fractal Relics actuels",
             matricesCart: "Integrated Fractal Matrices actuels",
             secRoutine: "Votre Routine de Farm Quotidienne",
-            subDailies: "Dailies Standards",
+            subDailies: "Dailies Temps",
             recsCheck: "Recommandées (Recs)",
             subCMs: "Challenge Modes (CMs)",
             secGains: "Gains Quotidiens Calculés",
@@ -567,7 +559,6 @@
         }
     };
 
-    // Altera os textos estáticos da interface dependendo do idioma escolhido
     function changeLanguage() {
         const lang = document.getElementById('langPicker').value;
         const text = translations[lang];
@@ -590,11 +581,9 @@
         document.getElementById('lblRelicsDay').innerText = text.relicsDay;
         document.getElementById('lblResultTitle').innerText = text.resultTitle;
 
-        // Força a atualização dos cálculos para traduzir os cards dinâmicos
         calculate();
     }
 
-    // Custos EXATOS e INDIVIDUAIS de cada degrau de upgrade
     const tierData = [
         { level: 1, name: "Nenhum ➔ Fractal Savant",     pristine: 0,    relics: 25000,  matrices: 75  },
         { level: 2, name: "Savant ➔ Fractal Prodigy",    pristine: 1200, relics: 35000,  matrices: 150 },
@@ -616,12 +605,12 @@
             relicsSum += 60;
         }
 
+        if (document.getElementById('cmKinfall').checked)   { pristineSum += 2; matrixSum += 1; relicsSum += 57; }
         if (document.getElementById('cmNightmare').checked) { pristineSum += 2; matrixSum += 1; relicsSum += 50; }
         if (document.getElementById('cmShattered').checked) { pristineSum += 2; matrixSum += 1; relicsSum += 50; }
         if (document.getElementById('cmSunqua').checked)    { pristineSum += 2; matrixSum += 1; relicsSum += 57; }
         if (document.getElementById('cmSilent').checked)    { pristineSum += 2; matrixSum += 1; relicsSum += 65; }
         if (document.getElementById('cmLonely').checked)    { pristineSum += 2; matrixSum += 1; relicsSum += 65; }
-        if (document.getElementById('cmKinfall').checked)   { pristineSum += 2; matrixSum += 1; relicsSum += 57; }
 
         document.getElementById('dailyPristine').value = pristineSum;
         document.getElementById('dailyMatrices').value = matrixSum;
@@ -633,7 +622,6 @@
     function calculate() {
         const lang = document.getElementById('langPicker').value;
         const text = translations[lang];
-
         const currentTitle = parseInt(document.getElementById('currentTitle').value);
         
         let wallet = {
@@ -740,7 +728,6 @@
         `;
     }
 
-    // Inicialização do script com a rotina e carregamento do idioma padrão (pt)
     updateDailyInputs();
     changeLanguage();
 </script>
