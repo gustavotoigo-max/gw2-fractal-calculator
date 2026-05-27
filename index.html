@@ -228,6 +228,7 @@
             border-bottom: 1px solid var(--border);
             padding-bottom: 5px;
             margin-bottom: 8px;
+            align-items: center;
         }
 
         .tier-header .status {
@@ -398,13 +399,16 @@
 </div>
 
 <script>
-    const SITE_VERSION = "v1.3.4"; 
+    const SITE_VERSION = "v1.4.0"; 
     const USER_NICK    = "SeuNickAqui";       
     const USER_EMAIL   = "seu@email.com";     
 
     const ID_RELIC = 7;
     const ID_PRISTINE = 6;
     const ID_MATRIX = 73232;
+
+    // Roteador Proxy CORS para evitar bloqueios do navegador na Vercel
+    const CORS_PROXY = "https://cors-anywhere.herokuapp.com/";
 
     const translations = {
         pt: {
@@ -538,7 +542,7 @@
             lblWeeks: "semanas",
             lblFootnote: "*El temporizador maestro suma los cuellos de botella parciales asumiendo que acumulas recursos en orden lineal de logros.",
             lblDevBy: "Desarrollado por:",
-            alertSuccess: "¡Sincronizado con éxito con la API de GW2!",
+            alertSuccess: "¡Sincronizado con éxito con a API de GW2!",
             alertError: "Error al conectar con la API. Verifique su clave y los permisos de la misma.",
             alertEmpty: "Por favor, introduzca una clave API válida."
         },
@@ -652,15 +656,14 @@
         let totalMatrices = 0;
         let peloMenosUmSucesso = false;
 
-        // Diretivas anti-cache configuradas para evitar erros de CORS e travamentos locais
+        // Passando a URL da API da ArenaNet por dentro do proxy CORS-Anywhere
         const fetchOptions = { 
             method: 'GET',
-            headers: { 'Authorization': `Bearer ${apiKey}` },
-            cache: 'no-cache'
+            headers: { 'Authorization': `Bearer ${apiKey}` }
         };
 
         try {
-            const walletRes = await fetch('https://api.guildwars2.com/v2/account/wallet', fetchOptions);
+            const walletRes = await fetch(`${CORS_PROXY}https://api.guildwars2.com/v2/account/wallet`, fetchOptions);
             if (walletRes.ok) {
                 const wallet = await walletRes.json();
                 const relicObj = wallet.find(i => i && i.id == ID_RELIC);
@@ -684,7 +687,7 @@
         };
 
         try {
-            const bankRes = await fetch('https://api.guildwars2.com/v2/account/bank', fetchOptions);
+            const bankRes = await fetch(`${CORS_PROXY}https://api.guildwars2.com/v2/account/bank`, fetchOptions);
             if (bankRes.ok) {
                 const bank = await bankRes.json();
                 scanItems(bank);
@@ -695,7 +698,7 @@
         }
 
         try {
-            const charsRes = await fetch('https://api.guildwars2.com/v2/characters?ids=all', fetchOptions);
+            const charsRes = await fetch(`${CORS_PROXY}https://api.guildwars2.com/v2/characters?ids=all', fetchOptions);
             if (charsRes.ok) {
                 const characters = await charsRes.json();
                 const charList = Array.isArray(characters) ? characters : Object.values(characters);
