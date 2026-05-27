@@ -168,4 +168,724 @@
             font-size: 11px;
             color: var(--text-secondary);
             display: block;
-            margin-
+            margin-top: 2px;
+        }
+
+        .sub-group-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            color: var(--primary);
+            font-weight: bold;
+            margin-top: 10px;
+            margin-bottom: 8px;
+            grid-column: 1 / -1;
+        }
+
+        .result-box {
+            margin-top: 30px;
+            padding: 22px;
+            border-radius: 10px;
+            border: 1px solid var(--primary);
+            background: rgba(229, 169, 60, 0.08);
+        }
+
+        .result-box h2 {
+            margin-top: 0;
+            text-align: center;
+            font-size: 16px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .time-highlight {
+            text-align: center;
+            font-size: 38px;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .details {
+            border-radius: 8px;
+            line-height: 1.8;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .tier-card {
+            background: var(--tier-bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 12px;
+        }
+
+        .tier-card.completed {
+            border-color: #22c55e;
+            background: rgba(34, 197, 94, 0.05);
+        }
+
+        .tier-header {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            color: var(--text);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 5px;
+            margin-bottom: 8px;
+        }
+
+        .tier-header .status {
+            color: var(--primary);
+        }
+
+        .tier-card.completed .tier-header .status {
+            color: #22c55e;
+        }
+
+        .resource {
+            color: var(--text);
+            font-weight: bold;
+        }
+
+        small {
+            display: block;
+            margin-top: 15px;
+            line-height: 1.5;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <select id="langPicker" class="language-picker" onchange="changeLanguage()">
+        <option value="pt">🇧🇷 Português</option>
+        <option value="en">🇺🇸 English</option>
+        <option value="es">🇪🇸 Español</option>
+        <option value="fr">🇫🇷 Français</option>
+    </select>
+
+    <h1 id="lblMainTitle">Fractal God Timeline</h1>
+
+    <div class="subtitle" id="lblSubtitle">
+        Cálculo passo a passo baseado na progressão linear de upgrades da Wiki de GW2
+    </div>
+
+    <div class="farm-section" style="margin-bottom: 25px;">
+        <label for="apiKey" style="color: var(--primary); font-weight: bold;" id="lblApiKeyTitle">Chave de API do GW2 (Opcional)</label>
+        <div style="display: flex; gap: 10px; margin-bottom: 8px;">
+            <input type="text" id="apiKey" placeholder="Cole sua API Key aqui..." style="font-size: 13px;">
+            <button onclick="fetchGW2Data()" id="btnSync" style="background: var(--primary); color: #000; border: none; border-radius: 6px; padding: 0 15px; font-weight: bold; cursor: pointer; white-space: nowrap;">Sincronizar</button>
+        </div>
+        <span style="font-size: 11px; color: var(--text-secondary); display: block; line-height: 1.4;" id="lblApiWarning">
+            ⚠️ <strong>Aviso:</strong> Para puxar os dados corretamente, certifique-se de gerar uma API Key no site da ArenaNet com as permissões <strong>account, inventories, unlocks e wallet</strong> ativadas. Seus dados ficam salvos localmente.
+        </span>
+    </div>
+
+    <div class="form-group">
+        <label for="currentTitle" id="lblCurrentTitle">Seu título atual</label>
+        <select id="currentTitle" oninput="calculate()">
+            <option value="0" id="optNone">Nenhum</option>
+            <option value="1">Fractal Savant</option>
+            <option value="2">Fractal Prodigy</option>
+            <option value="3">Fractal Champion</option>
+            <option value="4">Fractal God</option>
+        </select>
+    </div>
+
+    <h3 id="lblSectionInventory">Seu Inventário Atual</h3>
+    <div class="grid-inputs">
+        <div class="form-group">
+            <label for="pristine" id="lblPristineCart">Pristine Fractal Relics atuais</label>
+            <input type="number" id="pristine" value="0" min="0" oninput="calculate()">
+        </div>
+        <div class="form-group">
+            <label for="relics" id="lblRelicsCart">Fractal Relics atuais</label>
+            <input type="number" id="relics" value="0" min="0" oninput="calculate()">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="matrices" id="lblMatricesCart">Integrated Fractal Matrices atuais</label>
+        <input type="number" id="matrices" value="0" min="0" oninput="calculate()">
+    </div>
+
+    <h3 id="lblSectionRoutine">Sua Rotina Diária de Farm</h3>
+    <div class="farm-section">
+        <div class="checkbox-group">
+            <div class="sub-group-title" id="lblSubDailies">Dailies Padrão</div>
+            <label class="checkbox-item">
+                <input type="checkbox" id="farmT4" checked onchange="updateDailyInputs()">
+                <div>
+                    <span>Fractals T4</span>
+                    <span class="desc">+12 Pristines | +174 Relics</span>
+                </div>
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" id="farmRecs" checked onchange="updateDailyInputs()">
+                <div>
+                    <span id="lblRecsCheck">Recomendadas (Recs)</span>
+                    <span class="desc">+3 Pristines | +36 Relics</span>
+                </div>
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" id="farmPotions" checked onchange="updateDailyInputs()">
+                <div>
+                    <span>Extra Potions Melt</span>
+                    <span class="desc">+0 Pristines | +16 Relics</span>
+                </div>
+            </label>
+
+            <div class="sub-group-title" id="lblSubCMs">Challenge Modes (CMs)</div>
+            <label class="checkbox-item">
+                <input type="checkbox" id="cmKinfall" checked onchange="updateDailyInputs()">
+                <div>
+                    <span>95 - Kinfall</span>
+                    <span class="desc">+2 Pristines | +1 Matrix | +119 Relics</span>
+                </div>
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" id="cmNightmare" checked onchange="updateDailyInputs()">
+                <div>
+                    <span>96 - Nightmare</span>
+                    <span class="desc">+2 Pristines | +1 Matrix | +159 Relics</span>
+                </div>
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" id="cmShattered" checked onchange="updateDailyInputs()">
+                <div>
+                    <span>97 - Shattered Obs.</span>
+                    <span class="desc">+2 Pristines | +1 Matrix | +159 Relics</span>
+                </div>
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" id="cmSunqua" checked onchange="updateDailyInputs()">
+                <div>
+                    <span>98 - Sunqua Peak</span>
+                    <span class="desc">+2 Pristines | +1 Matrix | +139 Relics</span>
+                </div>
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" id="cmSilent" checked onchange="updateDailyInputs()">
+                <div>
+                    <span>99 - Silent Surf</span>
+                    <span class="desc">+2 Pristines | +1 Matrix | +119 Relics</span>
+                </div>
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" id="cmLonely" checked onchange="updateDailyInputs()">
+                <div>
+                    <span>100 - Lonely Tower</span>
+                    <span class="desc">+2 Pristines | +1 Matrix | +139 Relics</span>
+                </div>
+            </label>
+        </div>
+    </div>
+
+    <h3 id="lblSectionGains">Ganhos Diários Calculados (Dados Reais)</h3>
+    <div class="grid-inputs">
+        <div class="form-group">
+            <label for="dailyPristine" id="lblPristineDay">Pristine Relics / dia</label>
+            <input type="number" id="dailyPristine" value="27" min="0" oninput="calculate()">
+        </div>
+        <div class="form-group">
+            <label for="dailyMatrices" id="lblMatricesDay">Integrated Matrices / dia</label>
+            <input type="number" id="dailyMatrices" value="6" min="0" oninput="calculate()">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="dailyRelics" id="lblRelicsDay">Fractal Relics Normais / dia (Garantidos + Conversões)</label>
+        <input type="number" id="dailyRelics" value="1060" min="0" oninput="calculate()">
+    </div>
+
+    <div class="result-box">
+        <h2 id="lblResultTitle">Tempo Total Restante até o Fractal God</h2>
+        <div class="time-highlight" id="timeResult">0 dias</div>
+        
+        <div class="details" id="missingResources">
+            </div>
+    </div>
+
+</div>
+
+<script>
+    // ======= CONFIGURAÇÃO DE VERSIONAMENTO E CRÉDITOS =======
+    const SITE_VERSION = "v1.3.3"; 
+    const USER_NICK    = "SeuNickAqui";       
+    const USER_EMAIL   = "seu@email.com";     
+    // ========================================================
+
+    // IDs Oficiais dos Itens na API do GW2
+    const ID_RELIC = 7;
+    const ID_PRISTINE = 6;
+    const ID_MATRIX = 73232;
+
+    const translations = {
+        pt: {
+            mainTitle: "Fractal God Timeline",
+            subtitle: "Cálculo baseado nos valores exatos de drops e conversões da sua planilha",
+            apiKeyTitle: "Chave de API do GW2 (Opcional)",
+            btnSync: "Sincronizar",
+            apiWarning: "⚠️ <strong>Aviso:</strong> Para puxar os dados corretamente, certifique-se de gerar uma API Key no site da ArenaNet com as permissões <strong>account, inventories, unlocks e wallet</strong> ativadas. Seus dados ficam salvos localmente.",
+            currentTitle: "Seu título atual",
+            none: "Nenhum",
+            secInventory: "Seu Inventário Atual",
+            pristineCart: "Pristine Fractal Relics atuais",
+            relicsCart: "Fractal Relics atuais",
+            matricesCart: "Integrated Fractal Matrices atuais",
+            secRoutine: "Sua Rotina Diária de Farm",
+            subDailies: "Dailies Padrão",
+            recsCheck: "Recomendadas (Recs)",
+            subCMs: "Challenge Modes (CMs)",
+            secGains: "Ganhos Diários Calculados (Dados Reais)",
+            pristineDay: "Pristine Relics / dia",
+            matricesDay: "Integrated Matrices / dia",
+            relicsDay: "Fractal Relics Normais / dia (Garantidos + Conversões)",
+            resultTitle: "Tempo Total Restante até o Fractal God",
+            lblCompleted: "✓ Concluído",
+            lblAlreadyDone: "Você já domina este tier ou passou dele!",
+            lblNeedStock: "Falta estocar nesta etapa:",
+            lblGate: "Gargalo desta etapa:",
+            lblReadyBuy: "Pronto para comprar",
+            lblInfDays: "Infinitos dias (Sem farm ativo)",
+            lblNoFarmActive: "Falta ativar uma fonte de farm!",
+            lblGateNone: "Nenhum",
+            lblGateReady: "Nenhum (Pronto!)",
+            lblGateNormal: "Fractal Relics Normais",
+            lblGateBoth: "Pristines e Matrices",
+            lblGatePristine: "Pristine Relics",
+            lblGateMatrix: "Integrated Matrices",
+            lblReadyGod: "Pronto para virar Deus!",
+            lblIsGod: "Fractal God!",
+            lblUnfTime: "Tempo Indeterminado",
+            lblDays: "dias",
+            lblWeeks: "semanas",
+            lblFootnote: "*O cronômetro mestre soma os gargalos parciais considerando que você acumula os recursos em ordem linear de conquistas.",
+            lblDevBy: "Desenvolvido por:",
+            alertSuccess: "Sincronizado com sucesso com a API do GW2!",
+            alertError: "Erro ao conectar com a API. Verifique se a chave está correta e tem as permissões necessárias.",
+            alertEmpty: "Por favor, insira uma API Key válida."
+        },
+        en: {
+            mainTitle: "Fractal God Timeline",
+            subtitle: "Calculation based on exact drop values and conversions from your spreadsheet",
+            apiKeyTitle: "GW2 API Key (Optional)",
+            btnSync: "Synchronize",
+            apiWarning: "⚠️ <strong>Warning:</strong> To fetch data properly, make sure to generate an API Key on the ArenaNet website with <strong>account, inventories, unlocks, and wallet</strong> permissions enabled. Your data is stored locally.",
+            currentTitle: "Your current title",
+            none: "None",
+            secInventory: "Your Current Inventory",
+            pristineCart: "Current Pristine Fractal Relics",
+            relicsCart: "Current Fractal Relics",
+            matricesCart: "Current Integrated Fractal Matrices",
+            secRoutine: "Your Daily Farm Routine",
+            subDailies: "Standard Dailies",
+            recsCheck: "Recommended (Recs)",
+            subCMs: "Challenge Modes (CMs)",
+            secGains: "Calculated Daily Earnings (Real Data)",
+            pristineDay: "Pristine Relics / day",
+            matricesDay: "Integrated Matrices / day",
+            relicsDay: "Normal Fractal Relics / day (Guaranteed + Melt)",
+            resultTitle: "Total Time Remaining until Fractal God",
+            lblCompleted: "✓ Completed",
+            lblAlreadyDone: "You already own this tier or have passed it!",
+            lblNeedStock: "Missing resources in this step:",
+            lblGate: "Bottleneck of this step:",
+            lblReadyBuy: "Ready to buy",
+            lblInfDays: "Infinite days (No active farm)",
+            lblNoFarmActive: "You need to activate a farm source!",
+            lblGateNone: "None",
+            lblGateReady: "None (Ready!)",
+            lblGateNormal: "Normal Fractal Relics",
+            lblGateBoth: "Pristines and Matrices",
+            lblGatePristine: "Pristine Relics",
+            lblGateMatrix: "Integrated Matrices",
+            lblReadyGod: "Ready to become God!",
+            lblIsGod: "Fractal God!",
+            lblUnfTime: "Undetermined Time",
+            lblDays: "days",
+            lblWeeks: "weeks",
+            lblFootnote: "*The master timer sums the partial bottlenecks assuming you accumulate resources in a linear order of achievements.",
+            lblDevBy: "Developed by:",
+            alertSuccess: "Successfully synchronized with the GW2 API!",
+            alertError: "Error connecting to the API. Please check your key and its permissions.",
+            alertEmpty: "Please enter a valid API Key."
+        },
+        es: {
+            mainTitle: "Fractal God Timeline",
+            subtitle: "Cálculo basado en los valores de drop exactos y conversiones de tu plantilla",
+            apiKeyTitle: "Clave API de GW2 (Opcional)",
+            btnSync: "Sincronizar",
+            apiWarning: "⚠️ <strong>Advertencia:</strong> Para obtener los datos correctamente, asegúrese de generar una clave API en el sitio de ArenaNet con los permisos <strong>account, inventories, unlocks y wallet</strong> activados. Sus datos se guardan localmente.",
+            currentTitle: "Tu título actual",
+            none: "Ninguno",
+            secInventory: "Tu Inventario Actual",
+            pristineCart: "Pristine Fractal Relics actuales",
+            relicsCart: "Fractal Relics actuales",
+            matricesCart: "Integrated Fractal Matrices actuales",
+            secRoutine: "Tu Rutina Diaria de Farm",
+            subDailies: "Dailies Estándar",
+            recsCheck: "Recomendadas (Recs)",
+            subCMs: "Challenge Modes (CMs)",
+            secGains: "Ganancias Diarias Calculadas (Datos Reales)",
+            pristineDay: "Pristine Relics / día",
+            matricesDay: "Integrated Matrices / día",
+            relicsDay: "Fractal Relics Normales / día (Garantizados + Conversión)",
+            resultTitle: "Tiempo Total Restante hasta Fractal God",
+            lblCompleted: "✓ Completado",
+            lblAlreadyDone: "¡Ya dominas este nivel o lo has superado!",
+            lblNeedStock: "Falta acumular en esta etapa:",
+            lblGate: "Cuello de botella de esta etapa:",
+            lblReadyBuy: "Listo para comprar",
+            lblInfDays: "Días infinitos (Sin farm activo)",
+            lblNoFarmActive: "¡Falta activar uma fonte de farm!",
+            lblGateNone: "Ninguno",
+            lblGateReady: "Ninguno (¡Listo!)",
+            lblGateNormal: "Fractal Relics Normales",
+            lblGateBoth: "Pristines y Matrices",
+            lblGatePristine: "Pristine Relics",
+            lblGateMatrix: "Integrated Matrices",
+            lblReadyGod: "¡Listo para convertirte en Dios!",
+            lblIsGod: "¡Fractal God!",
+            lblUnfTime: "Tiempo Indeterminado",
+            lblDays: "días",
+            lblWeeks: "semanas",
+            lblFootnote: "*El temporizador maestro suma los cuellos de botella parciales asumiendo que acumulas recursos en orden lineal de logros.",
+            lblDevBy: "Desarrollado por:",
+            alertSuccess: "¡Sincronizado con éxito con la API de GW2!",
+            alertError: "Error al conectar con la API. Verifique su clave y los permisos de la misma.",
+            alertEmpty: "Por favor, introduzca una clave API válida."
+        },
+        fr: {
+            mainTitle: "Fractal God Timeline",
+            subtitle: "Calcul basé sur les valeurs exactes de drop et conversions de votre tableur",
+            apiKeyTitle: "Clé API GW2 (Optionnel)",
+            btnSync: "Synchroniser",
+            apiWarning: "⚠️ <strong>Attention :</strong> Pour récupérer correctement les données, assurez-vous de générer une clé API sur le site d'ArenaNet avec les permissions <strong>account, inventories, unlocks et wallet</strong> activées. Vos données sont stockées localement.",
+            currentTitle: "Votre titre actuel",
+            none: "Aucun",
+            secInventory: "Votre Inventaire Actuel",
+            pristineCart: "Pristine Fractal Relics actuels",
+            relicsCart: "Fractal Relics actuels",
+            matricesCart: "Integrated Fractal Matrices actuels",
+            secRoutine: "Votre Routine de Farm Quotidienne",
+            subDailies: "Dailies Standards",
+            recsCheck: "Recommandées (Recs)",
+            subCMs: "Challenge Modes (CMs)",
+            secGains: "Gains Quotidiens Calculés (Données Réelles)",
+            pristineDay: "Pristine Relics / jour",
+            matricesDay: "Integrated Matrices / jour",
+            relicsDay: "Fractal Relics Normaux / jour (Garantis + Recyclage)",
+            resultTitle: "Temps Total Restante jusqu'à Fractal God",
+            lblCompleted: "✓ Terminé",
+            lblAlreadyDone: "Vous maîtrisez déjà ce niveau ou l'avez dépassé !",
+            lblNeedStock: "Ressources manquantes pour cette étape :",
+            lblGate: "Goulot d'étranglement de cette étape :",
+            lblReadyBuy: "Prêt à acheter",
+            lblInfDays: "Jours infinis (Pas de farm actif)",
+            lblNoFarmActive: "Il faut activer une source de farm !",
+            lblGateNone: "Aucun",
+            lblGateReady: "Aucun (Prêt !)",
+            lblGateNormal: "Fractal Relics Normaux",
+            lblGateBoth: "Pristines et Matrices",
+            lblGatePristine: "Pristine Relics",
+            lblGateMatrix: "Integrated Matrices",
+            lblReadyGod: "Prêt à devenir un Dieu !",
+            lblIsGod: "Fractal God !",
+            lblUnfTime: "Temps Indéterminé",
+            lblDays: "jours",
+            lblWeeks: "semaines",
+            lblFootnote: "*Le minuteur maître additionne les goulots d'étranglement partiels en supposant que vous accumulez les ressources dans l'ordre linéaire des succès.",
+            lblDevBy: "Développé par :",
+            alertSuccess: "Synchronisé avec succès avec l'API GW2 !",
+            alertError: "Erreur lors de la connexion à l'API. Veuillez vérifier votre clé et ses permissions.",
+            alertEmpty: "Veuillez entrer une clé API valide."
+        }
+    };
+
+    function changeLanguage() {
+        const lang = document.getElementById('langPicker').value;
+        const text = translations[lang];
+
+        document.getElementById('lblMainTitle').innerText = text.mainTitle;
+        document.getElementById('lblSubtitle').innerHTML = text.subtitle;
+        document.getElementById('lblApiKeyTitle').innerText = text.apiKeyTitle;
+        document.getElementById('btnSync').innerText = text.btnSync;
+        document.getElementById('lblApiWarning').innerHTML = text.apiWarning;
+        document.getElementById('lblCurrentTitle').innerText = text.currentTitle;
+        document.getElementById('optNone').innerText = text.none;
+        document.getElementById('lblSectionInventory').innerText = text.secInventory;
+        document.getElementById('lblPristineCart').innerText = text.pristineCart;
+        document.getElementById('lblRelicsCart').innerText = text.relicsCart;
+        document.getElementById('lblMatricesCart').innerText = text.matricesCart;
+        document.getElementById('lblSectionRoutine').innerText = text.secRoutine;
+        document.getElementById('lblSubDailies').innerText = text.subDailies;
+        document.getElementById('lblRecsCheck').innerText = text.recsCheck;
+        document.getElementById('lblSubCMs').innerText = text.subCMs;
+        document.getElementById('lblSectionGains').innerText = text.secGains;
+        document.getElementById('lblPristineDay').innerText = text.pristineDay;
+        document.getElementById('lblMatricesDay').innerText = text.matricesDay;
+        document.getElementById('lblRelicsDay').innerText = text.relicsDay;
+        document.getElementById('lblResultTitle').innerText = text.resultTitle;
+
+        calculate();
+    }
+
+    const tierData = [
+        { level: 1, name: "Nenhum ➔ Fractal Savant",     pristine: 0,    relics: 25000,  matrices: 75  },
+        { level: 2, name: "Savant ➔ Fractal Prodigy",    pristine: 1200, relics: 35000,  matrices: 150 },
+        { level: 3, name: "Prodigy ➔ Fractal Champion",  pristine: 0,    relics: 45000,  matrices: 225 },
+        { level: 4, name: "Champion ➔ Fractal God",     pristine: 2000, relics: 55000,  matrices: 400 }
+    ];
+
+    // Carregar API Key salva no navegador ao iniciar
+    window.addEventListener('DOMContentLoaded', () => {
+        const savedKey = localStorage.getItem('gw2_api_key');
+        if (savedKey) {
+            document.getElementById('apiKey').value = savedKey;
+            fetchGW2Data(); 
+        }
+    });
+
+    // Função de Sincronização Resiliente, Multi-idioma e Livre de Conflitos de Tipo (String vs Number)
+    async function fetchGW2Data() {
+        const apiKey = document.getElementById('apiKey').value.trim();
+        const lang = document.getElementById('langPicker').value;
+        const text = translations[lang];
+        
+        if (!apiKey) {
+            alert(text.alertEmpty);
+            return;
+        }
+
+        localStorage.setItem('gw2_api_key', apiKey);
+
+        let totalRelics = 0;
+        let totalPristines = 0;
+        let totalMatrices = 0;
+        let peloMenosUmSucesso = false;
+
+        const headers = { 'Authorization': `Bearer ${apiKey}` };
+
+        // --- 1. BUSCAR DA WALLET (Relics e Pristines) ---
+        try {
+            const walletRes = await fetch('https://api.guildwars2.com/v2/account/wallet', { headers });
+            if (walletRes.ok) {
+                const wallet = await walletRes.json();
+                // Comparação flexível (==) caso o ID retorne como string ou número
+                const relicObj = wallet.find(i => i && i.id == ID_RELIC);
+                const pristineObj = wallet.find(i => i && i.id == ID_PRISTINE);
+                
+                if (relicObj) totalRelics += parseInt(relicObj.count) || 0;
+                if (pristineObj) totalPristines += parseInt(pristineObj.count) || 0;
+                peloMenosUmSucesso = true;
+            }
+        } catch (e) {
+            console.warn("Erro ou falta de permissão no endpoint da Wallet:", e);
+        }
+
+        // Helper para ler Banco e Inventários tratando IDs mistos (String/Número) e slots vazios (null)
+        const scanItems = (itemsArray) => {
+            if (!itemsArray || !Array.isArray(itemsArray)) return;
+            itemsArray.forEach(item => {
+                if (item && item.id == ID_MATRIX) {
+                    totalMatrices += parseInt(item.count) || 0;
+                }
+            });
+        };
+
+        // --- 2. BUSCAR DO BANCO (Matrices) ---
+        try {
+            const bankRes = await fetch('https://api.guildwars2.com/v2/account/bank', { headers });
+            if (bankRes.ok) {
+                const bank = await bankRes.json();
+                scanItems(bank);
+                peloMenosUmSucesso = true;
+            }
+        } catch (e) {
+            console.warn("Erro ou falta de permissão no endpoint do Banco:", e);
+        }
+
+        // --- 3. BUSCAR DOS INVENTÁRIOS DOS PERSONAGENS (Matrices) ---
+        try {
+            const charsRes = await fetch('https://api.guildwars2.com/v2/characters?ids=all', { headers });
+            if (charsRes.ok) {
+                const characters = await charsRes.json();
+                const charList = Array.isArray(characters) ? characters : Object.values(characters);
+                
+                charList.forEach(char => {
+                    if (char && char.bags && Array.isArray(char.bags)) {
+                        char.bags.forEach(bag => {
+                            if (bag && bag.inventory && Array.isArray(bag.inventory)) {
+                                scanItems(bag.inventory);
+                            }
+                        });
+                    }
+                });
+                peloMenosUmSucesso = true;
+            }
+        } catch (e) {
+            console.warn("Erro ou falta de permissão no endpoint de Personagens:", e);
+        }
+
+        // --- VALIDAÇÃO FINAL ---
+        if (peloMenosUmSucesso) {
+            document.getElementById('relics').value = totalRelics;
+            document.getElementById('pristine').value = totalPristines;
+            document.getElementById('matrices').value = totalMatrices;
+
+            calculate();
+            alert(text.alertSuccess);
+        } else {
+            alert(text.alertError);
+        }
+    }
+
+    function updateDailyInputs() {
+        let pristineSum = 0;
+        let matrixSum = 0;
+        let relicsSum = 0;
+
+        if (document.getElementById('farmT4').checked) {
+            pristineSum += 12;
+            relicsSum += 174; 
+        }
+        if (document.getElementById('farmRecs').checked) {
+            pristineSum += 3;
+            relicsSum += 36;  
+        }
+        if (document.getElementById('farmPotions').checked) {
+            relicsSum += 16;  
+        }
+
+        if (document.getElementById('cmKinfall').checked)   { pristineSum += 2; matrixSum += 1; relicsSum += 119; } 
+        if (document.getElementById('cmNightmare').checked) { pristineSum += 2; matrixSum += 1; relicsSum += 159; } 
+        if (document.getElementById('cmShattered').checked) { pristineSum += 2; matrixSum += 1; relicsSum += 159; } 
+        if (document.getElementById('cmSunqua').checked)    { pristineSum += 2; matrixSum += 1; relicsSum += 139; } 
+        if (document.getElementById('cmSilent').checked)    { pristineSum += 2; matrixSum += 1; relicsSum += 119; } 
+        if (document.getElementById('cmLonely').checked)    { pristineSum += 2; matrixSum += 1; relicsSum += 139; } 
+
+        document.getElementById('dailyPristine').value = pristineSum;
+        document.getElementById('dailyMatrices').value = matrixSum;
+        document.getElementById('dailyRelics').value = relicsSum;
+
+        calculate();
+    }
+
+    function calculate() {
+        const lang = document.getElementById('langPicker').value;
+        const text = translations[lang];
+        const currentTitle = parseInt(document.getElementById('currentTitle').value);
+        
+        let wallet = {
+            pristine: parseInt(document.getElementById('pristine').value) || 0,
+            relics: parseInt(document.getElementById('relics').value) || 0,
+            matrices: parseInt(document.getElementById('matrices').value) || 0
+        };
+
+        const dailyPristine = parseInt(document.getElementById('dailyPristine').value) || 0;
+        const dailyMatrices = parseInt(document.getElementById('dailyMatrices').value) || 0;
+        const dailyRelics = parseInt(document.getElementById('dailyRelics').value) || 0;
+
+        let totalDaysRemaining = 0;
+        let htmlOutput = "";
+
+        for (let i = 0; i < tierData.length; i++) {
+            const tier = tierData[i];
+
+            if (currentTitle >= tier.level) {
+                htmlOutput += `
+                    <div class="tier-card completed">
+                        <div class="tier-header">
+                            <span>${tier.name}</span>
+                            <span class="status">${text.lblCompleted}</span>
+                        </div>
+                        <div>${text.lblAlreadyDone}</div>
+                    </div>
+                `;
+                continue;
+            }
+
+            const neededPristine = Math.max(0, tier.pristine - wallet.pristine);
+            const neededRelics = Math.max(0, tier.relics - wallet.relics);
+            const neededMatrices = Math.max(0, tier.matrices - wallet.matrices);
+
+            wallet.pristine = Math.max(0, wallet.pristine - tier.pristine);
+            wallet.relics = Math.max(0, wallet.relics - tier.relics);
+            wallet.matrices = Math.max(0, wallet.matrices - tier.matrices);
+
+            const pristineDays = dailyPristine > 0 ? Math.ceil(neededPristine / dailyPristine) : (neededPristine > 0 ? Infinity : 0);
+            const matrixDays = dailyMatrices > 0 ? Math.ceil(neededMatrices / dailyMatrices) : (neededMatrices > 0 ? Infinity : 0);
+            const relicsDays = dailyRelics > 0 ? Math.ceil(neededRelics / dailyRelics) : (neededRelics > 0 ? Infinity : 0);
+
+            const tierDays = Math.max(pristineDays, matrixDays, relicsDays);
+
+            if(tierDays !== Infinity) {
+                totalDaysRemaining += tierDays;
+            }
+
+            let stepGate = text.lblGateNone;
+            if (tierDays === 0) {
+                stepGate = text.lblGateReady;
+            } else if (tierDays === relicsDays) {
+                stepGate = text.lblGateNormal;
+            } else if (tierDays === pristineDays && tierDays === matrixDays) {
+                stepGate = text.lblGateBoth;
+            } else if (tierDays === pristineDays) {
+                stepGate = text.lblGatePristine;
+            } else if (tierDays === matrixDays) {
+                stepGate = text.lblGateMatrix;
+            }
+
+            let daysLabel = `+${tierDays} ${text.lblDays}`;
+            if (tierDays === Infinity) { daysLabel = text.lblInfDays; stepGate = text.lblNoFarmActive; }
+            else if (tierDays === 0) { daysLabel = text.lblReadyBuy; }
+
+            htmlOutput += `
+                <div class="tier-card">
+                    <div class="tier-header">
+                        <span>${tier.name}</span>
+                        <span class="status">${daysLabel}</span>
+                    </div>
+                    <strong>${text.lblNeedStock}</strong><br>
+                    • Pristines: <span class="resource">${neededPristine.toLocaleString()}</span> | 
+                    • Relics: <span class="resource">${neededRelics.toLocaleString()}</span> | 
+                    • Matrices: <span class="resource">${neededMatrices.toLocaleString()}</span><br>
+                    <small style="text-align: left; margin-top: 5px; color: var(--text-secondary); font-size: 12px;">
+                        ${text.lblGate} <span style="color: var(--primary); font-weight:600;">${stepGate}</span>
+                    </small>
+                </div>
+            `;
+        }
+
+        const totalWeeks = (totalDaysRemaining / 7).toFixed(1);
+        if (totalDaysRemaining === 0 && currentTitle < 4) {
+            document.getElementById('timeResult').innerText = text.lblReadyGod;
+        } else if (currentTitle === 4) {
+            document.getElementById('timeResult').innerText = text.lblIsGod;
+        } else if (totalDaysRemaining === Infinity || isNaN(totalDaysRemaining)) {
+            document.getElementById('timeResult').innerText = text.lblUnfTime;
+        } else {
+            document.getElementById('timeResult').innerText = `${totalDaysRemaining} ${text.lblDays} (~${totalWeeks} ${text.lblWeeks})`;
+        }
+
+        document.getElementById('missingResources').innerHTML = htmlOutput + `
+            <small>
+                ${text.lblFootnote}
+            </small>
+            
+            <div style="text-align: center; margin-top: 25px; font-size: 10px; color: var(--text-secondary); opacity: 0.4; letter-spacing: 0.5px; line-height: 1.5;">
+                <div>${SITE_VERSION}</div>
+                <div style="margin-top: 4px;">${text.lblDevBy} <strong>${USER_NICK}</strong> (${USER_EMAIL})</div>
+            </div>
+        `;
+    }
+
+    updateDailyInputs();
+    changeLanguage();
+</script>
+
+</body>
+</html>
