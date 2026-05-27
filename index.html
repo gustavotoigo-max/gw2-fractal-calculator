@@ -274,7 +274,7 @@
         Cálculo passo a passo baseado na progressão linear de upgrades da Wiki de GW2
     </div>
 
-    <!-- SEÇÃO DE CONEXÃO DA API (NOVO) -->
+    <!-- SEÇÃO DE CONEXÃO DA API (SUPORTE MULTI-IDIOMA) -->
     <div class="farm-section" style="margin-bottom: 25px;">
         <label for="apiKey" style="color: var(--primary); font-weight: bold;" id="lblApiKeyTitle">Chave de API do GW2 (Opcional)</label>
         <div style="display: flex; gap: 10px; margin-bottom: 8px;">
@@ -406,7 +406,7 @@
         <div class="time-highlight" id="timeResult">0 dias</div>
         
         <div class="details" id="missingResources">
-            <!-- Os cards parciais surgem aqui via JS -->
+            <!-- Cards parciais renderizados via JS -->
         </div>
     </div>
 
@@ -414,7 +414,7 @@
 
 <script>
     // ======= CONFIGURAÇÃO DE VERSIONAMENTO E CRÉDITOS =======
-    const SITE_VERSION = "v1.3.1"; 
+    const SITE_VERSION = "v1.3.2"; 
     const USER_NICK    = "SeuNickAqui";       
     const USER_EMAIL   = "seu@email.com";     
     // ========================================================
@@ -542,7 +542,7 @@
             lblGate: "Cuello de botella de esta etapa:",
             lblReadyBuy: "Listo para comprar",
             lblInfDays: "Días infinitos (Sin farm activo)",
-            lblNoFarmActive: "¡Falta activar una fonte de farm!",
+            lblNoFarmActive: "¡Falta activar uma fonte de farm!",
             lblGateNone: "Ninguno",
             lblGateReady: "Ninguno (¡Listo!)",
             lblGateNormal: "Fractal Relics Normales",
@@ -565,10 +565,10 @@
             subtitle: "Calcul basé sur les valeurs exactes de drop et conversions de votre tableur",
             apiKeyTitle: "Clé API GW2 (Optionnel)",
             btnSync: "Synchroniser",
-            apiWarning: "⚠️ <strong>Attention :</strong> Pour récupérer correctement les données, assurez-vous de générer une clé API sur le site d'ArenaNet avec les permissions <strong>account, inventories, unlocks et wallet</strong> activées. Vos données sont stockées localnement.",
+            apiWarning: "⚠️ <strong>Attention :</strong> Pour récupérer correctement les données, assurez-vous de générer une clé API sur le site d'ArenaNet avec les permissions <strong>account, inventories, unlocks et wallet</strong> activées. Vos données sont stockées localement.",
             currentTitle: "Votre titre actuel",
             none: "Aucun",
-            secInventory: "Votre Inventaire Actuel",
+            secInventory: "Votre Votre Inventaire Actuel",
             pristineCart: "Pristine Fractal Relics actuels",
             relicsCart: "Fractal Relics actuels",
             matricesCart: "Integrated Fractal Matrices actuels",
@@ -651,7 +651,7 @@
         }
     });
 
-    // Função de Sincronização com API oficial do GW2
+    // Função de Sincronização Resiliente e Multi-idioma
     async function fetchGW2Data() {
         const apiKey = document.getElementById('apiKey').value.trim();
         const lang = document.getElementById('langPicker').value;
@@ -667,11 +667,12 @@
         let totalRelics = 0;
         let totalPristines = 0;
         let totalMatrices = 0;
+        let peloMenosUmSucesso = false;
 
+        const headers = { 'Authorization': `Bearer ${apiKey}` };
+
+        // --- 1. BUSCAR DA WALLET (Relics e Pristines) ---
         try {
-            const headers = { 'Authorization': `Bearer ${apiKey}` };
-
-            // 1. BUSCAR DA WALLET
             const walletRes = await fetch('https://api.guildwars2.com/v2/account/wallet', { headers });
             if (walletRes.ok) {
                 const wallet = await walletRes.json();
@@ -679,31 +680,43 @@
                 const pristineObj = wallet.find(i => i.id === ID_PRISTINE);
                 if (relicObj) totalRelics += relicObj.count;
                 if (pristineObj) totalPristines += pristineObj.count;
+                peloMenosUmSucesso = true;
             }
+        } catch (e) {
+            console.warn("Permissão de Wallet ausente ou erro no endpoint.");
+        }
 
-            // Helper para ler Banco e Inventários
-            const scanItems = (itemsArray) => {
-                if (!itemsArray) return;
-                itemsArray.forEach(item => {
-                    if (item && item.id === ID_MATRIX) {
-                        totalMatrices += item.count;
-                    }
-                });
-            };
+        // Helper para ler Banco e Inventários
+        const scanItems = (itemsArray) => {
+            if (!itemsArray) return;
+            itemsArray.forEach(item => {
+                if (item && item.id === ID_MATRIX) {
+                    totalMatrices += item.count;
+                }
+            });
+        };
 
-            // 2. BUSCAR DO BANCO
+        // --- 2. BUSCAR DO BANCO (Matrices) ---
+        try {
             const bankRes = await fetch('https://api.guildwars2.com/v2/account/bank', { headers });
             if (bankRes.ok) {
                 const bank = await bankRes.json();
                 scanItems(bank);
+                peloMenosUmSucesso = true;
             }
+        } catch (e) {
+            console.warn("Permissão de Inventário (Banco) ausente ou erro no endpoint.");
+        }
 
-            // 3. BUSCAR DOS INVENTÁRIOS DOS CHARS
+        // --- 3. BUSCAR DOS INVENTÁRIOS DOS PERSONAGENS (Matrices) ---
+        try {
             const charsRes = await fetch('https://api.guildwars2.com/v2/characters?ids=all', { headers });
             if (charsRes.ok) {
                 const characters = await charsRes.json();
-                Object.values(characters).forEach(char => {
-                    if (char.bags) {
+                const charList = Array.isArray(characters) ? characters : Object.values(characters);
+                
+                charList.forEach(char => {
+                    if (char && char.bags) {
                         char.bags.forEach(bag => {
                             if (bag && bag.inventory) {
                                 scanItems(bag.inventory);
@@ -711,17 +724,21 @@
                         });
                     }
                 });
+                peloMenosUmSucesso = true;
             }
+        } catch (e) {
+            console.warn("Permissão de Characters/Inventories ausente ou erro no endpoint.");
+        }
 
+        // --- VALIDAÇÃO FINAL ---
+        if (peloMenosUmSucesso) {
             document.getElementById('relics').value = totalRelics;
             document.getElementById('pristine').value = totalPristines;
             document.getElementById('matrices').value = totalMatrices;
 
             calculate();
             alert(text.alertSuccess);
-
-        } catch (error) {
-            console.error("Erro na API:", error);
+        } else {
             alert(text.alertError);
         }
     }
