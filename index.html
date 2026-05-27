@@ -398,7 +398,7 @@
 </div>
 
 <script>
-    const SITE_VERSION = "v1.3.3"; 
+    const SITE_VERSION = "v1.3.4"; 
     const USER_NICK    = "SeuNickAqui";       
     const USER_EMAIL   = "seu@email.com";     
 
@@ -506,7 +506,7 @@
             currentTitle: "Tu título actual",
             none: "Ninguno",
             secInventory: "Tu Inventario Actual",
-            pristineCart: "Pristine Fractal Relics actuales",
+            pristineCart: "Pristine Fractal Relics originales",
             relicsCart: "Fractal Relics actuales",
             matricesCart: "Integrated Fractal Matrices actuales",
             secRoutine: "Tu Rutina Diaria de Farm",
@@ -652,10 +652,15 @@
         let totalMatrices = 0;
         let peloMenosUmSucesso = false;
 
-        const headers = { 'Authorization': `Bearer ${apiKey}` };
+        // Diretivas anti-cache configuradas para evitar erros de CORS e travamentos locais
+        const fetchOptions = { 
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${apiKey}` },
+            cache: 'no-cache'
+        };
 
         try {
-            const walletRes = await fetch('https://api.guildwars2.com/v2/account/wallet', { headers });
+            const walletRes = await fetch('https://api.guildwars2.com/v2/account/wallet', fetchOptions);
             if (walletRes.ok) {
                 const wallet = await walletRes.json();
                 const relicObj = wallet.find(i => i && i.id == ID_RELIC);
@@ -679,7 +684,7 @@
         };
 
         try {
-            const bankRes = await fetch('https://api.guildwars2.com/v2/account/bank', { headers });
+            const bankRes = await fetch('https://api.guildwars2.com/v2/account/bank', fetchOptions);
             if (bankRes.ok) {
                 const bank = await bankRes.json();
                 scanItems(bank);
@@ -690,7 +695,7 @@
         }
 
         try {
-            const charsRes = await fetch('https://api.guildwars2.com/v2/characters?ids=all', { headers });
+            const charsRes = await fetch('https://api.guildwars2.com/v2/characters?ids=all', fetchOptions);
             if (charsRes.ok) {
                 const characters = await charsRes.json();
                 const charList = Array.isArray(characters) ? characters : Object.values(characters);
