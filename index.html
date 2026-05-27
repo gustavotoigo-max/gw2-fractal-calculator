@@ -1,12 +1,9 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Calculadora Fractal God - GW2</title>
-
     <style>
         :root {
             --bg-color: #121214;
@@ -90,8 +87,7 @@
             color: var(--text-secondary);
         }
 
-        input,
-        select {
+        input, select {
             width: 100%;
             padding: 12px;
             background: var(--bg-color);
@@ -102,8 +98,7 @@
             box-sizing: border-box;
         }
 
-        input:focus,
-        select:focus {
+        input:focus, select:focus {
             outline: none;
             border-color: var(--primary);
         }
@@ -256,11 +251,9 @@
         }
     </style>
 </head>
-
 <body>
 
 <div class="container">
-
     <select id="langPicker" class="language-picker" onchange="changeLanguage()">
         <option value="pt">🇧🇷 Português</option>
         <option value="en">🇺🇸 English</option>
@@ -269,12 +262,9 @@
     </select>
 
     <h1 id="lblMainTitle">Fractal God Timeline</h1>
+    <div class="subtitle" id="lblSubtitle">Cálculo passo a passo baseado na progressão linear de upgrades da Wiki de GW2</div>
 
-    <div class="subtitle" id="lblSubtitle">
-        Cálculo passo a passo baseado na progressão linear de upgrades da Wiki de GW2
-    </div>
-
-    <div class="farm-section" style="margin-bottom: 25px;">
+    <div class="farm-section">
         <label for="apiKey" style="color: var(--primary); font-weight: bold;" id="lblApiKeyTitle">Chave de API do GW2 (Opcional)</label>
         <div style="display: flex; gap: 10px; margin-bottom: 8px;">
             <input type="text" id="apiKey" placeholder="Cole sua API Key aqui..." style="font-size: 13px;">
@@ -403,21 +393,15 @@
     <div class="result-box">
         <h2 id="lblResultTitle">Tempo Total Restante até o Fractal God</h2>
         <div class="time-highlight" id="timeResult">0 dias</div>
-        
-        <div class="details" id="missingResources">
-            </div>
+        <div class="details" id="missingResources"></div>
     </div>
-
 </div>
 
 <script>
-    // ======= CONFIGURAÇÃO DE VERSIONAMENTO E CRÉDITOS =======
     const SITE_VERSION = "v1.3.3"; 
     const USER_NICK    = "SeuNickAqui";       
     const USER_EMAIL   = "seu@email.com";     
-    // ========================================================
 
-    // IDs Oficiais dos Itens na API do GW2
     const ID_RELIC = 7;
     const ID_PRISTINE = 6;
     const ID_MATRIX = 73232;
@@ -571,7 +555,7 @@
             relicsCart: "Fractal Relics actuels",
             matricesCart: "Integrated Fractal Matrices actuels",
             secRoutine: "Votre Routine de Farm Quotidienne",
-            subDailies: "Dailies Standards",
+            subDailies: "Dailies Temps",
             recsCheck: "Recommandées (Recs)",
             subCMs: "Challenge Modes (CMs)",
             secGains: "Gains Quotidiens Calculés (Données Réelles)",
@@ -605,6 +589,24 @@
         }
     };
 
+    const tierData = [
+        { level: 1, name: "Nenhum ➔ Fractal Savant",     pristine: 0,    relics: 25000,  matrices: 75  },
+        { level: 2, name: "Savant ➔ Fractal Prodigy",    pristine: 1200, relics: 35000,  matrices: 150 },
+        { level: 3, name: "Prodigy ➔ Fractal Champion",  pristine: 0,    relics: 45000,  matrices: 225 },
+        { level: 4, name: "Champion ➔ Fractal God",     pristine: 2000, relics: 55000,  matrices: 400 }
+    ];
+
+    window.addEventListener('DOMContentLoaded', () => {
+        const savedKey = localStorage.getItem('gw2_api_key');
+        if (savedKey) {
+            document.getElementById('apiKey').value = savedKey;
+            fetchGW2Data(); 
+        } else {
+            updateDailyInputs();
+            changeLanguage();
+        }
+    });
+
     function changeLanguage() {
         const lang = document.getElementById('langPicker').value;
         const text = translations[lang];
@@ -633,23 +635,6 @@
         calculate();
     }
 
-    const tierData = [
-        { level: 1, name: "Nenhum ➔ Fractal Savant",     pristine: 0,    relics: 25000,  matrices: 75  },
-        { level: 2, name: "Savant ➔ Fractal Prodigy",    pristine: 1200, relics: 35000,  matrices: 150 },
-        { level: 3, name: "Prodigy ➔ Fractal Champion",  pristine: 0,    relics: 45000,  matrices: 225 },
-        { level: 4, name: "Champion ➔ Fractal God",     pristine: 2000, relics: 55000,  matrices: 400 }
-    ];
-
-    // Carregar API Key salva no navegador ao iniciar
-    window.addEventListener('DOMContentLoaded', () => {
-        const savedKey = localStorage.getItem('gw2_api_key');
-        if (savedKey) {
-            document.getElementById('apiKey').value = savedKey;
-            fetchGW2Data(); 
-        }
-    });
-
-    // Função de Sincronização Resiliente, Multi-idioma e Livre de Conflitos de Tipo (String vs Number)
     async function fetchGW2Data() {
         const apiKey = document.getElementById('apiKey').value.trim();
         const lang = document.getElementById('langPicker').value;
@@ -669,12 +654,10 @@
 
         const headers = { 'Authorization': `Bearer ${apiKey}` };
 
-        // --- 1. BUSCAR DA WALLET (Relics e Pristines) ---
         try {
             const walletRes = await fetch('https://api.guildwars2.com/v2/account/wallet', { headers });
             if (walletRes.ok) {
                 const wallet = await walletRes.json();
-                // Comparação flexível (==) caso o ID retorne como string ou número
                 const relicObj = wallet.find(i => i && i.id == ID_RELIC);
                 const pristineObj = wallet.find(i => i && i.id == ID_PRISTINE);
                 
@@ -683,10 +666,9 @@
                 peloMenosUmSucesso = true;
             }
         } catch (e) {
-            console.warn("Erro ou falta de permissão no endpoint da Wallet:", e);
+            console.warn("Erro no endpoint da Wallet:", e);
         }
 
-        // Helper para ler Banco e Inventários tratando IDs mistos (String/Número) e slots vazios (null)
         const scanItems = (itemsArray) => {
             if (!itemsArray || !Array.isArray(itemsArray)) return;
             itemsArray.forEach(item => {
@@ -696,7 +678,6 @@
             });
         };
 
-        // --- 2. BUSCAR DO BANCO (Matrices) ---
         try {
             const bankRes = await fetch('https://api.guildwars2.com/v2/account/bank', { headers });
             if (bankRes.ok) {
@@ -705,10 +686,9 @@
                 peloMenosUmSucesso = true;
             }
         } catch (e) {
-            console.warn("Erro ou falta de permissão no endpoint do Banco:", e);
+            console.warn("Erro no endpoint do Banco:", e);
         }
 
-        // --- 3. BUSCAR DOS INVENTÁRIOS DOS PERSONAGENS (Matrices) ---
         try {
             const charsRes = await fetch('https://api.guildwars2.com/v2/characters?ids=all', { headers });
             if (charsRes.ok) {
@@ -727,18 +707,17 @@
                 peloMenosUmSucesso = true;
             }
         } catch (e) {
-            console.warn("Erro ou falta de permissão no endpoint de Personagens:", e);
+            console.warn("Erro no endpoint de Personagens:", e);
         }
 
-        // --- VALIDAÇÃO FINAL ---
         if (peloMenosUmSucesso) {
             document.getElementById('relics').value = totalRelics;
             document.getElementById('pristine').value = totalPristines;
             document.getElementById('matrices').value = totalMatrices;
-
             calculate();
             alert(text.alertSuccess);
         } else {
+            calculate();
             alert(text.alertError);
         }
     }
@@ -872,20 +851,13 @@
         }
 
         document.getElementById('missingResources').innerHTML = htmlOutput + `
-            <small>
-                ${text.lblFootnote}
-            </small>
-            
+            <small>${text.lblFootnote}</small>
             <div style="text-align: center; margin-top: 25px; font-size: 10px; color: var(--text-secondary); opacity: 0.4; letter-spacing: 0.5px; line-height: 1.5;">
                 <div>${SITE_VERSION}</div>
                 <div style="margin-top: 4px;">${text.lblDevBy} <strong>${USER_NICK}</strong> (${USER_EMAIL})</div>
             </div>
         `;
     }
-
-    updateDailyInputs();
-    changeLanguage();
 </script>
-
 </body>
 </html>
