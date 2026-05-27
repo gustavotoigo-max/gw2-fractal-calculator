@@ -286,6 +286,19 @@
     </div>
 
     <h3 id="lblSectionInventory">Seu Inventário Atual</h3>
+    
+    <!-- NOVO: Campo de API Key e Aviso -->
+    <div class="farm-section" style="margin-bottom: 15px;">
+        <label for="apiKey" style="color: var(--primary);">Chave de API do GW2 (Opcional)</label>
+        <div style="display: flex; gap: 10px; margin-bottom: 8px;">
+            <input type="text" id="apiKey" placeholder="Cole sua API Key aqui..." style="font-size: 13px;">
+            <button onclick="fetchGW2Data()" style="background: var(--primary); color: #000; border: none; border-radius: 6px; padding: 0 15px; font-weight: bold; cursor: pointer; white-space: nowrap;">Sincronizar</button>
+        </div>
+        <span style="font-size: 11px; color: var(--text-secondary); display: block; line-height: 1.4;">
+            ⚠️ <strong>Aviso:</strong> Para puxar os dados corretamente, certifique-se de gerar uma API Key no site da ArenaNet com as permissões <strong>account, inventories, unlocks e wallet</strong> ativadas. Seus dados ficam salvos localmente.
+        </span>
+    </div>
+
     <div class="grid-inputs">
         <div class="form-group">
             <label for="pristine" id="lblPristineCart">Pristine Fractal Relics atuais</label>
@@ -295,6 +308,10 @@
             <label for="relics" id="lblRelicsCart">Fractal Relics atuais</label>
             <input type="number" id="relics" value="0" min="0" oninput="calculate()">
         </div>
+    </div>
+    <div class="form-group">
+        <label for="matrices" id="lblMatricesCart">Integrated Fractal Matrices atuais</label>
+        <input type="number" id="matrices" value="0" min="0" oninput="calculate()">
     </div>
     <div class="form-group">
         <label for="matrices" id="lblMatricesCart">Integrated Fractal Matrices atuais</label>
@@ -400,6 +417,98 @@
     const USER_EMAIL   = "seu@email.com";     
     // ========================================================
 
+
+	// IDs Oficiais da API do GW2
+    const ID_RELIC = 7;
+    const ID_PRISTINE = 6;
+    const ID_MATRIX = 73232;
+
+    // Carregar a API Key salva e buscar dados ao iniciar a página
+    window.addEventListener('DOMContentLoaded', () => {
+        const savedKey = localStorage.getItem('gw2_api_key');
+        if (savedKey) {
+            document.getElementById('apiKey').value = savedKey;
+            fetchGW2Data(); // Sincroniza automaticamente se já houver chave salva
+        }
+    });
+
+    async function fetchGW2Data() {
+        const apiKey = document.getElementById('apiKey').value.trim();
+        
+        if (!apiKey) {
+            alert("Por favor, insira uma API Key válida.");
+            return;
+        }
+
+        // Salva a API Key para acessos futuros
+        localStorage.setItem('gw2_api_key', apiKey);
+
+        let totalRelics = 0;
+        let totalPristines = 0;
+        let totalMatrices = 0;
+
+        try {
+            // Headers padrão de autenticação da API do GW2
+            const headers = { 'Authorization': `Bearer ${apiKey}` };
+
+            // 1. BUSCAR DA WALLET (Relics e Pristines ficam aqui)
+            const walletRes = await fetch('https://api.guildwars2.com/v2/account/wallet', { headers });
+            if (walletRes.ok) {
+                const wallet = await walletRes.json();
+                const relicObj = wallet.find(i => i.id === ID_RELIC);
+                const pristineObj = wallet.find(i => i.id === ID_PRISTINE);
+                if (relicObj) totalRelics += relicObj.count;
+                if (pristineObj) totalPristines += pristineObj.count;
+            }
+
+            // Helper para escanear arrays de itens (banco e inventários)
+            const scanItems = (itemsArray) => {
+                if (!itemsArray) return;
+                itemsArray.forEach(item => {
+                    if (item && item.id === ID_MATRIX) {
+                        totalMatrices += item.count;
+                    }
+                });
+            };
+
+            // 2. BUSCAR DO BANCO
+            const bankRes = await fetch('https://api.guildwars2.com/v2/account/bank', { headers });
+            if (bankRes.ok) {
+                const bank = await bankRes.json();
+                scanItems(bank);
+            }
+
+            // 3. BUSCAR DOS INVENTÁRIOS DE TODOS OS PERSONAGENS
+            const charsRes = await fetch('https://api.guildwars2.com/v2/characters?ids=all', { headers });
+            if (charsRes.ok) {
+                const characters = await charsRes.json();
+                // Characters retorna um array de objetos ou um dicionário dependendo do formato de resposta, tratamos como array
+                Object.values(characters).forEach(char => {
+                    if (char.bags) {
+                        char.bags.forEach(bag => {
+                            if (bag && bag.inventory) {
+                                scanItems(bag.inventory);
+                            }
+                        });
+                    }
+                });
+            }
+
+            // Atualiza os inputs na tela com os valores encontrados
+            document.getElementById('relics').value = totalRelics;
+            document.getElementById('pristine').value = totalPristines;
+            document.getElementById('matrices').value = totalMatrices;
+
+            // Roda o cálculo principal para atualizar a timeline do Fractal God
+            calculate();
+            alert("Sincronizado com sucesso com a API do GW2!");
+
+        } catch (error) {
+            console.error("Erro ao puxar dados da API:", error);
+            alert("Erro ao conectar com a API. Verifique se a chave está correta e tem as permissões necessárias.");
+        }
+    }
+	
     const translations = {
         pt: {
             mainTitle: "Fractal God Timeline",
