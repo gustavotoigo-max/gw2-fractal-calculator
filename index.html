@@ -200,10 +200,10 @@
             lblFootnote: "*The master timer sums the partial bottlenecks assuming you accumulate resources in a linear order of achievements.", lblDevBy: "Developed by:"
         },
         es: {
-            mainTitle: "Fractal God Timeline", subtitle: "Cálculo basado en los valores de drop exactos y conversiones de tu plantilla",
+            mainTitle: "Fractal God Timeline", subtitle: "Cálculo baseado en los valores de drop exactos y conversiones de tu plantilla",
             currentTitle: "Tu título actual", none: "Ninguno", secInventory: "Tu Inventario Actual", pristineCart: "Pristine Fractal Relics originales", relicsCart: "Fractal Relics actuales", matricesCart: "Integrated Fractal Matrices actuales", secRoutine: "Tu Rutina Diaria de Farm", subDailies: "Dailies Estándar", recsCheck: "Recomendadas (Recs)", subCMs: "Challenge Modes (CMs)", secGains: "Ganancias Diarias Calculadas (Datos Reales)", pristineDay: "Pristine Relics / día", matricesDay: "Integrated Matrices / día", relicsDay: "Fractal Relics Normales / día (Garantizados + Conversión)", resultTitle: "Tiempo Total Restante hasta Fractal God",
-            lblCompleted: "✓ Computado", lblAlreadyDone: "¡Ya dominas este nivel o lo has superado!", lblNeedStock: "Falta acumular en esta etapa:", lblGate: "Cuello de botella de esta etapa:", lblReadyBuy: "Listo para comprar", lblInfDays: "Días infinitos (Sin farm activo)", lblNoFarmActive: "¡Falta activar una fonte de farm!", lblGateNone: "Ninguno", lblGateReady: "Ninguno (¡Listo!)", lblGateNormal: "Fractal Relics Normales", lblGateBoth: "Pristines y Matrices", lblGatePristine: "Pristine Relics", lblGateMatrix: "Integrated Matrices", lblReadyGod: "¡Listo para convertirte en Dios!", lblIsGod: "¡Fractal God!", lblUnfTime: "Tiempo Indeterminado", lblDays: "días", lblWeeks: "semanas",
-            lblFootnote: "*El temporizador maestro suma los cuellos de botella parciales asumiendo que acumulas recursos in orden lineal de logros.", lblDevBy: "Desarrollado por:"
+            lblCompleted: "¡Ya dominas este nivel o lo has superado!", lblNeedStock: "Falta acumular en esta etapa:", lblGate: "Cuello de botella de esta etapa:", lblReadyBuy: "Listo para comprar", lblInfDays: "Días infinitos (Sin farm activo)", lblNoFarmActive: "¡Falta activar una fonte de farm!", lblGateNone: "Ninguno", lblGateReady: "Ninguno (¡Listo!)", lblGateNormal: "Fractal Relics Normales", lblGateBoth: "Pristines y Matrices", lblGatePristine: "Pristine Relics", lblGateMatrix: "Integrated Matrices", lblReadyGod: "¡Listo para convertirte en Dios!", lblIsGod: "¡Fractal God!", lblUnfTime: "Tiempo Indeterminado", lblDays: "días", lblWeeks: "semanas",
+            lblFootnote: "*El temporizador maestro suma los cuellos de botella parciales asumiendo que acumulas recursos in orden lineal de logros.", lblDevBy: "Desenvolvido por:"
         },
         fr: {
             mainTitle: "Fractal God Timeline", subtitle: "Calcul basé sur les valeurs exactes de drop et conversions de votre tableur",
@@ -217,8 +217,6 @@
         updateDailyInputs();
         changeLanguage();
     });
-
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 
     function changeLanguage() {
         const lang = document.getElementById('langPicker').value;
@@ -280,7 +278,7 @@
 
         try {
             // Comunica em tempo real com a Serverless Function oculta na Vercel
-            const res = await fetch('/api/calcular.js', {
+            const res = await fetch('/api/calcular', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
@@ -321,15 +319,4 @@
 
             document.getElementById('missingResources').innerHTML = finalHtml + `
                 <small>${text.lblFootnote}</small>
-                <div style="text-align: center; margin-top: 25px; font-size: 10px; color: var(--text-secondary); opacity: 0.4; letter-spacing: 0.5px; line-height: 1.5;">
-                    <div>${SITE_VERSION}</div>
-                    <div style="margin-top: 4px;">${text.lblDevBy} <strong>${USER_NICK}</strong> (${USER_EMAIL})</div>
-                </div>
-            `;
-        } catch(e) {
-            console.error("Erro na comunicação com o backend protegido.", e);
-        }
-    }
-</script>
-</body>
-</html>
+                <div
