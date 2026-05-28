@@ -249,45 +249,54 @@
     }
 
     async function fetchFractalData() {
-        const apiKey = document.getElementById('apiKey').value.trim();
-        const statusDiv = document.getElementById('apiStatus');
-        const errorDiv = document.getElementById('apiError');
-        const lang = document.getElementById('langPicker').value;
-        const text = translations[lang] || translations['pt'];
+        async function fetchFractalData() {
+    const apiKey = document.getElementById('apiKey').value.trim();
+    const statusDiv = document.getElementById('apiStatus');
+    const errorDiv = document.getElementById('apiError');
+    const lang = document.getElementById('langPicker').value;
+    const text = translations[lang] || translations['pt'];
 
-        errorDiv.style.display = 'none';
-        if (!apiKey) {
-            errorDiv.innerText = lang === 'pt' ? 'Por favor, insira uma API Key.' : 'Please enter an API Key.';
-            errorDiv.style.display = 'block';
-            return;
+    errorDiv.style.display = 'none';
+    if (!apiKey) {
+        errorDiv.innerText = lang === 'pt' ? 'Por favor, insira uma API Key.' : 'Please enter an API Key.';
+        errorDiv.style.display = 'block';
+        return;
+    }
+
+    statusDiv.innerText = text.apiLoading;
+    statusDiv.style.display = 'block';
+
+    try {
+        const response = await fetch('/api/consultar', {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ apiKey: apiKey })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || 'Erro na sincronização.');
         }
 
-        statusDiv.innerText = text.apiLoading;
-        statusDiv.style.display = 'block';
+        // Injeta os valores coletados nos inputs originais
+        document.getElementById('relics').value = data.fractalRelics;
+        document.getElementById('pristine').value = data.pristineRelics;
+        document.getElementById('matrices').value = data.integratedMatrices;
 
-        try {
-            const response = await fetch('/api/consultar', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ apiKey })
-            });
+        statusDiv.style.display = 'none';
+        
+        // Executa o cálculo local da calculadora para atualizar a timeline na hora
+        calculate(); 
 
-            const data = await response.json();
-
-            if (!response.ok) throw new Error(data.error || 'Error fetching data.');
-
-            // Preenche os campos do inventário original com o retorno da API
-            document.getElementById('relics').value = data.fractalRelics;
-            document.getElementById('pristine').value = data.pristineRelics;
-            document.getElementById('matrices').value = data.integratedMatrices;
-
-            statusDiv.style.display = 'none';
-            calculate(); // Recalcula os dias automaticamente com os novos dados
-        } catch (err) {
-            errorDiv.innerText = err.message;
-            errorDiv.style.display = 'block';
-            statusDiv.style.display = 'none';
-        }
+    } catch (err) {
+        errorDiv.innerText = err.message;
+        errorDiv.style.display = 'block';
+        statusDiv.style.display = 'none';
+    }
+}
     }
 
     function updateDailyInputs() {
