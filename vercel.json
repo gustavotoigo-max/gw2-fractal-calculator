@@ -1,0 +1,7 @@
+{
+  "version": 2,
+  "rewrites": [
+    { "source": "/api/calcular", "destination": "/api/calcular.js" },
+    { "source": "/api/consultar", "destination": "/api/consultar.js" }
+  ]
+}
