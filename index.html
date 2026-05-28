@@ -14,242 +14,36 @@
             --border: #29292e;
             --tier-bg: #222226;
         }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 700px;
-            background: var(--card-bg);
-            padding: 30px;
-            border-radius: 12px;
-            border: 1px solid var(--border);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.45);
-            position: relative;
-        }
-
-        .language-picker {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            width: auto;
-            padding: 6px 10px;
-            font-size: 14px;
-            background: var(--bg-color);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            color: var(--text);
-            cursor: pointer;
-        }
-
-        h1 {
-            text-align: center;
-            color: var(--primary);
-            margin-bottom: 8px;
-            font-size: 30px;
-            letter-spacing: 1px;
-            padding-top: 15px;
-        }
-
-        .subtitle {
-            text-align: center;
-            color: var(--text-secondary);
-            margin-bottom: 30px;
-            font-size: 13px;
-        }
-
-        h3 {
-            color: var(--primary);
-            font-size: 16px;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 6px;
-            margin-top: 25px;
-            margin-bottom: 15px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-secondary);
-        }
-
-        input, select {
-            width: 100%;
-            padding: 12px;
-            background: var(--bg-color);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            color: var(--text);
-            font-size: 16px;
-            box-sizing: border-box;
-        }
-
-        input:focus, select:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-
-        .grid-inputs {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
-        .farm-section {
-            background: var(--tier-bg);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 18px;
-            margin-bottom: 25px;
-        }
-
-        .checkbox-group {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        @media(min-width: 480px) {
-            .checkbox-group {
-                grid-template-columns: 1fr 1fr;
-            }
-            h1 { padding-top: 0; }
-        }
-
-        .checkbox-item {
-            display: flex;
-            align-items: center;
-            background: var(--bg-color);
-            padding: 10px 14px;
-            border-radius: 6px;
-            border: 1px solid var(--border);
-            cursor: pointer;
-            transition: border-color 0.2s;
-        }
-
-        .checkbox-item:hover {
-            border-color: #444;
-        }
-
-        .checkbox-item input {
-            width: auto;
-            margin-right: 12px;
-            transform: scale(1.2);
-            accent-color: var(--primary);
-            cursor: pointer;
-        }
-
-        .checkbox-item span {
-            font-size: 14px;
-            color: var(--text);
-        }
-
-        .checkbox-item .desc {
-            font-size: 11px;
-            color: var(--text-secondary);
-            display: block;
-            margin-top: 2px;
-        }
-
-        .sub-group-title {
-            font-size: 12px;
-            text-transform: uppercase;
-            color: var(--primary);
-            font-weight: bold;
-            margin-top: 10px;
-            margin-bottom: 8px;
-            grid-column: 1 / -1;
-        }
-
-        .result-box {
-            margin-top: 30px;
-            padding: 22px;
-            border-radius: 10px;
-            border: 1px solid var(--primary);
-            background: rgba(229, 169, 60, 0.08);
-        }
-
-        .result-box h2 {
-            margin-top: 0;
-            text-align: center;
-            font-size: 16px;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-        }
-
-        .time-highlight {
-            text-align: center;
-            font-size: 38px;
-            font-weight: bold;
-            color: var(--primary);
-            margin-bottom: 20px;
-        }
-
-        .details {
-            border-radius: 8px;
-            line-height: 1.8;
-            color: var(--text-secondary);
-            font-size: 14px;
-        }
-
-        .tier-card {
-            background: var(--tier-bg);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 15px;
-            margin-bottom: 12px;
-        }
-
-        .tier-card.completed {
-            border-color: #22c55e;
-            background: rgba(34, 197, 94, 0.05);
-        }
-
-        .tier-header {
-            display: flex;
-            justify-content: space-between;
-            font-weight: bold;
-            color: var(--text);
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 5px;
-            margin-bottom: 8px;
-            align-items: center;
-        }
-
-        .tier-header .status {
-            color: var(--primary);
-        }
-
-        .tier-card.completed .tier-header .status {
-            color: #22c55e;
-        }
-
-        .resource {
-            color: var(--text);
-            font-weight: bold;
-        }
-
-        small {
-            display: block;
-            margin-top: 15px;
-            line-height: 1.5;
-            text-align: center;
-        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text); margin: 0; padding: 20px; display: flex; justify-content: center; }
+        .container { width: 100%; max-width: 700px; background: var(--card-bg); padding: 30px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 8px 24px rgba(0,0,0,0.45); position: relative; }
+        .language-picker { position: absolute; top: 20px; right: 20px; width: auto; padding: 6px 10px; font-size: 14px; background: var(--bg-color); border: 1px solid var(--border); border-radius: 6px; color: var(--text); cursor: pointer; }
+        h1 { text-align: center; color: var(--primary); margin-bottom: 8px; font-size: 30px; letter-spacing: 1px; padding-top: 15px; }
+        .subtitle { text-align: center; color: var(--text-secondary); margin-bottom: 30px; font-size: 13px; }
+        h3 { color: var(--primary); font-size: 16px; border-bottom: 1px solid var(--border); padding-bottom: 6px; margin-top: 25px; margin-bottom: 15px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: var(--text-secondary); }
+        input, select { width: 100%; padding: 12px; background: var(--bg-color); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-size: 16px; box-sizing: border-box; }
+        input:focus, select:focus { outline: none; border-color: var(--primary); }
+        .grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .farm-section { background: var(--tier-bg); border: 1px solid var(--border); border-radius: 8px; padding: 18px; margin-bottom: 25px; }
+        .checkbox-group { display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 15px; }
+        @media(min-width: 480px) { .checkbox-group { grid-template-columns: 1fr 1fr; } h1 { padding-top: 0; } }
+        .checkbox-item { display: flex; align-items: center; background: var(--bg-color); padding: 10px 14px; border-radius: 6px; border: 1px solid var(--border); cursor: pointer; }
+        .checkbox-item input { width: auto; margin-right: 12px; transform: scale(1.2); accent-color: var(--primary); }
+        .checkbox-item span { font-size: 14px; color: var(--text); }
+        .checkbox-item .desc { font-size: 11px; color: var(--text-secondary); display: block; margin-top: 2px; }
+        .sub-group-title { font-size: 12px; text-transform: uppercase; color: var(--primary); font-weight: bold; margin-top: 10px; margin-bottom: 8px; grid-column: 1 / -1; }
+        .result-box { margin-top: 30px; padding: 22px; border-radius: 10px; border: 1px solid var(--primary); background: rgba(229, 169, 60, 0.08); }
+        .result-box h2 { margin-top: 0; text-align: center; font-size: 16px; color: var(--text-secondary); text-transform: uppercase; }
+        .time-highlight { text-align: center; font-size: 38px; font-weight: bold; color: var(--primary); margin-bottom: 20px; }
+        .details { border-radius: 8px; line-height: 1.8; color: var(--text-secondary); font-size: 14px; }
+        .tier-card { background: var(--tier-bg); border: 1px solid var(--border); border-radius: 6px; padding: 15px; margin-bottom: 12px; }
+        .tier-card.completed { border-color: #22c55e; background: rgba(34, 197, 94, 0.05); }
+        .tier-header { display: flex; justify-content: space-between; font-weight: bold; color: var(--text); border-bottom: 1px solid var(--border); padding-bottom: 5px; margin-bottom: 8px; align-items: center; }
+        .tier-header .status { color: var(--primary); }
+        .tier-card.completed .tier-header .status { color: #22c55e; }
+        .resource { color: var(--text); font-weight: bold; }
+        small { display: block; margin-top: 15px; line-height: 1.5; text-align: center; }
     </style>
 </head>
 <body>
@@ -263,7 +57,7 @@
     </select>
 
     <h1 id="lblMainTitle">Fractal God Timeline</h1>
-    <div class="subtitle" id="lblSubtitle">Cálculo passo a passo baseado na progressão linear de upgrades da Wiki de GW2</div>
+    <div class="subtitle" id="lblSubtitle">Cálculo passo a passo baseado na progressão linear de upgrades da Wiki do GW2</div>
 
     <div class="form-group">
         <label for="currentTitle" id="lblCurrentTitle">Seu título atual</label>
@@ -322,7 +116,7 @@
             <label class="checkbox-item">
                 <input type="checkbox" id="cmKinfall" checked onchange="updateDailyInputs()">
                 <div>
-                    <span>95 - Kinfall</span>
+                    <span>95 - Kanaxai (Silent Surf)</span>
                     <span class="desc">+2 Pristines | +1 Matrix | +119 Relics</span>
                 </div>
             </label>
@@ -388,180 +182,43 @@
 </div>
 
 <script>
-    const SITE_VERSION = "v1.3.0"; 
+    const SITE_VERSION = "v2.0.0"; 
     const USER_NICK    = "SeuNickAqui";       
     const USER_EMAIL   = "seu@email.com";     
 
     const translations = {
         pt: {
-            mainTitle: "Fractal God Timeline",
-            subtitle: "Cálculo baseado nos valores exatos de drops e conversões da sua planilha",
-            currentTitle: "Seu título atual",
-            none: "Nenhum",
-            secInventory: "Seu Inventário Atual",
-            pristineCart: "Pristine Fractal Relics atuais",
-            relicsCart: "Fractal Relics atuais",
-            matricesCart: "Integrated Fractal Matrices atuais",
-            secRoutine: "Sua Rotina Diária de Farm",
-            subDailies: "Dailies Padrão",
-            recsCheck: "Recomendadas (Recs)",
-            subCMs: "Challenge Modes (CMs)",
-            secGains: "Ganhos Diários Calculados (Dados Reais)",
-            pristineDay: "Pristine Relics / dia",
-            matricesDay: "Integrated Matrices / dia",
-            relicsDay: "Fractal Relics Normais / dia (Garantidos + Conversões)",
-            resultTitle: "Tempo Total Restante até o Fractal God",
-            lblCompleted: "✓ Concluído",
-            lblAlreadyDone: "Você já domina este tier ou passou dele!",
-            lblNeedStock: "Falta estocar nesta etapa:",
-            lblGate: "Gargalo desta etapa:",
-            lblReadyBuy: "Pronto para comprar",
-            lblInfDays: "Infinitos dias (Sem farm ativo)",
-            lblNoFarmActive: "Falta ativar uma fonte de farm!",
-            lblGateNone: "Nenhum",
-            lblGateReady: "Nenhum (Pronto!)",
-            lblGateNormal: "Fractal Relics Normais",
-            lblGateBoth: "Pristines e Matrices",
-            lblGatePristine: "Pristine Relics",
-            lblGateMatrix: "Integrated Matrices",
-            lblReadyGod: "Pronto para virar Deus!",
-            lblIsGod: "Fractal God!",
-            lblUnfTime: "Tempo Indeterminado",
-            lblDays: "dias",
-            lblWeeks: "semanas",
-            lblFootnote: "*O cronômetro mestre soma os gargalos parciais considerando que você acumula os recursos em ordem linear de conquistas.",
-            lblDevBy: "Desenvolvido por:"
+            mainTitle: "Fractal God Timeline", subtitle: "Cálculo baseado nos valores exatos de drops e conversões da sua planilha",
+            currentTitle: "Seu título atual", none: "Nenhum", secInventory: "Seu Inventário Atual", pristineCart: "Pristine Fractal Relics atuais", relicsCart: "Fractal Relics atuais", matricesCart: "Integrated Fractal Matrices atuais", secRoutine: "Sua Rotina Diária de Farm", subDailies: "Dailies Padrão", recsCheck: "Recomendadas (Recs)", subCMs: "Challenge Modes (CMs)", secGains: "Ganhos Diários Calculados (Dados Reais)", pristineDay: "Pristine Relics / dia", matricesDay: "Integrated Matrices / dia", relicsDay: "Fractal Relics Normais / dia (Garantidos + Conversões)", resultTitle: "Tempo Total Restante até o Fractal God",
+            lblCompleted: "✓ Concluído", lblAlreadyDone: "Você já domina este tier ou passou dele!", lblNeedStock: "Falta estocar nesta etapa:", lblGate: "Gargalo desta etapa:", lblReadyBuy: "Pronto para comprar", lblInfDays: "Infinitos dias (Sem farm ativo)", lblNoFarmActive: "Falta ativar uma fonte de farm!", lblGateNone: "Nenhum", lblGateReady: "Nenhum (Pronto!)", lblGateNormal: "Fractal Relics Normais", lblGateBoth: "Pristines e Matrices", lblGatePristine: "Pristine Relics", lblGateMatrix: "Integrated Matrices", lblReadyGod: "Pronto para virar Deus!", lblIsGod: "Fractal God!", lblUnfTime: "Tempo Indeterminado", lblDays: "dias", lblWeeks: "semanas",
+            lblFootnote: "*O cronômetro mestre soma os gargalos parciais considerando que você acumula os recursos em ordem linear de conquistas.", lblDevBy: "Desenvolvido por:"
         },
         en: {
-            mainTitle: "Fractal God Timeline",
-            subtitle: "Calculation based on exact drop values and conversions from your spreadsheet",
-            currentTitle: "Your current title",
-            none: "None",
-            secInventory: "Your Current Inventory",
-            pristineCart: "Current Pristine Fractal Relics",
-            relicsCart: "Current Fractal Relics",
-            matricesCart: "Current Integrated Fractal Matrices",
-            secRoutine: "Your Daily Farm Routine",
-            subDailies: "Standard Dailies",
-            recsCheck: "Recommended (Recs)",
-            subCMs: "Challenge Modes (CMs)",
-            secGains: "Calculated Daily Earnings (Real Data)",
-            pristineDay: "Pristine Relics / day",
-            matricesDay: "Integrated Matrices / day",
-            relicsDay: "Normal Fractal Relics / day (Guaranteed + Melt)",
-            resultTitle: "Total Time Remaining until Fractal God",
-            lblCompleted: "✓ Completed",
-            lblAlreadyDone: "You already own this tier or have passed it!",
-            lblNeedStock: "Missing resources in this step:",
-            lblGate: "Bottleneck of this step:",
-            lblReadyBuy: "Ready to buy",
-            lblInfDays: "Infinite days (No active farm)",
-            lblNoFarmActive: "You need to activate a farm source!",
-            lblGateNone: "None",
-            lblGateReady: "None (Ready!)",
-            lblGateNormal: "Normal Fractal Relics",
-            lblGateBoth: "Pristines and Matrices",
-            lblGatePristine: "Pristine Relics",
-            lblGateMatrix: "Integrated Matrices",
-            lblReadyGod: "Ready to become God!",
-            lblIsGod: "Fractal God!",
-            lblUnfTime: "Undetermined Time",
-            lblDays: "days",
-            lblWeeks: "weeks",
-            lblFootnote: "*The master timer sums the partial bottlenecks assuming you accumulate resources in a linear order of achievements.",
-            lblDevBy: "Developed by:"
+            mainTitle: "Fractal God Timeline", subtitle: "Calculation based on exact drop values and conversions from your spreadsheet",
+            currentTitle: "Your current title", none: "None", secInventory: "Your Current Inventory", pristineCart: "Current Pristine Fractal Relics", relicsCart: "Current Fractal Relics", matricesCart: "Current Integrated Fractal Matrices", secRoutine: "Your Daily Farm Routine", subDailies: "Standard Dailies", recsCheck: "Recommended (Recs)", subCMs: "Challenge Modes (CMs)", secGains: "Calculated Daily Earnings (Real Data)", pristineDay: "Pristine Relics / day", matricesDay: "Integrated Matrices / day", relicsDay: "Normal Fractal Relics / day (Guaranteed + Melt)", resultTitle: "Total Time Remaining until Fractal God",
+            lblCompleted: "✓ Completed", lblAlreadyDone: "You already own this tier or have passed it!", lblNeedStock: "Missing resources in this step:", lblGate: "Bottleneck of this step:", lblReadyBuy: "Ready to buy", lblInfDays: "Infinite days (No active farm)", lblNoFarmActive: "You need to activate a farm source!", lblGateNone: "None", lblGateReady: "None (Ready!)", lblGateNormal: "Normal Fractal Relics", lblGateBoth: "Pristines and Matrices", lblGatePristine: "Pristine Relics", lblGateMatrix: "Integrated Matrices", lblReadyGod: "Ready to become God!", lblIsGod: "Fractal God!", lblUnfTime: "Undetermined Time", lblDays: "days", lblWeeks: "weeks",
+            lblFootnote: "*The master timer sums the partial bottlenecks assuming you accumulate resources in a linear order of achievements.", lblDevBy: "Developed by:"
         },
         es: {
-            mainTitle: "Fractal God Timeline",
-            subtitle: "Cálculo baseado en los valores de drop exactos y conversiones de tu plantilla",
-            currentTitle: "Tu título actual",
-            none: "Ninguno",
-            secInventory: "Tu Inventario Actual",
-            pristineCart: "Pristine Fractal Relics originales",
-            relicsCart: "Fractal Relics actuales",
-            matricesCart: "Integrated Fractal Matrices actuales",
-            secRoutine: "Tu Rutina Diaria de Farm",
-            subDailies: "Dailies Estándar",
-            recsCheck: "Recomendadas (Recs)",
-            subCMs: "Challenge Modes (CMs)",
-            secGains: "Ganancias Diarias Calculadas (Datos Reales)",
-            pristineDay: "Pristine Relics / día",
-            matricesDay: "Integrated Matrices / día",
-            relicsDay: "Fractal Relics Normales / día (Garantizados + Conversión)",
-            resultTitle: "Tiempo Total Restante hasta Fractal God",
-            lblCompleted: "✓ Completado",
-            lblAlreadyDone: "¡Ya dominas este nivel o lo has superado!",
-            lblNeedStock: "Falta acumular en esta etapa:",
-            lblGate: "Cuello de botella de esta etapa:",
-            lblReadyBuy: "Listo para comprar",
-            lblInfDays: "Días infinitos (Sin farm activo)",
-            lblNoFarmActive: "¡Falta activar una fuente de farm!",
-            lblGateNone: "Ninguno",
-            lblGateReady: "Ninguno (¡Listo!)",
-            lblGateNormal: "Fractal Relics Normales",
-            lblGateBoth: "Pristines y Matrices",
-            lblGatePristine: "Pristine Relics",
-            lblGateMatrix: "Integrated Matrices",
-            lblReadyGod: "¡Listo para convertirte en Dios!",
-            lblIsGod: "¡Fractal God!",
-            lblUnfTime: "Tiempo Indeterminado",
-            lblDays: "días",
-            lblWeeks: "semanas",
-            lblFootnote: "*El temporizador maestro suma los cuellos de botella parciales asumiendo que acumulas recursos en orden lineal de logros.",
-            lblDevBy: "Desarrollado por:"
+            mainTitle: "Fractal God Timeline", subtitle: "Cálculo basado en los valores de drop exactos y conversiones de tu plantilla",
+            currentTitle: "Tu título actual", none: "Ninguno", secInventory: "Tu Inventario Actual", pristineCart: "Pristine Fractal Relics originales", relicsCart: "Fractal Relics actuales", matricesCart: "Integrated Fractal Matrices actuales", secRoutine: "Tu Rutina Diaria de Farm", subDailies: "Dailies Estándar", recsCheck: "Recomendadas (Recs)", subCMs: "Challenge Modes (CMs)", secGains: "Ganancias Diarias Calculadas (Datos Reales)", pristineDay: "Pristine Relics / día", matricesDay: "Integrated Matrices / día", relicsDay: "Fractal Relics Normales / día (Garantizados + Conversión)", resultTitle: "Tiempo Total Restante hasta Fractal God",
+            lblCompleted: "✓ Computado", lblAlreadyDone: "¡Ya dominas este nivel o lo has superado!", lblNeedStock: "Falta acumular en esta etapa:", lblGate: "Cuello de botella de esta etapa:", lblReadyBuy: "Listo para comprar", lblInfDays: "Días infinitos (Sin farm activo)", lblNoFarmActive: "¡Falta activar una fonte de farm!", lblGateNone: "Ninguno", lblGateReady: "Ninguno (¡Listo!)", lblGateNormal: "Fractal Relics Normales", lblGateBoth: "Pristines y Matrices", lblGatePristine: "Pristine Relics", lblGateMatrix: "Integrated Matrices", lblReadyGod: "¡Listo para convertirte en Dios!", lblIsGod: "¡Fractal God!", lblUnfTime: "Tiempo Indeterminado", lblDays: "días", lblWeeks: "semanas",
+            lblFootnote: "*El temporizador maestro suma los cuellos de botella parciales asumiendo que acumulas recursos in orden lineal de logros.", lblDevBy: "Desarrollado por:"
         },
         fr: {
-            mainTitle: "Fractal God Timeline",
-            subtitle: "Calcul basé sur les valeurs exactes de drop et conversions de votre tableur",
-            currentTitle: "Votre titre actuel",
-            none: "Aucun",
-            secInventory: "Votre Inventaire Actuel",
-            pristineCart: "Pristine Fractal Relics actuels",
-            relicsCart: "Fractal Relics actuels",
-            matricesCart: "Integrated Fractal Matrices actuels",
-            secRoutine: "Votre Routine de Farm Quotidienne",
-            subDailies: "Dailies Temps",
-            recsCheck: "Recommandées (Recs)",
-            subCMs: "Challenge Modes (CMs)",
-            secGains: "Gains Quotidiens Calculés (Données Réelles)",
-            pristineDay: "Pristine Relics / jour",
-            matricesDay: "Integrated Matrices / jour",
-            relicsDay: "Fractal Relics Normaux / jour (Garantis + Recyclage)",
-            resultTitle: "Temps Total Restante jusqu'à Fractal God",
-            lblCompleted: "✓ Terminé",
-            lblAlreadyDone: "Vous maîtrisez déjà ce niveau ou l'avez dépassé !",
-            lblNeedStock: "Ressources manquantes pour cette étape :",
-            lblGate: "Goulot d'étranglement de cette étape :",
-            lblReadyBuy: "Prêt à acheter",
-            lblInfDays: "Jours infinis (Pas de farm actif)",
-            lblNoFarmActive: "Il faut activer une source de farm !",
-            lblGateNone: "Aucun",
-            lblGateReady: "Aucun (Prêt !)",
-            lblGateNormal: "Fractal Relics Normaux",
-            lblGateBoth: "Pristines et Matrices",
-            lblGatePristine: "Pristine Relics",
-            lblGateMatrix: "Integrated Matrices",
-            lblReadyGod: "Prêt à devenir un Dieu !",
-            lblIsGod: "Fractal God !",
-            lblUnfTime: "Temps Indéterminé",
-            lblDays: "jours",
-            lblWeeks: "semaines",
-            lblFootnote: "*Le minuteur maître additionne les goulots d'étranglement partiels en supposant que vous accumulez les ressources dans l'ordre linéaire des succès.",
-            lblDevBy: "Développé por :"
+            mainTitle: "Fractal God Timeline", subtitle: "Calcul basé sur les valeurs exactes de drop et conversions de votre tableur",
+            currentTitle: "Votre titre actuel", none: "Aucun", secInventory: "Votre Inventaire Actuel", pristineCart: "Pristine Fractal Relics actuels", relicsCart: "Fractal Relics actuels", matricesCart: "Integrated Fractal Matrices actuels", secRoutine: "Votre Routine de Farm Quotidienne", subDailies: "Dailies Temps", recsCheck: "Recommandées (Recs)", subCMs: "Challenge Modes (CMs)", secGains: "Gains Quotidiens Calculés (Données Réelles)", pristineDay: "Pristine Relics / jour", matricesDay: "Integrated Matrices / jour", relicsDay: "Fractal Relics Normaux / jour (Garantis + Recyclage)", resultTitle: "Temps Total Restante jusqu'à Fractal God",
+            lblCompleted: "✓ Terminé", lblAlreadyDone: "Vous maîtrisez déjà ce niveau ou l'avez dépassé !", lblNeedStock: "Ressources manquantes pour cette étape :", lblGate: "Goulot d'étranglement de cette étape :", lblReadyBuy: "Prêt à acheter", lblInfDays: "Jours infinis (Pas de farm actif)", lblNoFarmActive: "Il faut activer une source de farm !", lblGateNone: "Aucun", lblGateReady: "Aucun (Prêt !)", lblGateNormal: "Fractal Relics Normaux", lblGateBoth: "Pristines et Matrices", lblGatePristine: "Pristine Relics", lblGateMatrix: "Integrated Matrices", lblReadyGod: "Prêt à devenir un Dieu !", lblIsGod: "Fractal God !", lblUnfTime: "Temps Indéterminé", lblDays: "jours", lblWeeks: "semaines",
+            lblFootnote: "*Le minuteur maître additionne les goulots d'étranglement partiels en supposant que vous accumuliez les ressources dans l'ordre linéaire des succès.", lblDevBy: "Développé par :"
         }
     };
-
-    const tierData = [
-        { level: 1, name: "Nenhum ➔ Fractal Savant",     pristine: 0,    relics: 25000,  matrices: 75  },
-        { level: 2, name: "Savant ➔ Fractal Prodigy",    pristine: 1200, relics: 35000,  matrices: 150 },
-        { level: 3, name: "Prodigy ➔ Fractal Champion",  pristine: 0,    relics: 45000,  matrices: 225 },
-        { level: 4, name: "Champion ➔ Fractal God",     pristine: 2000, relics: 55000,  matrices: 400 }
-    ];
 
     window.addEventListener('DOMContentLoaded', () => {
         updateDailyInputs();
         changeLanguage();
     });
+
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 
     function changeLanguage() {
         const lang = document.getElementById('langPicker').value;
@@ -589,14 +246,10 @@
     }
 
     function updateDailyInputs() {
-        let pristineSum = 0;
-        let matrixSum = 0;
-        let relicsSum = 0;
-
+        let pristineSum = 0; let matrixSum = 0; let relicsSum = 0;
         if (document.getElementById('farmT4').checked) { pristineSum += 12; relicsSum += 174; }
         if (document.getElementById('farmRecs').checked) { pristineSum += 3; relicsSum += 36; }
         if (document.getElementById('farmPotions').checked) { relicsSum += 16; }
-
         if (document.getElementById('cmKinfall').checked)   { pristineSum += 2; matrixSum += 1; relicsSum += 119; } 
         if (document.getElementById('cmNightmare').checked) { pristineSum += 2; matrixSum += 1; relicsSum += 159; } 
         if (document.getElementById('cmShattered').checked) { pristineSum += 2; matrixSum += 1; relicsSum += 159; } 
@@ -607,114 +260,75 @@
         document.getElementById('dailyPristine').value = pristineSum;
         document.getElementById('dailyMatrices').value = matrixSum;
         document.getElementById('dailyRelics').value = relicsSum;
-
         calculate();
     }
 
-    function calculate() {
+    async function calculate() {
         const lang = document.getElementById('langPicker').value;
         const text = translations[lang];
         const currentTitle = parseInt(document.getElementById('currentTitle').value);
-        
-        let wallet = {
+
+        const payload = {
+            currentTitle,
             pristine: parseInt(document.getElementById('pristine').value) || 0,
             relics: parseInt(document.getElementById('relics').value) || 0,
-            matrices: parseInt(document.getElementById('matrices').value) || 0
+            matrices: parseInt(document.getElementById('matrices').value) || 0,
+            dailyPristine: parseInt(document.getElementById('dailyPristine').value) || 0,
+            dailyMatrices: parseInt(document.getElementById('dailyMatrices').value) || 0,
+            dailyRelics: parseInt(document.getElementById('dailyRelics').value) || 0
         };
 
-        const dailyPristine = parseInt(document.getElementById('dailyPristine').value) || 0;
-        const dailyMatrices = parseInt(document.getElementById('dailyMatrices').value) || 0;
-        const dailyRelics = parseInt(document.getElementById('dailyRelics').value) || 0;
+        try {
+            // Comunica em tempo real com a Serverless Function oculta na Vercel
+            const res = await fetch('/api/calcular', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            
+            if (!res.ok) return;
+            const data = await res.json();
 
-        let totalDaysRemaining = 0;
-        let htmlOutput = "";
+            // Traduz os marcadores dinâmicos que vieram salvos do servidor seguro
+            let finalHtml = data.htmlOutput
+                .replaceAll('__LBL_COMPLETED__', text.lblCompleted)
+                .replaceAll('__LBL_ALREADY_DONE__', text.lblAlreadyDone)
+                .replaceAll('__LBL_NEED_STOCK__', text.lblNeedStock)
+                .replaceAll('__LBL_GATE__', text.lblGate)
+                .replaceAll('__GATE_NONE__', text.lblGateNone)
+                .replaceAll('__GATE_READY__', text.lblGateReady)
+                .replaceAll('__GATE_NORMAL__', text.lblGateNormal)
+                .replaceAll('__GATE_BOTH__', text.lblGateBoth)
+                .replaceAll('__GATE_PRISTINE__', text.lblGatePristine)
+                .replaceAll('__GATE_MATRIX__', text.lblGateMatrix)
+                .replaceAll('__LBL_DAYS__', text.lblDays)
+                .replaceAll('__LBL_INF_DAYS__', text.lblInfDays)
+                .replaceAll('__LBL_NO_FARM__', text.lblNoFarmActive)
+                .replaceAll('__LBL_READY_BUY__', text.lblReadyBuy);
 
-        for (let i = 0; i < tierData.length; i++) {
-            const tier = tierData[i];
+            const totalDays = data.totalDaysRemaining;
+            const totalWeeks = (totalDays / 7).toFixed(1);
 
-            if (currentTitle >= tier.level) {
-                htmlOutput += `
-                    <div class="tier-card completed">
-                        <div class="tier-header">
-                            <span>${tier.name}</span>
-                            <span class="status">${text.lblCompleted}</span>
-                        </div>
-                        <div>${text.lblAlreadyDone}</div>
-                    </div>
-                `;
-                continue;
+            if (totalDays === 0 && currentTitle < 4) {
+                document.getElementById('timeResult').innerText = text.lblReadyGod;
+            } else if (currentTitle === 4) {
+                document.getElementById('timeResult').innerText = text.lblIsGod;
+            } else if (totalDays === Infinity || isNaN(totalDays)) {
+                document.getElementById('timeResult').innerText = text.lblUnfTime;
+            } else {
+                document.getElementById('timeResult').innerText = `${totalDays} ${text.lblDays} (~${totalWeeks} ${text.lblWeeks})`;
             }
 
-            const neededPristine = Math.max(0, tier.pristine - wallet.pristine);
-            const neededRelics = Math.max(0, tier.relics - wallet.relics);
-            const neededMatrices = Math.max(0, tier.matrices - wallet.matrices);
-
-            wallet.pristine = Math.max(0, wallet.pristine - tier.pristine);
-            wallet.relics = Math.max(0, wallet.relics - tier.relics);
-            wallet.matrices = Math.max(0, wallet.matrices - tier.matrices);
-
-            const pristineDays = dailyPristine > 0 ? Math.ceil(neededPristine / dailyPristine) : (neededPristine > 0 ? Infinity : 0);
-            const matrixDays = dailyMatrices > 0 ? Math.ceil(neededMatrices / dailyMatrices) : (neededMatrices > 0 ? Infinity : 0);
-            const relicsDays = dailyRelics > 0 ? Math.ceil(neededRelics / dailyRelics) : (neededRelics > 0 ? Infinity : 0);
-
-            const tierDays = Math.max(pristineDays, matrixDays, relicsDays);
-
-            if(tierDays !== Infinity) {
-                totalDaysRemaining += tierDays;
-            }
-
-            let stepGate = text.lblGateNone;
-            if (tierDays === 0) {
-                stepGate = text.lblGateReady;
-            } else if (tierDays === relicsDays) {
-                stepGate = text.lblGateNormal;
-            } else if (tierDays === pristineDays && tierDays === matrixDays) {
-                stepGate = text.lblGateBoth;
-            } else if (tierDays === pristineDays) {
-                stepGate = text.lblGatePristine;
-            } else if (tierDays === matrixDays) {
-                stepGate = text.lblGateMatrix;
-            }
-
-            let daysLabel = `+${tierDays} ${text.lblDays}`;
-            if (tierDays === Infinity) { daysLabel = text.lblInfDays; stepGate = text.lblNoFarmActive; }
-            else if (tierDays === 0) { daysLabel = text.lblReadyBuy; }
-
-            htmlOutput += `
-                <div class="tier-card">
-                    <div class="tier-header">
-                        <span>${tier.name}</span>
-                        <span class="status">${daysLabel}</span>
-                    </div>
-                    <strong>${text.lblNeedStock}</strong><br>
-                    • Pristines: <span class="resource">${neededPristine.toLocaleString()}</span> | 
-                    • Relics: <span class="resource">${neededRelics.toLocaleString()}</span> | 
-                    • Matrices: <span class="resource">${neededMatrices.toLocaleString()}</span><br>
-                    <small style="text-align: left; margin-top: 5px; color: var(--text-secondary); font-size: 12px;">
-                        ${text.lblGate} <span style="color: var(--primary); font-weight:600;">${stepGate}</span>
-                    </small>
+            document.getElementById('missingResources').innerHTML = finalHtml + `
+                <small>${text.lblFootnote}</small>
+                <div style="text-align: center; margin-top: 25px; font-size: 10px; color: var(--text-secondary); opacity: 0.4; letter-spacing: 0.5px; line-height: 1.5;">
+                    <div>${SITE_VERSION}</div>
+                    <div style="margin-top: 4px;">${text.lblDevBy} <strong>${USER_NICK}</strong> (${USER_EMAIL})</div>
                 </div>
             `;
+        } catch(e) {
+            console.error("Erro na comunicação com o backend protegido.", e);
         }
-
-        const totalWeeks = (totalDaysRemaining / 7).toFixed(1);
-        if (totalDaysRemaining === 0 && currentTitle < 4) {
-            document.getElementById('timeResult').innerText = text.lblReadyGod;
-        } else if (currentTitle === 4) {
-            document.getElementById('timeResult').innerText = text.lblIsGod;
-        } else if (totalDaysRemaining === Infinity || isNaN(totalDaysRemaining)) {
-            document.getElementById('timeResult').innerText = text.lblUnfTime;
-        } else {
-            document.getElementById('timeResult').innerText = `${totalDaysRemaining} ${text.lblDays} (~${totalWeeks} ${text.lblWeeks})`;
-        }
-
-        document.getElementById('missingResources').innerHTML = htmlOutput + `
-            <small>${text.lblFootnote}</small>
-            <div style="text-align: center; margin-top: 25px; font-size: 10px; color: var(--text-secondary); opacity: 0.4; letter-spacing: 0.5px; line-height: 1.5;">
-                <div>${SITE_VERSION}</div>
-                <div style="margin-top: 4px;">${text.lblDevBy} <strong>${USER_NICK}</strong> (${USER_EMAIL})</div>
-            </div>
-        `;
     }
 </script>
 </body>
