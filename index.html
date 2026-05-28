@@ -280,7 +280,7 @@
 
         try {
             // Comunica em tempo real com a Serverless Function oculta na Vercel
-            const res = await fetch('/api/calcular', {
+            const res = await fetch('/api/calcular.js', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
