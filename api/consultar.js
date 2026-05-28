@@ -1,76 +1,61 @@
 // api/consultar.js
-const https = require('https');
 
 const FRACTAL_RELIC_ID = 7;
 const PRISTINE_RELIC_ID = 24;
 const INTEGRATED_MATRIX_ID = 73248;
 
-// Função auxiliar para fazer requisições HTTPS nativas retornando uma Promise
-function seguroGet(url) {
-    return new Promise((resolve, reject) => {
-        https.get(url, { headers: { 'Accept': 'application/json' } }, (res) => {
-            let data = '';
-            res.on('data', (chunk) => { data += chunk; });
-            res.on('end', () => {
-                resolve({ status: res.statusCode, body: data });
-            });
-        }).on('error', (err) => { reject(err); });
-    });
-}
+export const config = {
+    runtime: 'edge', // Força a Vercel a usar o ambiente moderno com suporte nativo a fetch
+};
 
-module.exports = async (req, res) => {
-    // Garante que o cabeçalho de resposta é JSON
-    res.setHeader('Content-Type', 'application/json');
-
+export default async function handler(req) {
+    // Permite apenas requisições POST
     if (req.method !== 'POST') {
-        res.statusCode = 405;
-        return res.end(JSON.stringify({ error: 'Método não permitido' }));
+        return new Response(JSON.stringify({ error: 'Método não permitido' }), {
+            status: 405,
+            headers: { 'Content-Type': 'application/json' }
+        });
     }
 
     try {
-        // Se a Vercel já parseou o body automaticamente:
-        let payload = req.body;
-
-        // Se o body veio como String ou Buffer devido ao ambiente puro, parseia manualmente:
-        if (typeof req.body === 'string') {
-            payload = JSON.parse(req.body);
-        } else if (req.body instanceof Buffer) {
-            payload = JSON.parse(req.body.toString('utf-8'));
-        } else if (!payload && req.query && req.query.apiKey) {
-            // Fallback caso os dados tenham ido por QueryString por algum motivo
-            payload = { apiKey: req.query.apiKey };
-        }
-
+        // Captura o JSON enviado pelo frontend de forma nativa e limpa
+        const payload = await req.json();
         const apiKey = payload && payload.apiKey ? payload.apiKey.trim() : '';
 
         if (!apiKey) {
-            res.statusCode = 400;
-            return res.end(JSON.stringify({ error: 'Por favor, forneça uma API Key válida.' }));
+            return new Response(JSON.stringify({ error: 'Por favor, forneça uma API Key válida.' }), {
+                status: 400,
+                headers: { 'Content-Type': 'application/json' }
+            });
         }
 
         const walletUrl = `https://api.guildwars2.com/v2/account/wallet?access_token=${apiKey}`;
         const bankUrl = `https://api.guildwars2.com/v2/account/bank?access_token=${apiKey}`;
 
-        // Executa as chamadas em paralelo
-        const [walletRes, bankRes] = await Promise.all([
-            seguroGet(walletUrl),
-            seguroGet(bankUrl)
+        // Realiza as chamadas em paralelo de forma nativa no servidor
+        const [walletResponse, bankResponse] = await Promise.all([
+            fetch(walletUrl),
+            fetch(bankUrl)
         ]);
 
-        if (walletRes.status === 403 || bankRes.status === 403) {
-            res.statusCode = 403;
-            return res.end(JSON.stringify({ 
-                error: 'Chave inválida ou sem permissão. Garanta as permissões "account", "wallet" e "inventories".' 
-            }));
+        if (walletResponse.status === 403 || bankResponse.status === 403) {
+            return new Response(JSON.stringify({ 
+                error: 'Chave inválida ou sem permissão. Garanta as permissões "account", "wallet" e "inventories" no site da ArenaNet.' 
+            }), {
+                status: 403,
+                headers: { 'Content-Type': 'application/json' }
+            });
         }
 
-        if (walletRes.status !== 200 || bankRes.status !== 200) {
-            res.statusCode = 502;
-            return res.end(JSON.stringify({ error: 'Erro de resposta da API da ArenaNet.' }));
+        if (!walletResponse.ok || !bankResponse.ok) {
+            return new Response(JSON.stringify({ error: 'Erro de comunicação com a API da ArenaNet.' }), {
+                status: 502,
+                headers: { 'Content-Type': 'application/json' }
+            });
         }
 
-        const walletData = JSON.parse(walletRes.body);
-        const bankData = JSON.parse(bankRes.body);
+        const walletData = await walletResponse.json();
+        const bankData = await bankResponse.json();
 
         let fractalRelics = 0;
         let pristineRelics = 0;
@@ -91,15 +76,20 @@ module.exports = async (req, res) => {
             });
         }
 
-        res.statusCode = 200;
-        return res.end(JSON.stringify({
+        // Retorna a resposta de sucesso formatada
+        return new Response(JSON.stringify({
             fractalRelics,
             pristineRelics,
             integratedMatrices
-        }));
+        }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' }
+        });
 
     } catch (err) {
-        res.statusCode = 500;
-        return res.end(JSON.stringify({ error: 'Erro interno ao processar a requisição.' }));
+        return new Response(JSON.stringify({ error: 'Erro interno ao processar a sincronização.' }), {
+            status: 500,
+            headers: { 'Content-Type': 'application/json' }
+        });
     }
-};
+}
