@@ -3,24 +3,53 @@ export default function handler(req, res) {
         return res.status(405).json({ error: 'Método não permitido' });
     }
 
-    const { 
-        currentTitle, pristine, relics, matrices, 
-        dailyPristine, dailyMatrices, dailyRelics 
+    const {
+        currentTitle,
+        pristine,
+        relics,
+        matrices,
+        dailyPristine,
+        dailyMatrices,
+        dailyRelics
     } = req.body;
 
-    // Base de dados exata dos custos acumulados por Tier
+    // Custos reais das etapas
     const tierData = [
-        { level: 1, name: "Nenhum ➔ Fractal Savant",     pristine: 0,    relics: 25000,  matrices: 75  },
-        { level: 2, name: "Savant ➔ Fractal Prodigy",    pristine: 1200, relics: 35000,  matrices: 150 },
-        { level: 3, name: "Prodigy ➔ Fractal Champion",  pristine: 0,    relics: 45000,  matrices: 225 },
-        { level: 4, name: "Champion ➔ Fractal God",     pristine: 2000, relics: 55000,  matrices: 400 }
+        {
+            level: 1,
+            name: "Nenhum ➔ Fractal Savant",
+            pristine: 0,
+            relics: 25000,
+            matrices: 75
+        },
+        {
+            level: 2,
+            name: "Savant ➔ Fractal Prodigy",
+            pristine: 1200,
+            relics: 35000,
+            matrices: 150
+        },
+        {
+            level: 3,
+            name: "Prodigy ➔ Fractal Champion",
+            pristine: 0,
+            relics: 45000,
+            matrices: 225
+        },
+        {
+            level: 4,
+            name: "Champion ➔ Fractal God",
+            pristine: 2000,
+            relics: 55000,
+            matrices: 400
+        }
     ];
 
-    // Clonamos o inventário inicial recebido da API oficial do GW2
-    let wallet = { 
-        pristine: parseInt(pristine) || 0, 
-        relics: parseInt(relics) || 0, 
-        matrices: parseInt(matrices) || 0 
+    // Carteira viva
+    let wallet = {
+        pristine: parseInt(pristine) || 0,
+        relics: parseInt(relics) || 0,
+        matrices: parseInt(matrices) || 0
     };
 
     const dPristine = parseInt(dailyPristine) || 0;
@@ -30,12 +59,31 @@ export default function handler(req, res) {
     let totalDaysRemaining = 0;
     let htmlOutput = "";
 
-    // Simulação linear e progressiva das etapas
+    // =========================================================
+    // CALCULA QUANTO PRISTINE AINDA SERÁ NECESSÁRIO NO FUTURO
+    // =========================================================
+
+    function calculateFuturePristineNeed(tierData, currentIndex) {
+        let total = 0;
+
+        for (let j = currentIndex + 1; j < tierData.length; j++) {
+            total += tierData[j].pristine;
+        }
+
+        return total;
+    }
+
+    // =========================================================
+    // LOOP DAS ETAPAS
+    // =========================================================
+
     for (let i = 0; i < tierData.length; i++) {
+
         const tier = tierData[i];
 
-        // Se o jogador já passou ou tem esse título, marca como concluído
+        // Etapa já concluída
         if (parseInt(currentTitle) >= tier.level) {
+
             htmlOutput += `
                 <div class="tier-card completed">
                     <div class="tier-header">
@@ -45,34 +93,71 @@ export default function handler(req, res) {
                     <div>__LBL_ALREADY_DONE__</div>
                 </div>
             `;
+
             continue;
         }
 
-        // Calcula EXATAMENTE quanto falta considerando o que sobrou na carteira da etapa anterior
-        const neededPristine = Math.max(0, tier.pristine - wallet.pristine);
-        const neededRelics = Math.max(0, tier.relics - wallet.relics);
-        const neededMatrices = Math.max(0, tier.matrices - wallet.matrices);
+        // Recursos faltando
+        let neededPristine = Math.max(0, tier.pristine - wallet.pristine);
+        let neededRelics = Math.max(0, tier.relics - wallet.relics);
+        let neededMatrices = Math.max(0, tier.matrices - wallet.matrices);
 
         let tierDays = 0;
-        
-        // Se o usuário não ativou nenhuma rotina de farm mas ainda precisa de itens, gera tempo infinito
-        if ((neededPristine > 0 && dPristine === 0) || 
-            (neededMatrices > 0 && dMatrices === 0) || 
-            (neededRelics > 0 && dRelics === 0 && dPristine === 0)) {
+
+        // =====================================================
+        // CHECA SE O FARM É IMPOSSÍVEL
+        // =====================================================
+
+        if (
+            (neededPristine > 0 && dPristine === 0) ||
+            (neededMatrices > 0 && dMatrices === 0) ||
+            (neededRelics > 0 && dRelics === 0 && dPristine === 0)
+        ) {
+
             tierDays = Infinity;
+
         } else {
-            // SIMULAÇÃO DIÁRIA DA ETAPA: Avança dia após dia acumulando recursos de verdade
-            while (
-                wallet.pristine < tier.pristine || 
-                wallet.matrices < tier.matrices || 
-                (wallet.relics + (Math.max(0, wallet.pristine - tier.pristine) * 15)) < tier.relics
-            ) {
+
+            // =================================================
+            // SIMULAÇÃO DIÁRIA
+            // =================================================
+
+            while (true) {
+
+                // Quanto pristine ainda será necessário no futuro?
+                const futurePristineNeed =
+                    calculateFuturePristineNeed(tierData, i);
+
+                // Quanto pristine pode ser convertido sem prejudicar o futuro?
+                const availablePristineForConversion =
+                    Math.max(
+                        0,
+                        wallet.pristine - futurePristineNeed
+                    );
+
+                // Relics virtuais possíveis após melt
+                const effectiveRelics =
+                    wallet.relics +
+                    (availablePristineForConversion * 15);
+
+                // Verifica se já consegue comprar
+                const canBuy =
+                    wallet.pristine >= tier.pristine &&
+                    wallet.matrices >= tier.matrices &&
+                    effectiveRelics >= tier.relics;
+
+                if (canBuy) {
+                    break;
+                }
+
+                // Acumula recursos do dia
                 wallet.pristine += dPristine;
                 wallet.matrices += dMatrices;
                 wallet.relics += dRelics;
+
                 tierDays++;
 
-                // Trava de segurança para evitar loops infinitos caso trave o farm
+                // Proteção
                 if (tierDays > 15000) {
                     tierDays = Infinity;
                     break;
@@ -80,19 +165,52 @@ export default function handler(req, res) {
             }
         }
 
-        // Se o farm concluiu a etapa com sucesso, subtraímos os custos do banco de dados da carteira corrente
         let stepGate = "__GATE_NONE__";
-        if (tierDays !== Infinity && tierDays > 0) {
-            // Se faltou Relic normal mas tínhamos Pristines sobrando para cobrir o buraco, faz a conversão (Melt)
+
+        // =====================================================
+        // EXECUTA COMPRA
+        // =====================================================
+
+        if (tierDays !== Infinity) {
+
+            // Quanto pristine ainda precisa reservar futuramente?
+            const futurePristineNeed =
+                calculateFuturePristineNeed(tierData, i);
+
+            // Quanto pode converter?
+            let availablePristineForConversion =
+                Math.max(
+                    0,
+                    wallet.pristine - futurePristineNeed
+                );
+
+            // Se faltar relic normal
             if (wallet.relics < tier.relics) {
-                const relicDeficit = tier.relics - wallet.relics;
-                const pristinesToConvert = Math.ceil(relicDeficit / 15);
+
+                const relicDeficit =
+                    tier.relics - wallet.relics;
+
+                const maxConvertibleRelics =
+                    availablePristineForConversion * 15;
+
+                const relicsToCreate =
+                    Math.min(
+                        relicDeficit,
+                        maxConvertibleRelics
+                    );
+
+                const pristinesToConvert =
+                    Math.ceil(relicsToCreate / 15);
+
                 wallet.pristine -= pristinesToConvert;
-                wallet.relics += (pristinesToConvert * 15);
-                stepGate = "__GATE_NORMAL__"; // O gargalo foi relic normal convertido
+                wallet.relics += pristinesToConvert * 15;
+
+                if (pristinesToConvert > 0) {
+                    stepGate = "__GATE_NORMAL__";
+                }
             }
 
-            // Deduz os custos exatos do upgrade da carteira viva
+            // Deduz custos
             wallet.pristine -= tier.pristine;
             wallet.relics -= tier.relics;
             wallet.matrices -= tier.matrices;
@@ -100,25 +218,63 @@ export default function handler(req, res) {
             totalDaysRemaining += tierDays;
         }
 
-        // Identificação visual inteligente do Gargalo Real da Etapa baseado nos dados limites
-        if (tierDays === 0) {
-            stepGate = "__GATE_READY__";
-        } else if (stepGate === "__GATE_NONE__") {
-            // Se não foi resolvido por melt, avalia estatisticamente quem atrasou mais
-            const pDays = dPristine > 0 ? neededPristine / dPristine : 0;
-            const mDays = dMatrices > 0 ? neededMatrices / dMatrices : 0;
-            const rDays = dRelics > 0 ? neededRelics / dRelics : 0;
-            const maxDays = Math.max(pDays, mDays, rDays);
+        // =====================================================
+        // IDENTIFICA GARGALO
+        // =====================================================
 
-            if (maxDays === rDays) stepGate = "__GATE_NORMAL__";
-            else if (maxDays === pDays && maxDays === mDays) stepGate = "__GATE_BOTH__";
-            else if (maxDays === pDays) stepGate = "__GATE_PRISTINE__";
-            else if (maxDays === mDays) stepGate = "__GATE_MATRIX__";
+        if (tierDays === 0) {
+
+            stepGate = "__GATE_READY__";
+
+        } else if (stepGate === "__GATE_NONE__") {
+
+            const pDays =
+                dPristine > 0
+                    ? neededPristine / dPristine
+                    : 0;
+
+            const mDays =
+                dMatrices > 0
+                    ? neededMatrices / dMatrices
+                    : 0;
+
+            const rDays =
+                dRelics > 0
+                    ? neededRelics / dRelics
+                    : 0;
+
+            const maxDays =
+                Math.max(pDays, mDays, rDays);
+
+            if (maxDays === rDays) {
+                stepGate = "__GATE_NORMAL__";
+            }
+            else if (maxDays === pDays && maxDays === mDays) {
+                stepGate = "__GATE_BOTH__";
+            }
+            else if (maxDays === pDays) {
+                stepGate = "__GATE_PRISTINE__";
+            }
+            else if (maxDays === mDays) {
+                stepGate = "__GATE_MATRIX__";
+            }
         }
 
+        // =====================================================
+        // TEXTO VISUAL
+        // =====================================================
+
         let daysLabel = `+${tierDays} __LBL_DAYS__`;
-        if (tierDays === Infinity) { daysLabel = "__LBL_INF_DAYS__"; stepGate = "__LBL_NO_FARM__"; }
-        else if (tierDays === 0) { daysLabel = "__LBL_READY_BUY__"; }
+
+        if (tierDays === Infinity) {
+
+            daysLabel = "__LBL_INF_DAYS__";
+            stepGate = "__LBL_NO_FARM__";
+
+        } else if (tierDays === 0) {
+
+            daysLabel = "__LBL_READY_BUY__";
+        }
 
         htmlOutput += `
             <div class="tier-card">
@@ -126,12 +282,39 @@ export default function handler(req, res) {
                     <span>${tier.name}</span>
                     <span class="status">${daysLabel}</span>
                 </div>
+
                 <strong>__LBL_NEED_STOCK__</strong><br>
-                • Pristines: <span class="resource">${neededPristine.toLocaleString()}</span> | 
-                • Relics: <span class="resource">${neededRelics.toLocaleString()}</span> | 
-                • Matrices: <span class="resource">${neededMatrices.toLocaleString()}</span><br>
-                <small style="text-align: left; margin-top: 5px; color: var(--text-secondary); font-size: 12px;">
-                    __LBL_GATE__ <span style="color: var(--primary); font-weight:600;">${stepGate}</span>
+
+                • Pristines:
+                <span class="resource">
+                    ${neededPristine.toLocaleString()}
+                </span> |
+
+                • Relics:
+                <span class="resource">
+                    ${neededRelics.toLocaleString()}
+                </span> |
+
+                • Matrices:
+                <span class="resource">
+                    ${neededMatrices.toLocaleString()}
+                </span>
+
+                <br>
+
+                <small style="
+                    text-align: left;
+                    margin-top: 5px;
+                    color: var(--text-secondary);
+                    font-size: 12px;
+                ">
+                    __LBL_GATE__
+                    <span style="
+                        color: var(--primary);
+                        font-weight:600;
+                    ">
+                        ${stepGate}
+                    </span>
                 </small>
             </div>
         `;
