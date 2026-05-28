@@ -483,80 +483,47 @@
             calculate();
         }
 
-        async function fetchFractalData() {
+        // A função deve ser específica na atribuição para evitar sobreposição
+async function fetchFractalData() {
     const apiKey = document.getElementById('apiKey').value.trim();
-    const statusDiv = document.getElementById('apiStatus');
-    const errorDiv = document.getElementById('apiError');
-    const lang = document.getElementById('langPicker').value;
-    const text = translations[lang] || translations['pt'];
-
-    errorDiv.style.display = 'none';
-    if (!apiKey) {
-        errorDiv.innerText = lang === 'pt' ? 'Por favor, insira uma API Key.' : 'Please enter an API Key.';
-        errorDiv.style.display = 'block';
-        return;
-    }
-
-    statusDiv.innerText = text.apiLoading;
-    statusDiv.style.display = 'block';
+    // ... restante da validação inicial ...
 
     try {
-        // IDs Corretos do GW2
-        const FRACTAL_RELIC_ID = 7;
-        const PRISTINE_RELIC_ID = 24;
-        const INTEGRATED_MATRIX_ID = 73248; // ID corrigido para Integrated Fractal Matrix
+        // IDs Reais (GW2 API)
+        const PRISTINE_RELIC_ID = 24; 
+        const INTEGRATED_MATRIX_ID = 73248; 
 
-        const [walletRes, bankRes, matRes] = await Promise.all([
+        // Chamadas paralelas
+        const [walletRes, materialsRes] = await Promise.all([
             fetch(`https://api.guildwars2.com/v2/account/wallet?access_token=${apiKey}`),
-            fetch(`https://api.guildwars2.com/v2/account/bank?access_token=${apiKey}`),
             fetch(`https://api.guildwars2.com/v2/account/materials?access_token=${apiKey}`)
         ]);
 
-        if (!walletRes.ok || !bankRes.ok || !matRes.ok) throw new Error("Erro ao acessar a API. Verifique sua Key.");
-
         const walletData = await walletRes.json();
-        const bankData = await bankRes.json();
-        const materialsData = await matRes.json();
+        const materialsData = await materialsRes.json();
 
-        // 1. Busca Relics e Pristines na Wallet
-        let relics = 0;
-        let pristine = 0;
-        walletData.forEach(c => {
-            if (c.id === FRACTAL_RELIC_ID) relics = c.value;
-            if (c.id === PRISTINE_RELIC_ID) pristine = c.value;
-        });
+        // 1. EXTRAÇÃO DE PRISTINE (Fica na Wallet)
+        const pristineObj = walletData.find(item => item.id === PRISTINE_RELIC_ID);
+        const pristineValue = pristineObj ? pristineObj.value : 0;
+        
+        // 2. EXTRAÇÃO DE INTEGRATED MATRICES (Fica no Material Storage)
+        const matrixObj = materialsData.find(item => item.id === INTEGRATED_MATRIX_ID);
+        const matrixValue = matrixObj ? matrixObj.count : 0;
 
-        // 2. Busca Integrated Matrices no Banco E no Material Storage
-        let matrices = 0;
+        // ATRIBUIÇÃO DIRETA AOS CAMPOS CORRETOS
+        // Certifique-se que o ID no HTML seja 'pristine' e 'matrices'
+        document.getElementById('pristine').value = pristineValue;
+        document.getElementById('matrices').value = matrixValue;
 
-        // Verifica no Banco
-        if (Array.isArray(bankData)) {
-            bankData.forEach(item => {
-                if (item && item.id === INTEGRATED_MATRIX_ID) matrices += item.count;
-            });
-        }
+        // Opcional: Logs para depuração caso continue confundindo
+        console.log("Pristine ID 24:", pristineValue);
+        console.log("Integrated Matrix ID 73248:", matrixValue);
 
-        // Verifica no Material Storage (aqui é onde a maioria guarda as matrices)
-        if (Array.isArray(materialsData)) {
-            materialsData.forEach(item => {
-                if (item && item.id === INTEGRATED_MATRIX_ID) matrices += item.count;
-            });
-        }
-
-        // Atualiza os inputs
-        document.getElementById('relics').value = relics;
-        document.getElementById('pristine').value = pristine;
-        document.getElementById('matrices').value = matrices;
-
-        statusDiv.style.display = 'none';
         calculate(); 
-
     } catch (err) {
-        console.error(err);
-        errorDiv.innerText = err.message;
-        errorDiv.style.display = 'block';
-        statusDiv.style.display = 'none';
+        console.error("Erro ao buscar dados:", err);
     }
+}
 }
 
         function updateDailyInputs() {
