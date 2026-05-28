@@ -189,3 +189,81 @@ export default function handler(req, res) {
             const pDays = dPristine > 0 ? neededPristine / dPristine : 0;
             const mDays = dMatrices > 0 ? neededMatrices / dMatrices : 0;
             const rDays = dRelics > 0 ? neededRelics / dRelics : 0;
+
+            const maxDays = Math.max(pDays, mDays, rDays);
+
+            if (maxDays === rDays) {
+                stepGate = "__GATE_NORMAL__";
+            }
+            else if (maxDays === pDays && maxDays === mDays) {
+                stepGate = "__GATE_BOTH__";
+            }
+            else if (maxDays === pDays) {
+                stepGate = "__GATE_PRISTINE__";
+            }
+            else if (maxDays === mDays) {
+                stepGate = "__GATE_MATRIX__";
+            }
+        }
+
+        // =====================================================
+        // TEXTO VISUAL
+        // =====================================================
+        let daysLabel = `+${tierDays} __LBL_DAYS__`;
+
+        if (tierDays === Infinity) {
+            daysLabel = "__LBL_INF_DAYS__";
+            stepGate = "__LBL_NO_FARM__";
+        } else if (tierDays === 0) {
+            daysLabel = "__LBL_READY_BUY__";
+        }
+
+        htmlOutput += `
+            <div class="tier-card">
+                <div class="tier-header">
+                    <span>${tier.name}</span>
+                    <span class="status">${daysLabel}</span>
+                </div>
+
+                <strong>__LBL_NEED_STOCK__</strong><br>
+
+                • Pristines:
+                <span class="resource">
+                    ${neededPristine.toLocaleString()}
+                </span> |
+
+                • Relics:
+                <span class="resource">
+                    ${neededRelics.toLocaleString()}
+                </span> |
+
+                • Matrices:
+                <span class="resource">
+                    ${neededMatrices.toLocaleString()}
+                </span>
+
+                <br>
+
+                <small style="
+                    text-align: left;
+                    margin-top: 5px;
+                    color: var(--text-secondary);
+                    font-size: 12px;
+                ">
+                    __LBL_GATE__
+                    <span style="
+                        color: var(--primary);
+                        font-weight:600;
+                    ">
+                        ${stepGate}
+                    </span>
+                </small>
+            </div>
+        `;
+    }
+
+    return res.status(200).json({
+        totalDaysRemaining,
+        htmlOutput
+    });
+}
