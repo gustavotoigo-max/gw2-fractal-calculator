@@ -399,7 +399,7 @@
 </div>
 
 <script>
-    const SITE_VERSION = "v1.4.0"; 
+    const SITE_VERSION = "v1.4.1"; 
     const USER_NICK    = "SeuNickAqui";       
     const USER_EMAIL   = "seu@email.com";     
 
@@ -407,7 +407,6 @@
     const ID_PRISTINE = 6;
     const ID_MATRIX = 73232;
 
-    // Roteador Proxy CORS para evitar bloqueios do navegador na Vercel
     const CORS_PROXY = "https://cors-anywhere.herokuapp.com/";
 
     const translations = {
@@ -506,7 +505,7 @@
             subtitle: "Cálculo basado en los valores de drop exactos y conversiones de tu plantilla",
             apiKeyTitle: "Clave API de GW2 (Opcional)",
             btnSync: "Sincronizar",
-            apiWarning: "⚠️ <strong>Advertencia:</strong> Para obtener los datos correctamente, asegúrese de generar una clave API en el sitio de ArenaNet con los permisos <strong>account, inventories, unlocks y wallet</strong> activados. Sus datos se guardan localmente.",
+            apiWarning: "⚠️ <strong>Advertencia:</strong> Para obtener los datos correctamente, asegúrese de generar uma clave API en el sitio de ArenaNet con los permisos <strong>account, inventories, unlocks y wallet</strong> activados. Sus datos se guardan localmente.",
             currentTitle: "Tu título actual",
             none: "Ninguno",
             secInventory: "Tu Inventario Actual",
@@ -542,7 +541,7 @@
             lblWeeks: "semanas",
             lblFootnote: "*El temporizador maestro suma los cuellos de botella parciales asumiendo que acumulas recursos en orden lineal de logros.",
             lblDevBy: "Desarrollado por:",
-            alertSuccess: "¡Sincronizado con éxito con a API de GW2!",
+            alertSuccess: "¡Sincronizado con éxito con la API de GW2!",
             alertError: "Error al conectar con la API. Verifique su clave y los permisos de la misma.",
             alertEmpty: "Por favor, introduzca una clave API válida."
         },
@@ -656,7 +655,6 @@
         let totalMatrices = 0;
         let peloMenosUmSucesso = false;
 
-        // Passando a URL da API da ArenaNet por dentro do proxy CORS-Anywhere
         const fetchOptions = { 
             method: 'GET',
             headers: { 'Authorization': `Bearer ${apiKey}` }
@@ -698,7 +696,8 @@
         }
 
         try {
-            const charsRes = await fetch(`${CORS_PROXY}https://api.guildwars2.com/v2/characters?ids=all', fetchOptions);
+            // SINTAXE CORRIGIDA: Removida a aspa simples que quebrava o script anterior
+            const charsRes = await fetch(`${CORS_PROXY}https://api.guildwars2.com/v2/characters?ids=all`, fetchOptions);
             if (charsRes.ok) {
                 const characters = await charsRes.json();
                 const charList = Array.isArray(characters) ? characters : Object.values(characters);
