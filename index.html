@@ -201,160 +201,78 @@
 </div>
 
 <script>
-    const SITE_VERSION = "v2.2.0"; 
-    const USER_NICK    = "SeuNickAqui";       
-    const USER_EMAIL   = "seu@email.com";     
+    const SITE_VERSION = "v2.2.0";
+const USER_NICK    = "SeuNickAqui";
+const USER_EMAIL   = "seu@email.com";
 
-    const translations = {
-        pt: {
-            mainTitle: "Fractal God Timeline", subtitle: "Cálculo baseado nos valores exatos de drops e conversões da sua planilha",
-            currentTitle: "Seu título atual", none: "Nenhum", secInventory: "Seu Inventário Atual", pristineCart: "Pristine Fractal Relics atuais", relicsCart: "Fractal Relics atuais", matricesCart: "Integrated Fractal Matrices atuais", secRoutine: "Sua Rotina Diária de Farm", subDailies: "Dailies Padrão", recsCheck: "Recomendadas (Recs)", subCMs: "Challenge Modes (CMs)", secGains: "Ganhos Diários Calculados (Dados Reais)", pristineDay: "Pristine Relics / dia", matricesDay: "Integrated Matrices / dia", relicsDay: "Fractal Relics Normais / dia (Garantidos + Conversões)", resultTitle: "Tempo Total Restante até o Fractal God",
-            lblCompleted: "✓ Concluído", lblAlreadyDone: "Você já domina este tier ou passou dele!", lblNeedStock: "Falta estocar nesta etapa:", lblGate: "Gargalo desta etapa:", lblReadyBuy: "Pronto para comprar", lblInfDays: "Infinitos dias (Sem farm ativo)", lblNoFarmActive: "Falta ativar uma fonte de farm!", lblGateNone: "Nenhum", lblGateReady: "Nenhum (Pronto!)", lblGateNormal: "Fractal Relics Normais", lblGateBoth: "Pristines e Matrices", lblGatePristine: "Pristine Relics", lblGateMatrix: "Integrated Matrices", lblReadyGod: "Pronto para virar Deus!", lblIsGod: "Fractal God!", lblUnfTime: "Tempo Indeterminado", lblDays: "dias", lblWeeks: "semanas",
-            lblFootnote: "*O cronômetro mestre soma os gargalos parciais considerando que você acumula os recursos em ordem linear de conquistas.", lblDevBy: "Desenvolvido por:",
-            apiKey: "Sincronizar Conta via GW2 API Key:", btnSync: "Sincronizar Inventário", apiLoading: "Buscando dados na Tyria..."
-        },
-        en: {
-            mainTitle: "Fractal God Timeline", subtitle: "Calculation based on exact drop values and conversions from your spreadsheet",
-            currentTitle: "Your current title", none: "None", secInventory: "Your Current Inventory", pristineCart: "Current Pristine Fractal Relics", relicsCart: "Current Fractal Relics", matricesCart: "Current Integrated Fractal Matrices", secRoutine: "Your Daily Farm Routine", subDailies: "Standard Dailies", recsCheck: "Recommended (Recs)", subCMs: "Challenge Modes (CMs)", secGains: "Calculated Daily Earnings (Real Data)", pristineDay: "Pristine Relics / day", matricesDay: "Integrated Matrices / day", relicsDay: "Normal Fractal Relics / day (Guaranteed + Melt)", resultTitle: "Total Time Remaining until Fractal God",
-            lblCompleted: "✓ Completed", lblAlreadyDone: "You already own this tier or have passed it!", lblNeedStock: "Missing resources in this step:", lblGate: "Bottleneck of this step:", lblReadyBuy: "Ready to buy", lblInfDays: "Infinite days (No active farm)", lblNoFarmActive: "You need to activate a farm source!", lblGateNone: "None", lblGateReady: "None (Ready!)", lblGateNormal: "Normal Fractal Relics", lblGateBoth: "Pristines and Matrices", lblGatePristine: "Pristine Relics", lblGateMatrix: "Integrated Matrices", lblReadyGod: "Ready to become God!", lblIsGod: "Fractal God!", lblUnfTime: "Undetermined Time", lblDays: "days", lblWeeks: "weeks",
-            lblFootnote: "*The master timer sums the partial bottlenecks assuming you accumulate resources in a linear order of achievements.", lblDevBy: "Developed by:",
-            apiKey: "Sync Account via GW2 API Key:", btnSync: "Sync Inventory", apiLoading: "Fetching data from Tyria..."
-        }
+// ======================================================
+// LOCAL STORAGE
+// ======================================================
+
+const STORAGE_KEY = "fractalGodCalculatorData";
+
+function saveLocalData() {
+
+    const data = {
+
+        apiKey: document.getElementById('apiKey').value,
+
+        currentTitle: document.getElementById('currentTitle').value,
+
+        pristine: document.getElementById('pristine').value,
+        relics: document.getElementById('relics').value,
+        matrices: document.getElementById('matrices').value,
+
+        dailyPristine: document.getElementById('dailyPristine').value,
+        dailyMatrices: document.getElementById('dailyMatrices').value,
+        dailyRelics: document.getElementById('dailyRelics').value,
+
+        farmT4: document.getElementById('farmT4').checked,
+        farmRecs: document.getElementById('farmRecs').checked,
+        farmPotions: document.getElementById('farmPotions').checked,
+
+        cmKinfall: document.getElementById('cmKinfall').checked,
+        cmNightmare: document.getElementById('cmNightmare').checked,
+        cmShattered: document.getElementById('cmShattered').checked,
+        cmSunqua: document.getElementById('cmSunqua').checked,
+        cmSilent: document.getElementById('cmSilent').checked,
+        cmLonely: document.getElementById('cmLonely').checked
     };
 
-    window.addEventListener('DOMContentLoaded', () => {
-        updateDailyInputs();
-        changeLanguage();
+    localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(data)
+    );
+}
 
-        document.getElementById('btnSync').addEventListener('click', fetchFractalData);
-        document.getElementById('langPicker').addEventListener('change', changeLanguage);
+function loadLocalData() {
 
-        const inputsCalculo = ['currentTitle', 'pristine', 'relics', 'matrices', 'dailyPristine', 'dailyMatrices', 'dailyRelics'];
-        inputsCalculo.forEach(id => {
-            document.getElementById(id).addEventListener('input', calculate);
+    const raw =
+        localStorage.getItem(STORAGE_KEY);
+
+    if (!raw) return;
+
+    try {
+
+        const data = JSON.parse(raw);
+
+        Object.keys(data).forEach(key => {
+
+            const el = document.getElementById(key);
+
+            if (!el) return;
+
+            if (el.type === 'checkbox') {
+                el.checked = data[key];
+            } else {
+                el.value = data[key];
+            }
         });
 
-        const checkboxesFarm = ['farmT4', 'farmRecs', 'farmPotions', 'cmKinfall', 'cmNightmare', 'cmShattered', 'cmSunqua', 'cmSilent', 'cmLonely'];
-        checkboxesFarm.forEach(id => {
-            document.getElementById(id).addEventListener('change', updateDailyInputs);
-        });
-    });
-
-    function changeLanguage() {
-        const lang = document.getElementById('langPicker').value;
-        const text = translations[lang] || translations['pt'];
-
-        document.getElementById('lblMainTitle').innerText = text.mainTitle;
-        document.getElementById('lblSubtitle').innerHTML = text.subtitle;
-        document.getElementById('lblCurrentTitle').innerText = text.currentTitle;
-        document.getElementById('optNone').innerText = text.none;
-        document.getElementById('lblSectionInventory').innerText = text.secInventory;
-        document.getElementById('lblPristineCart').innerText = text.pristineCart;
-        document.getElementById('lblRelicsCart').innerText = text.relicsCart;
-        document.getElementById('lblMatricesCart').innerText = text.matricesCart;
-        document.getElementById('lblSectionRoutine').innerText = text.secRoutine;
-        document.getElementById('lblSubDailies').innerText = text.subDailies;
-        document.getElementById('lblRecsCheck').innerText = text.recsCheck;
-        document.getElementById('lblSubCMs').innerText = text.subCMs;
-        document.getElementById('lblSectionGains').innerText = text.secGains;
-        document.getElementById('lblPristineDay').innerText = text.pristineDay;
-        document.getElementById('lblMatricesDay').innerText = text.matricesDay;
-        document.getElementById('lblRelicsDay').innerText = text.relicsDay;
-        document.getElementById('lblResultTitle').innerText = text.resultTitle;
-        document.getElementById('lblApiKey').innerText = text.apiKey;
-        document.getElementById('btnSync').innerText = text.btnSync;
-
-        calculate();
+    } catch(err) {
+        console.error("Erro ao carregar save local", err);
     }
-
-    async function fetchFractalData() {
-        const apiKey = document.getElementById('apiKey').value.trim();
-        const statusDiv = document.getElementById('apiStatus');
-        const errorDiv = document.getElementById('apiError');
-        const lang = document.getElementById('langPicker').value;
-        const text = translations[lang] || translations['pt'];
-
-        errorDiv.style.display = 'none';
-        if (!apiKey) {
-            errorDiv.innerText = lang === 'pt' ? 'Por favor, insira uma API Key.' : 'Please enter an API Key.';
-            errorDiv.style.display = 'block';
-            return;
-        }
-
-        statusDiv.innerText = text.apiLoading;
-        statusDiv.style.display = 'block';
-
-        try {
-            // URLs da API: Incluído o Material Storage (/materials)
-            const walletUrl = `https://api.guildwars2.com/v2/account/wallet?access_token=${apiKey}`;
-            const bankUrl = `https://api.guildwars2.com/v2/account/bank?access_token=${apiKey}`;
-            const materialsUrl = `https://api.guildwars2.com/v2/account/materials?access_token=${apiKey}`;
-
-            const [walletResponse, bankResponse, materialsResponse] = await Promise.all([
-                fetch(walletUrl),
-                fetch(bankUrl),
-                fetch(materialsUrl)
-            ]);
-
-            if (walletResponse.status === 403 || bankResponse.status === 403 || materialsResponse.status === 403) {
-                throw new Error(lang === 'pt' ? 
-                    'Chave inválida ou sem permissão. Garanta que sua API key tenha as permissões "account", "wallet" e "inventories" marcadas.' : 
-                    'Invalid or unpermitted key. Ensure your API key has "account", "wallet", and "inventories" permissions enabled.');
-            }
-
-            if (!walletResponse.ok || !bankResponse.ok || !materialsResponse.ok) {
-                throw new Error(`API Error (Wallet: ${walletResponse.status} | Bank: ${bankResponse.status} | Materials: ${materialsResponse.status})`);
-            }
-
-            const walletData = await walletResponse.json();
-            const bankData = await bankResponse.json();
-            const materialsData = await materialsResponse.json();
-
-            let fractalRelics = 0;
-            let pristineRelics = 0;
-
-            const FRACTAL_RELIC_ID = 7;
-            const PRISTINE_RELIC_ID = 24;
-            const INTEGRATED_MATRIX_ID = 79230;
-
-            walletData.forEach(currency => {
-                if (currency.id === FRACTAL_RELIC_ID) fractalRelics = currency.value;
-                if (currency.id === PRISTINE_RELIC_ID) pristineRelics = currency.value;
-            });
-
-            let integratedMatrices = 0;
-
-            // Varre as abas normais do Banco
-            if (Array.isArray(bankData)) {
-                bankData.forEach(item => {
-                    if (item && typeof item === 'object' && item.id === INTEGRATED_MATRIX_ID) {
-                        integratedMatrices += item.count;
-                    }
-                });
-            }
-
-            // Varre o Material Storage (onde ficam os Fractal Materials depositados)
-            if (Array.isArray(materialsData)) {
-                materialsData.forEach(item => {
-                    if (item && typeof item === 'object' && item.id === INTEGRATED_MATRIX_ID) {
-                        integratedMatrices += item.count;
-                    }
-                });
-            }
-
-            document.getElementById('relics').value = fractalRelics;
-            document.getElementById('pristine').value = pristineRelics;
-            document.getElementById('matrices').value = integratedMatrices;
-
-            statusDiv.style.display = 'none';
-            calculate(); 
-
-        } catch (err) {
-            console.error(err);
-            errorDiv.innerText = err.message || 'Erro de conexão ("Failed to fetch").';
-            errorDiv.style.display = 'block';
-            statusDiv.style.display = 'none';
-        }
+}
     }
 
     function updateDailyInputs() {
