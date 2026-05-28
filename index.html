@@ -241,33 +241,7 @@
     });
 
     function changeLanguage() {
-        const lang = document.getElementById('langPicker').value;
-        const text = translations[lang] || translations['pt'];
-
-        document.getElementById('lblMainTitle').innerText = text.mainTitle;
-        document.getElementById('lblSubtitle').innerHTML = text.subtitle;
-        document.getElementById('lblCurrentTitle').innerText = text.currentTitle;
-        document.getElementById('optNone').innerText = text.none;
-        document.getElementById('lblSectionInventory').innerText = text.secInventory;
-        document.getElementById('lblPristineCart').innerText = text.pristineCart;
-        document.getElementById('lblRelicsCart').innerText = text.relicsCart;
-        document.getElementById('lblMatricesCart').innerText = text.matricesCart;
-        document.getElementById('lblSectionRoutine').innerText = text.secRoutine;
-        document.getElementById('lblSubDailies').innerText = text.subDailies;
-        document.getElementById('lblRecsCheck').innerText = text.recsCheck;
-        document.getElementById('lblSubCMs').innerText = text.subCMs;
-        document.getElementById('lblSectionGains').innerText = text.secGains;
-        document.getElementById('lblPristineDay').innerText = text.pristineDay;
-        document.getElementById('lblMatricesDay').innerText = text.matricesDay;
-        document.getElementById('lblRelicsDay').innerText = text.relicsDay;
-        document.getElementById('lblResultTitle').innerText = text.resultTitle;
-        document.getElementById('lblApiKey').innerText = text.apiKey;
-        document.getElementById('btnSync').innerText = text.btnSync;
-
-        calculate();
-    }
-
-    async function fetchFractalData() {
+        async function fetchFractalData() {
         const apiKey = document.getElementById('apiKey').value.trim();
         const statusDiv = document.getElementById('apiStatus');
         const errorDiv = document.getElementById('apiError');
@@ -285,26 +259,32 @@
         statusDiv.style.display = 'block';
 
         try {
+            // URLs da API: Wallet, Bank comum e Material Storage
             const walletUrl = `https://api.guildwars2.com/v2/account/wallet?access_token=${apiKey}`;
             const bankUrl = `https://api.guildwars2.com/v2/account/bank?access_token=${apiKey}`;
+            const materialsUrl = `https://api.guildwars2.com/v2/account/materials?access_token=${apiKey}`;
 
-            const [walletResponse, bankResponse] = await Promise.all([
+            // Fazemos a requisição dos 3 endpoints em paralelo
+            const [walletResponse, bankResponse, materialsResponse] = await Promise.all([
                 fetch(walletUrl),
-                fetch(bankUrl)
+                fetch(bankUrl),
+                fetch(materialsUrl)
             ]);
 
-            if (walletResponse.status === 403 || bankResponse.status === 403) {
+            // Validação de permissões da API Key (Erro 403)
+            if (walletResponse.status === 403 || bankResponse.status === 403 || materialsResponse.status === 403) {
                 throw new Error(lang === 'pt' ? 
                     'Chave inválida ou sem permissão. Garanta que sua API key tenha as permissões "account", "wallet" e "inventories" marcadas.' : 
                     'Invalid or unpermitted key. Ensure your API key has "account", "wallet", and "inventories" permissions enabled.');
             }
 
-            if (!walletResponse.ok || !bankResponse.ok) {
-                throw new Error(`API Error (Wallet: ${walletResponse.status} | Bank: ${bankResponse.status})`);
+            if (!walletResponse.ok || !bankResponse.ok || !materialsResponse.ok) {
+                throw new Error(`API Error (Wallet: ${walletResponse.status} | Bank: ${bankResponse.status} | Materials: ${materialsResponse.status})`);
             }
 
             const walletData = await walletResponse.json();
             const bankData = await bankResponse.json();
+            const materialsData = await materialsResponse.json();
 
             let fractalRelics = 0;
             let pristineRelics = 0;
@@ -313,20 +293,33 @@
             const PRISTINE_RELIC_ID = 24;
             const INTEGRATED_MATRIX_ID = 73248;
 
+            // 1. Puxa as moedas da Wallet
             walletData.forEach(currency => {
                 if (currency.id === FRACTAL_RELIC_ID) fractalRelics = currency.value;
                 if (currency.id === PRISTINE_RELIC_ID) pristineRelics = currency.value;
             });
 
             let integratedMatrices = 0;
+
+            // 2. Procura nas abas normais do Banco (varrendo possíveis objetos nulos de slots vazios)
             if (Array.isArray(bankData)) {
                 bankData.forEach(item => {
-                    if (item && item.id === INTEGRATED_MATRIX_ID) {
+                    if (item && typeof item === 'object' && item.id === INTEGRATED_MATRIX_ID) {
                         integratedMatrices += item.count;
                     }
                 });
             }
 
+            // 3. Procura no Material Storage (Armazenamento de Materiais)
+            if (Array.isArray(materialsData)) {
+                materialsData.forEach(item => {
+                    if (item && typeof item === 'object' && item.id === INTEGRATED_MATRIX_ID) {
+                        integratedMatrices += item.count;
+                    }
+                });
+            }
+
+            // Alimenta os inputs na tela com os valores somados
             document.getElementById('relics').value = fractalRelics;
             document.getElementById('pristine').value = pristineRelics;
             document.getElementById('matrices').value = integratedMatrices;
@@ -335,10 +328,12 @@
             calculate(); 
 
         } catch (err) {
+            console.error(err);
             errorDiv.innerText = err.message || 'Erro de conexão ("Failed to fetch").';
             errorDiv.style.display = 'block';
             statusDiv.style.display = 'none';
         }
+    }
     }
 
     function updateDailyInputs() {
