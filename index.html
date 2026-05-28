@@ -265,17 +265,6 @@
     <h1 id="lblMainTitle">Fractal God Timeline</h1>
     <div class="subtitle" id="lblSubtitle">Cálculo passo a passo baseado na progressão linear de upgrades da Wiki de GW2</div>
 
-    <div class="farm-section">
-        <label for="apiKey" style="color: var(--primary); font-weight: bold;" id="lblApiKeyTitle">Chave de API do GW2 (Opcional)</label>
-        <div style="display: flex; gap: 10px; margin-bottom: 8px;">
-            <input type="text" id="apiKey" placeholder="Cole sua API Key aqui..." style="font-size: 13px;">
-            <button onclick="fetchGW2Data()" id="btnSync" style="background: var(--primary); color: #000; border: none; border-radius: 6px; padding: 0 15px; font-weight: bold; cursor: pointer; white-space: nowrap;">Sincronizar</button>
-        </div>
-        <span style="font-size: 11px; color: var(--text-secondary); display: block; line-height: 1.4;" id="lblApiWarning">
-            ⚠️ <strong>Aviso:</strong> Para puxar os dados corretamente, certifique-se de gerar uma API Key no site da ArenaNet com as permissões <strong>account, inventories, unlocks e wallet</strong> ativadas. Seus dados ficam salvos localmente.
-        </span>
-    </div>
-
     <div class="form-group">
         <label for="currentTitle" id="lblCurrentTitle">Seu título atual</label>
         <select id="currentTitle" oninput="calculate()">
@@ -399,23 +388,14 @@
 </div>
 
 <script>
-    const SITE_VERSION = "v1.4.3"; 
+    const SITE_VERSION = "v1.3.0"; 
     const USER_NICK    = "SeuNickAqui";       
     const USER_EMAIL   = "seu@email.com";     
-
-    const ID_RELIC = 7;
-    const ID_PRISTINE = 6;
-    const ID_MATRIX = 73232;
-
-    const PRIMARY_PROXY = "https://api.allorigins.win/raw?url=";
 
     const translations = {
         pt: {
             mainTitle: "Fractal God Timeline",
             subtitle: "Cálculo baseado nos valores exatos de drops e conversões da sua planilha",
-            apiKeyTitle: "Chave de API do GW2 (Opcional)",
-            btnSync: "Sincronizar",
-            apiWarning: "⚠️ <strong>Aviso:</strong> Para puxar os dados corretamente, certifique-se de gerar uma API Key no site da ArenaNet com as permissões <strong>account, inventories, unlocks e wallet</strong> ativadas. Seus dados ficam salvos localmente.",
             currentTitle: "Seu título atual",
             none: "Nenhum",
             secInventory: "Seu Inventário Atual",
@@ -450,17 +430,11 @@
             lblDays: "dias",
             lblWeeks: "semanas",
             lblFootnote: "*O cronômetro mestre soma os gargalos parciais considerando que você acumula os recursos em ordem linear de conquistas.",
-            lblDevBy: "Desenvolvido por:",
-            alertSuccess: "Sincronizado com sucesso com a API do GW2!",
-            alertError: "Erro ao conectar com a API. Verifique se a chave está correta e tem as permissões necessárias.",
-            alertEmpty: "Por favor, insira uma API Key válida."
+            lblDevBy: "Desenvolvido por:"
         },
         en: {
             mainTitle: "Fractal God Timeline",
             subtitle: "Calculation based on exact drop values and conversions from your spreadsheet",
-            apiKeyTitle: "GW2 API Key (Optional)",
-            btnSync: "Synchronize",
-            apiWarning: "⚠️ <strong>Warning:</strong> To fetch data properly, make sure to generate an API Key on the ArenaNet website with <strong>account, inventories, unlocks, and wallet</strong> permissions enabled. Your data is stored locally.",
             currentTitle: "Your current title",
             none: "None",
             secInventory: "Your Current Inventory",
@@ -495,17 +469,11 @@
             lblDays: "days",
             lblWeeks: "weeks",
             lblFootnote: "*The master timer sums the partial bottlenecks assuming you accumulate resources in a linear order of achievements.",
-            lblDevBy: "Developed by:",
-            alertSuccess: "Successfully synchronized with the GW2 API!",
-            alertError: "Error connecting to the API. Please check your key and its permissions.",
-            alertEmpty: "Please enter a valid API Key."
+            lblDevBy: "Developed by:"
         },
         es: {
             mainTitle: "Fractal God Timeline",
-            subtitle: "Cálculo basado en los valores de drop exactos y conversiones de tu plantilla",
-            apiKeyTitle: "Clave API de GW2 (Opcional)",
-            btnSync: "Sincronizar",
-            apiWarning: "⚠️ <strong>Advertencia:</strong> Para obtener los datos correctamente, asegúrese de generar una clave API en el sitio de ArenaNet con los permisos <strong>account, inventories, unlocks y wallet</strong> activados. Sus datos se guardan localmente.",
+            subtitle: "Cálculo baseado en los valores de drop exactos y conversiones de tu plantilla",
             currentTitle: "Tu título actual",
             none: "Ninguno",
             secInventory: "Tu Inventario Actual",
@@ -527,7 +495,7 @@
             lblGate: "Cuello de botella de esta etapa:",
             lblReadyBuy: "Listo para comprar",
             lblInfDays: "Días infinitos (Sin farm activo)",
-            lblNoFarmActive: "¡Falta activar uma fonte de farm!",
+            lblNoFarmActive: "¡Falta activar una fuente de farm!",
             lblGateNone: "Ninguno",
             lblGateReady: "Ninguno (¡Listo!)",
             lblGateNormal: "Fractal Relics Normales",
@@ -540,17 +508,11 @@
             lblDays: "días",
             lblWeeks: "semanas",
             lblFootnote: "*El temporizador maestro suma los cuellos de botella parciales asumiendo que acumulas recursos en orden lineal de logros.",
-            lblDevBy: "Desarrollado por:",
-            alertSuccess: "¡Sincronizado con éxito con la API de GW2!",
-            alertError: "Error al conectar com a API. Verifique su clave y los permisos de la misma.",
-            alertEmpty: "Por favor, introduzca una clave API válida."
+            lblDevBy: "Desarrollado por:"
         },
         fr: {
             mainTitle: "Fractal God Timeline",
             subtitle: "Calcul basé sur les valeurs exactes de drop et conversions de votre tableur",
-            apiKeyTitle: "Clé API GW2 (Optionnel)",
-            btnSync: "Synchroniser",
-            apiWarning: "⚠️ <strong>Attention :</strong> Pour récupérer correctement les données, assurez-vous de générer une clé API sur le site d'ArenaNet avec les permissions <strong>account, inventories, unlocks et wallet</strong> activées. Vos données sont stockées localement.",
             currentTitle: "Votre titre actuel",
             none: "Aucun",
             secInventory: "Votre Inventaire Actuel",
@@ -585,10 +547,7 @@
             lblDays: "jours",
             lblWeeks: "semaines",
             lblFootnote: "*Le minuteur maître additionne les goulots d'étranglement partiels en supposant que vous accumulez les ressources dans l'ordre linéaire des succès.",
-            lblDevBy: "Développé par :",
-            alertSuccess: "Synchronisé avec succès avec l'API GW2 !",
-            alertError: "Erreur lors de la connexion à l'API. Veuillez vérifier votre clé et ses permissions.",
-            alertEmpty: "Veuillez entrer une clé API valide."
+            lblDevBy: "Développé por :"
         }
     };
 
@@ -600,14 +559,8 @@
     ];
 
     window.addEventListener('DOMContentLoaded', () => {
-        const savedKey = localStorage.getItem('gw2_api_key');
-        if (savedKey) {
-            document.getElementById('apiKey').value = savedKey;
-            fetchGW2Data(); 
-        } else {
-            updateDailyInputs();
-            changeLanguage();
-        }
+        updateDailyInputs();
+        changeLanguage();
     });
 
     function changeLanguage() {
@@ -616,9 +569,6 @@
 
         document.getElementById('lblMainTitle').innerText = text.mainTitle;
         document.getElementById('lblSubtitle').innerHTML = text.subtitle;
-        document.getElementById('lblApiKeyTitle').innerText = text.apiKeyTitle;
-        document.getElementById('btnSync').innerText = text.btnSync;
-        document.getElementById('lblApiWarning').innerHTML = text.apiWarning;
         document.getElementById('lblCurrentTitle').innerText = text.currentTitle;
         document.getElementById('optNone').innerText = text.none;
         document.getElementById('lblSectionInventory').innerText = text.secInventory;
@@ -638,134 +588,14 @@
         calculate();
     }
 
-    // Função inteligente de fetch com fallback robusto e codificação estrita de URL
-    async function smartFetch(targetUrl, options) {
-        try {
-            // Encode completo da URL para evitar que o proxy quebre os parâmetros de interrogação/igual
-            const proxyUrl = `${PRIMARY_PROXY}${encodeURIComponent(targetUrl)}`;
-            const res = await fetch(proxyUrl, options);
-            if (res.ok) return res;
-        } catch (e) {
-            console.warn(`Falha no proxy para ${targetUrl}, tentando conexão direta...`, e);
-        }
-        // Se o proxy falhar, tenta conexão direta na API do GW2 (CORS ativo por padrão na ArenaNet)
-        return fetch(targetUrl, options);
-    }
-
-    async function fetchGW2Data() {
-        const apiKey = document.getElementById('apiKey').value.trim();
-        const lang = document.getElementById('langPicker').value;
-        const text = translations[lang];
-        
-        if (!apiKey) {
-            alert(text.alertEmpty);
-            return;
-        }
-
-        localStorage.setItem('gw2_api_key', apiKey);
-
-        let totalRelics = 0;
-        let totalPristines = 0;
-        let totalMatrices = 0;
-        
-        // Marcadores individuais para garantir consistência total nos dados recolhidos
-        let walletSucesso = false;
-        let bancoSucesso = false;
-        let charsSucesso = false;
-
-        const fetchOptions = { 
-            method: 'GET',
-            headers: { 'Authorization': `Bearer ${apiKey}` }
-        };
-
-        // 1. Coleta os dados da Wallet (Relics e Pristines)
-        try {
-            const walletRes = await smartFetch(`https://api.guildwars2.com/v2/account/wallet`, fetchOptions);
-            if (walletRes.ok) {
-                const wallet = await walletRes.json();
-                const relicObj = wallet.find(i => i && i.id == ID_RELIC);
-                const pristineObj = wallet.find(i => i && i.id == ID_PRISTINE);
-                
-                if (relicObj) totalRelics += parseInt(relicObj.count) || 0;
-                if (pristineObj) totalPristines += parseInt(pristineObj.count) || 0;
-                walletSucesso = true;
-            }
-        } catch (e) {
-            console.error("Erro fatal no endpoint da Wallet:", e);
-        }
-
-        const scanItems = (itemsArray) => {
-            if (!itemsArray || !Array.isArray(itemsArray)) return;
-            itemsArray.forEach(item => {
-                if (item && item.id == ID_MATRIX) {
-                    totalMatrices += parseInt(item.count) || 0;
-                }
-            });
-        };
-
-        // 2. Coleta os dados do Banco (Integrated Matrices)
-        try {
-            const bankRes = await smartFetch(`https://api.guildwars2.com/v2/account/bank`, fetchOptions);
-            if (bankRes.ok) {
-                const bank = await bankRes.json();
-                scanItems(bank);
-                bancoSucesso = true;
-            }
-        } catch (e) {
-            console.error("Erro fatal no endpoint do Banco:", e);
-        }
-
-        // 3. Coleta os dados do Inventário de Todos os Personagens (Integrated Matrices)
-        try {
-            const charsRes = await smartFetch(`https://api.guildwars2.com/v2/characters?ids=all`, fetchOptions);
-            if (charsRes.ok) {
-                const characters = await charsRes.json();
-                const charList = Array.isArray(characters) ? characters : Object.values(characters);
-                
-                charList.forEach(char => {
-                    if (char && char.bags && Array.isArray(char.bags)) {
-                        char.bags.forEach(bag => {
-                            if (bag && bag.inventory && Array.isArray(bag.inventory)) {
-                                scanItems(bag.inventory);
-                            }
-                        });
-                    }
-                });
-                charsSucesso = true;
-            }
-        } catch (e) {
-            console.error("Erro fatal no endpoint de Personagens:", e);
-        }
-
-        // Sincroniza os inputs da interface apenas se os dados cruciais forem validados com sucesso
-        if (walletSucesso && bancoSucesso && charsSucesso) {
-            document.getElementById('relics').value = totalRelics;
-            document.getElementById('pristine').value = totalPristines;
-            document.getElementById('matrices').value = totalMatrices;
-            calculate();
-            alert(text.alertSuccess);
-        } else {
-            calculate();
-            alert(text.alertError + " (Algumas abas do inventário falharam ao sincronizar)");
-        }
-    }
-
     function updateDailyInputs() {
         let pristineSum = 0;
         let matrixSum = 0;
         let relicsSum = 0;
 
-        if (document.getElementById('farmT4').checked) {
-            pristineSum += 12;
-            relicsSum += 174; 
-        }
-        if (document.getElementById('farmRecs').checked) {
-            pristineSum += 3;
-            relicsSum += 36;  
-        }
-        if (document.getElementById('farmPotions').checked) {
-            relicsSum += 16;  
-        }
+        if (document.getElementById('farmT4').checked) { pristineSum += 12; relicsSum += 174; }
+        if (document.getElementById('farmRecs').checked) { pristineSum += 3; relicsSum += 36; }
+        if (document.getElementById('farmPotions').checked) { relicsSum += 16; }
 
         if (document.getElementById('cmKinfall').checked)   { pristineSum += 2; matrixSum += 1; relicsSum += 119; } 
         if (document.getElementById('cmNightmare').checked) { pristineSum += 2; matrixSum += 1; relicsSum += 159; } 
