@@ -399,7 +399,7 @@
 </div>
 
 <script>
-    const SITE_VERSION = "v1.4.1"; 
+    const SITE_VERSION = "v1.4.3"; 
     const USER_NICK    = "SeuNickAqui";       
     const USER_EMAIL   = "seu@email.com";     
 
@@ -407,7 +407,7 @@
     const ID_PRISTINE = 6;
     const ID_MATRIX = 73232;
 
-    const CORS_PROXY = "https://cors-anywhere.herokuapp.com/";
+    const PRIMARY_PROXY = "https://api.allorigins.win/raw?url=";
 
     const translations = {
         pt: {
@@ -505,7 +505,7 @@
             subtitle: "Cálculo basado en los valores de drop exactos y conversiones de tu plantilla",
             apiKeyTitle: "Clave API de GW2 (Opcional)",
             btnSync: "Sincronizar",
-            apiWarning: "⚠️ <strong>Advertencia:</strong> Para obtener los datos correctamente, asegúrese de generar uma clave API en el sitio de ArenaNet con los permisos <strong>account, inventories, unlocks y wallet</strong> activados. Sus datos se guardan localmente.",
+            apiWarning: "⚠️ <strong>Advertencia:</strong> Para obtener los datos correctamente, asegúrese de generar una clave API en el sitio de ArenaNet con los permisos <strong>account, inventories, unlocks y wallet</strong> activados. Sus datos se guardan localmente.",
             currentTitle: "Tu título actual",
             none: "Ninguno",
             secInventory: "Tu Inventario Actual",
@@ -542,7 +542,7 @@
             lblFootnote: "*El temporizador maestro suma los cuellos de botella parciales asumiendo que acumulas recursos en orden lineal de logros.",
             lblDevBy: "Desarrollado por:",
             alertSuccess: "¡Sincronizado con éxito con la API de GW2!",
-            alertError: "Error al conectar con la API. Verifique su clave y los permisos de la misma.",
+            alertError: "Error al conectar com a API. Verifique su clave y los permisos de la misma.",
             alertEmpty: "Por favor, introduzca una clave API válida."
         },
         fr: {
@@ -638,6 +638,20 @@
         calculate();
     }
 
+    // Função inteligente de fetch com fallback robusto e codificação estrita de URL
+    async function smartFetch(targetUrl, options) {
+        try {
+            // Encode completo da URL para evitar que o proxy quebre os parâmetros de interrogação/igual
+            const proxyUrl = `${PRIMARY_PROXY}${encodeURIComponent(targetUrl)}`;
+            const res = await fetch(proxyUrl, options);
+            if (res.ok) return res;
+        } catch (e) {
+            console.warn(`Falha no proxy para ${targetUrl}, tentando conexão direta...`, e);
+        }
+        // Se o proxy falhar, tenta conexão direta na API do GW2 (CORS ativo por padrão na ArenaNet)
+        return fetch(targetUrl, options);
+    }
+
     async function fetchGW2Data() {
         const apiKey = document.getElementById('apiKey').value.trim();
         const lang = document.getElementById('langPicker').value;
@@ -653,15 +667,20 @@
         let totalRelics = 0;
         let totalPristines = 0;
         let totalMatrices = 0;
-        let peloMenosUmSucesso = false;
+        
+        // Marcadores individuais para garantir consistência total nos dados recolhidos
+        let walletSucesso = false;
+        let bancoSucesso = false;
+        let charsSucesso = false;
 
         const fetchOptions = { 
             method: 'GET',
             headers: { 'Authorization': `Bearer ${apiKey}` }
         };
 
+        // 1. Coleta os dados da Wallet (Relics e Pristines)
         try {
-            const walletRes = await fetch(`${CORS_PROXY}https://api.guildwars2.com/v2/account/wallet`, fetchOptions);
+            const walletRes = await smartFetch(`https://api.guildwars2.com/v2/account/wallet`, fetchOptions);
             if (walletRes.ok) {
                 const wallet = await walletRes.json();
                 const relicObj = wallet.find(i => i && i.id == ID_RELIC);
@@ -669,10 +688,10 @@
                 
                 if (relicObj) totalRelics += parseInt(relicObj.count) || 0;
                 if (pristineObj) totalPristines += parseInt(pristineObj.count) || 0;
-                peloMenosUmSucesso = true;
+                walletSucesso = true;
             }
         } catch (e) {
-            console.warn("Erro no endpoint da Wallet:", e);
+            console.error("Erro fatal no endpoint da Wallet:", e);
         }
 
         const scanItems = (itemsArray) => {
@@ -684,20 +703,21 @@
             });
         };
 
+        // 2. Coleta os dados do Banco (Integrated Matrices)
         try {
-            const bankRes = await fetch(`${CORS_PROXY}https://api.guildwars2.com/v2/account/bank`, fetchOptions);
+            const bankRes = await smartFetch(`https://api.guildwars2.com/v2/account/bank`, fetchOptions);
             if (bankRes.ok) {
                 const bank = await bankRes.json();
                 scanItems(bank);
-                peloMenosUmSucesso = true;
+                bancoSucesso = true;
             }
         } catch (e) {
-            console.warn("Erro no endpoint do Banco:", e);
+            console.error("Erro fatal no endpoint do Banco:", e);
         }
 
+        // 3. Coleta os dados do Inventário de Todos os Personagens (Integrated Matrices)
         try {
-            // SINTAXE CORRIGIDA: Removida a aspa simples que quebrava o script anterior
-            const charsRes = await fetch(`${CORS_PROXY}https://api.guildwars2.com/v2/characters?ids=all`, fetchOptions);
+            const charsRes = await smartFetch(`https://api.guildwars2.com/v2/characters?ids=all`, fetchOptions);
             if (charsRes.ok) {
                 const characters = await charsRes.json();
                 const charList = Array.isArray(characters) ? characters : Object.values(characters);
@@ -711,13 +731,14 @@
                         });
                     }
                 });
-                peloMenosUmSucesso = true;
+                charsSucesso = true;
             }
         } catch (e) {
-            console.warn("Erro no endpoint de Personagens:", e);
+            console.error("Erro fatal no endpoint de Personagens:", e);
         }
 
-        if (peloMenosUmSucesso) {
+        // Sincroniza os inputs da interface apenas se os dados cruciais forem validados com sucesso
+        if (walletSucesso && bancoSucesso && charsSucesso) {
             document.getElementById('relics').value = totalRelics;
             document.getElementById('pristine').value = totalPristines;
             document.getElementById('matrices').value = totalMatrices;
@@ -725,7 +746,7 @@
             alert(text.alertSuccess);
         } else {
             calculate();
-            alert(text.alertError);
+            alert(text.alertError + " (Algumas abas do inventário falharam ao sincronizar)");
         }
     }
 
