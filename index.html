@@ -486,14 +486,17 @@
         // A função deve ser específica na atribuição para evitar sobreposição
 async function fetchFractalData() {
     const apiKey = document.getElementById('apiKey').value.trim();
-    // ... restante da validação inicial ...
+    const errorDiv = document.getElementById('apiError');
+    
+    if (!apiKey) return;
 
     try {
-        // IDs Reais (GW2 API)
-        const PRISTINE_RELIC_ID = 24; 
-        const INTEGRATED_MATRIX_ID = 73248; 
+        // IDs fornecidos por você
+        const FRACTAL_RELIC_ID = 7;
+        const PRISTINE_RELIC_ID = 24;
+        const INTEGRATED_MATRIX_ID = 59; 
 
-        // Chamadas paralelas
+        // Consultas aos dois endpoints principais
         const [walletRes, materialsRes] = await Promise.all([
             fetch(`https://api.guildwars2.com/v2/account/wallet?access_token=${apiKey}`),
             fetch(`https://api.guildwars2.com/v2/account/materials?access_token=${apiKey}`)
@@ -502,26 +505,39 @@ async function fetchFractalData() {
         const walletData = await walletRes.json();
         const materialsData = await materialsRes.json();
 
-        // 1. EXTRAÇÃO DE PRISTINE (Fica na Wallet)
+        // --- Lógica de extração com depuração ---
+        
+        // 1. Pristine Fractal Relic (ID 24) - Geralmente na Wallet
         const pristineObj = walletData.find(item => item.id === PRISTINE_RELIC_ID);
         const pristineValue = pristineObj ? pristineObj.value : 0;
         
-        // 2. EXTRAÇÃO DE INTEGRATED MATRICES (Fica no Material Storage)
+        // 2. Integrated Fractal Matrix (ID 59) - Geralmente nos Materiais
+        // Usamos .find() e verificamos tanto 'count' quanto 'value' por segurança
         const matrixObj = materialsData.find(item => item.id === INTEGRATED_MATRIX_ID);
-        const matrixValue = matrixObj ? matrixObj.count : 0;
+        const matrixValue = matrixObj ? (matrixObj.count || matrixObj.value || 0) : 0;
 
-        // ATRIBUIÇÃO DIRETA AOS CAMPOS CORRETOS
-        // Certifique-se que o ID no HTML seja 'pristine' e 'matrices'
+        // 3. Fractal Relic (ID 7) - Geralmente na Wallet
+        const relicObj = walletData.find(item => item.id === FRACTAL_RELIC_ID);
+        const relicValue = relicObj ? relicObj.value : 0;
+
+        // --- Atribuição aos campos ---
         document.getElementById('pristine').value = pristineValue;
         document.getElementById('matrices').value = matrixValue;
+        document.getElementById('relics').value = relicValue;
 
-        // Opcional: Logs para depuração caso continue confundindo
-        console.log("Pristine ID 24:", pristineValue);
-        console.log("Integrated Matrix ID 73248:", matrixValue);
+        // Debug no console para você verificar se o valor "chegou" da API
+        console.log("Valores recuperados da API:");
+        console.log("Pristine (24):", pristineValue);
+        console.log("Matrices (59):", matrixValue);
+        console.log("Relics (7):", relicValue);
 
-        calculate(); 
+        // Dispara o cálculo após preencher
+        calculate();
+
     } catch (err) {
-        console.error("Erro ao buscar dados:", err);
+        console.error("Erro na busca:", err);
+        errorDiv.innerText = "Erro ao conectar com a API.";
+        errorDiv.style.display = 'block';
     }
 }
 
