@@ -491,13 +491,15 @@ async function fetchFractalData() {
     try {
         console.log("Iniciando sincronização de wallet e materiais...");
 
-        const [walletRes, materialsRes] = await Promise.all([
-            fetch(`https://api.guildwars2.com/v2/account/wallet?access_token=${apiKey}`),
-            fetch(`https://api.guildwars2.com/v2/account/materials?access_token=${apiKey}`)
-        ]);
+    const [walletRes, materialsRes, achievementsRes] = await Promise.all([
+        fetch(`https://api.guildwars2.com/v2/account/wallet?access_token=${apiKey}`),
+        fetch(`https://api.guildwars2.com/v2/account/materials?access_token=${apiKey}`),
+        fetch(`https://api.guildwars2.com/v2/account/achievements?ids=4001,4015,3990,4018&access_token=${apiKey}`)
+    ]);
 
         const walletData = await walletRes.json();
         const materialsData = await materialsRes.json();
+        const achievementsData = await achievementsRes.json();
 
         // Atualização de Valores Numéricos
         const pristineObj = walletData.find(i => i.id === 24);
@@ -508,6 +510,23 @@ async function fetchFractalData() {
         document.getElementById('pristine').value = pristineObj ? pristineObj.value : 0;
         document.getElementById('relics').value = relicObj ? relicObj.value : 0;
         document.getElementById('matrices').value = matrixObj ? (matrixObj.count || 0) : 0;
+
+        let detectedTitle = 0;
+
+        if (achievementsData.some(a => a.id === 4018 && a.done)) {
+            detectedTitle = 4; // Fractal God
+        }
+        else if (achievementsData.some(a => a.id === 3990 && a.done)) {
+            detectedTitle = 3; // Fractal Champion
+        }
+        else if (achievementsData.some(a => a.id === 4015 && a.done)) {
+            detectedTitle = 2; // Fractal Prodigy
+        }
+        else if (achievementsData.some(a => a.id === 4001 && a.done)) {
+            detectedTitle = 1; // Fractal Savant
+        }
+
+        document.getElementById('currentTitle').value = detectedTitle;
 
         // Dispara o cálculo final após atualizar os campos
         calculate();
