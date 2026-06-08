@@ -520,19 +520,25 @@ async function fetchFractalData() {
         if (elTitle && mistAttunement) {
             const valorParaSelecionar = String(mistAttunement.current);
             
-            // 1. Muda o valor
-            elTitle.value = valorParaSelecionar;
+            const optionToSelect = elTitle.querySelector(`option[value="${valorParaSelecionar}"]`);
             
-            // 2. Dispara o evento
-            elTitle.dispatchEvent(new Event('change', { bubbles: true }));
-            
-            console.log("Título alterado via script para:", valorParaSelecionar);
-            
-            // 3. O SEGREDO: Damos 50ms para o DOM processar a alteração antes de calcular
+            if (optionToSelect) {
+                elTitle.value = valorParaSelecionar;
+                
+                // Dispara os eventos necessários para o DOM e eventuais frameworks
+                ['input', 'change', 'blur'].forEach(evt => {
+                    elTitle.dispatchEvent(new Event(evt, { bubbles: true }));
+                });
+                
+                console.log("Título selecionado com sucesso via DOM:", valorParaSelecionar);
+            } else {
+                console.warn("API retornou valor " + valorParaSelecionar + ", mas não existe essa opção no seu SELECT.");
+            }
+
+            // Mantemos o setTimeout para o cálculo final
             setTimeout(() => {
-                console.log("Executando cálculo após atualização do título...");
                 calculate();
-            }, 50);
+            }, 100);
         } else {
     // Se não encontrou o título, calcula direto
             calculate();
