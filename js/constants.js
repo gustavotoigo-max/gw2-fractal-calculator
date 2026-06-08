@@ -13,3 +13,7 @@ const WALLET_IDS = {
     RELICS: 7,
     PRISTINE: 24
 };
+
+const MATERIAL_IDS = {
+    INTEGRATED_MATRIX: 79230
+};

@@ -30,7 +30,7 @@ async function fetchFractalData() {
 
         let detectedTitle = 0;
 
-        if (achievementsData.some(a => a.id === 4018 && a.done)) {
+        if (achievementsData.some(a => a.id === ACHIEVEMENTS.GOD && a.done)) {
             detectedTitle = 4; // Fractal God
         }
         else if (achievementsData.some(a => a.id === 3990 && a.done)) {
