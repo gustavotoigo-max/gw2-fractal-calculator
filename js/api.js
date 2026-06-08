@@ -6,12 +6,12 @@ async function fetchFractalData() {
     try {
         console.log("Iniciando sincronização de wallet e materiais...");
 
-    const [walletRes, materialsRes, achievementsRes, accountRes] = await Promise.all([
-        fetch(`https://api.guildwars2.com/v2/account/wallet?access_token=${apiKey}`),
-        fetch(`https://api.guildwars2.com/v2/account/materials?access_token=${apiKey}`),
-        fetch(`https://api.guildwars2.com/v2/account/achievements?ids=4001,4015,3990,4018&access_token=${apiKey}`),
-        fetch(`https://api.guildwars2.com/v2/account?access_token=${apiKey}`)
-]);
+        const [walletRes, materialsRes, achievementsRes, accountRes] = await Promise.all([
+            fetch(`https://api.guildwars2.com/v2/account/wallet?access_token=${apiKey}`),
+            fetch(`https://api.guildwars2.com/v2/account/materials?access_token=${apiKey}`),
+            fetch(`https://api.guildwars2.com/v2/account/achievements?ids=4001,4015,3990,4018&access_token=${apiKey}`),
+            fetch(`https://api.guildwars2.com/v2/account?access_token=${apiKey}`)
+        ]);
 
         const walletData = await walletRes.json();
         const materialsData = await materialsRes.json();
@@ -62,7 +62,7 @@ async function fetchFractalData() {
 
         // Dispara o cálculo final após atualizar os campos
         calculate();
-        
+
         console.log("Dados sincronizados com sucesso.");
         hideLoading();
     } catch (err) {

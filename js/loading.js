@@ -9,7 +9,7 @@ function showLoading() {
 
         index++;
 
-        if(index >= loadingMessages.length)
+        if (index >= loadingMessages.length)
             index = 0;
 
         document.querySelector('.loading-text').innerText =
