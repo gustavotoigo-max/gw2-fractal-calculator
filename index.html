@@ -514,22 +514,22 @@ async function fetchFractalData() {
         if (matrixObj) document.getElementById('matrices').value = matrixObj.count || 0;
 
         // 2. Atualização do Título
-        const mistAttunement = achData.find(a => a.id === 1387);
+        
         const elTitle = document.getElementById('currentTitle');
 
         if (elTitle) {
+            const mistAttunement = achData.find(a => a.id === 1387);
+            const valorReal = (mistAttunement && mistAttunement.current > 0) ? mistAttunement.current : ETAPA_FORCADA;
             // Se achou a conquista, usa o valor dela, senão força 0 ou o valor que você sabe que tem
-            const valorParaSelecionar = mistAttunement ? String(mistAttunement.current) : "0";
             
-            elTitle.value = valorParaSelecionar;
+            elTitle.value = String(valorReal);
             
             // Dispara os eventos para o seu sistema de cálculo processar
             elTitle.dispatchEvent(new Event('change', { bubbles: true }));
             elTitle.dispatchEvent(new Event('input', { bubbles: true }));
             
-            console.log("Título atualizado com o ID 1387, valor:", valorParaSelecionar);
+            console.log("Título processado. Valor aplicado:", valorReal);
         }
-
     } catch (err) {
         console.error("Erro na API:", err);
     }
