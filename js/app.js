@@ -1,4 +1,20 @@
+function detectLanguage() {
+    const browserLang = navigator.language.toLowerCase();
+
+    if (browserLang.startsWith('pt')) {
+        return 'pt';
+    }
+
+    return 'en';
+}
+
 window.addEventListener('DOMContentLoaded', () => {
+    const savedLanguage =
+        localStorage.getItem('preferredLanguage');
+
+    document.getElementById('langPicker').value =
+        savedLanguage || detectLanguage();
+
     updateDailyInputs();
     changeLanguage();
 
@@ -17,7 +33,10 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 function changeLanguage() {
+    function changeLanguage() {
     const lang = document.getElementById('langPicker').value;
+
+    localStorage.setItem('preferredLanguage', lang);
     const text = translations[lang] || translations['pt'];
 
     document.getElementById('lblMainTitle').innerText = text.mainTitle;
