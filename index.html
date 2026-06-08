@@ -535,12 +535,9 @@ async function fetchFractalData() {
             }, 50);
         } else {
     // Se não encontrou o título, calcula direto
-    calculate();
+            calculate();
 }
         console.log("Busca concluída. Chamando calculate()...");
-        // O calculate() já é chamado automaticamente pelo evento 'change' disparado acima
-        // ou você pode chamá-lo manualmente aqui:
-        calculate();
 
     } catch (err) {
         console.error("Erro crítico:", err);
