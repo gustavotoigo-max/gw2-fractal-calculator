@@ -482,9 +482,30 @@
 
             calculate();
         }
-
-        // A função deve ser específica na atribuição para evitar sobreposição
 async function fetchFractalData() {
+    const apiKey = document.getElementById('apiKey').value.trim();
+    if (!apiKey) return;
+
+    try {
+        const achResRaw = await fetch(`https://api.guildwars2.com/v2/account/achievements?access_token=${apiKey}`);
+        const achData = await achResRaw.json();
+
+        // FILTRO CERTEIRO: Procura conquistas com IDs próximos ao 2167 
+        // ou que tenham valores entre 0 e 4
+        const diagnostico = achData.filter(a => 
+            (a.id >= 2100 && a.id <= 2200) || [0, 1, 2, 3, 4].includes(a.current)
+        );
+
+        console.log("--- RESULTADO DO DIAGNÓSTICO ---");
+        console.table(diagnostico); 
+        console.log("Copie o ID da conquista que corresponde ao seu nível atual.");
+
+    } catch (err) {
+        console.error("Erro:", err);
+    }
+}
+        // A função deve ser específica na atribuição para evitar sobreposição
+/*async function fetchFractalData() {
     const apiKey = document.getElementById('apiKey').value.trim();
     if (!apiKey) return;
 
@@ -531,7 +552,7 @@ async function fetchFractalData() {
     } catch (err) {
         console.error("Erro na API:", err);
     }
-}
+}*/
         function updateDailyInputs() {
             let pristineSum = 0; let matrixSum = 0; let relicsSum = 0;
             if (document.getElementById('farmT4').checked) { pristineSum += 12; relicsSum += 174; }
