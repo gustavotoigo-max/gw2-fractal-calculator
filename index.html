@@ -509,25 +509,24 @@ async function fetchFractalData() {
         const materialsData = await materialsRes.json();
         const achData = await achRes.json();
 
-        // ... dentro da sua função fetchFractalData, após receber achData ...
+        // Substitua o bloco do título dentro da sua função fetchFractalData por este:
 
         const mistAttunement = achData.find(a => a.id === 2167);
         const elTitle = document.getElementById('currentTitle');
 
         if (elTitle && mistAttunement) {
-            // Garantimos que o valor seja uma string, pois o value do select é string
-            const valorParaSelecionar = String(mistAttunement.current);
+            const novoValor = String(mistAttunement.current);
+            elTitle.value = novoValor;
             
-            // Atualiza o valor
-            elTitle.value = valorParaSelecionar;
+            // GATILHO PARA REACT:
+            // Disparamos um evento de 'input' e 'change' que o React monitora
+            const event = new Event('input', { bubbles: true });
+            const eventChange = new Event('change', { bubbles: true });
             
-            // IMPORTANTE: Disparar o evento para o React ou para o seu script de cálculo
-            // O 'change' avisa a página que o valor mudou
-            elTitle.dispatchEvent(new Event('change', { bubbles: true }));
+            elTitle.dispatchEvent(event);
+            elTitle.dispatchEvent(eventChange);
             
-            console.log("Título definido para:", valorParaSelecionar);
-        } else {
-            console.warn("Elemento 'currentTitle' não encontrado ou conquista não iniciada.");
+            console.log("Título forçado para:", novoValor);
         }
         // --- ATUALIZAÇÃO DOS CAMPOS ---
         
