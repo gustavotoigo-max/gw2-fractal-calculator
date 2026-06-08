@@ -558,28 +558,12 @@
             <div class="details" id="missingResources"></div>
         </div>
     </div>
-
+    <script src="js/translations.js"></script>
     <script>
         const SITE_VERSION = "v2.2.0"; 
         const USER_NICK    = "Nahar.5349";       
         const USER_EMAIL   = "gustavo.toigo@gmail.com";     
 
-        const translations = {
-            pt: {
-                mainTitle: "Fractal God Timeline", subtitle: "Cálculo baseado nos valores exatos de drops e conversões da sua planilha",
-                currentTitle: "Seu título atual", none: "Nenhum", secInventory: "Seu Inventário Atual", pristineCart: "Pristine Fractal Relics atuais", relicsCart: "Fractal Relics atuais", matricesCart: "Integrated Fractal Matrices atuais", secRoutine: "Sua Rotina Diária de Farm", subDailies: "Dailies Padrão", recsCheck: "Recomendadas (Recs)", subCMs: "Challenge Modes (CMs)", secGains: "Ganhos Diários Calculados (Dados Reais)", pristineDay: "Pristine Relics / dia", matricesDay: "Integrated Matrices / dia", relicsDay: "Fractal Relics Normais / dia (Garantidos + Conversões)", resultTitle: "Tempo Total Restante até o Fractal God",
-                lblCompleted: "✓ Concluído", lblAlreadyDone: "Você já domina este tier ou passou dele!", lblNeedStock: "Falta estocar nesta etapa:", lblGate: "Gargalo desta etapa:", lblReadyBuy: "Pronto para comprar", lblInfDays: "Infinitos dias (Sem farm ativo)", lblNoFarmActive: "Falta ativar uma fonte de farm!", lblGateNone: "Nenhum", lblGateReady: "Nenhum (Pronto!)", lblGateNormal: "Fractal Relics Normais", lblGateBoth: "Pristines e Matrices", lblGatePristine: "Pristine Relics", lblGateMatrix: "Integrated Matrices", lblReadyGod: "Pronto para virar Deus!", lblIsGod: "Fractal God!", lblUnfTime: "Tempo Indeterminado", lblDays: "dias", lblWeeks: "semanas",
-                lblFootnote: "*O cronômetro mestre soma os gargalos parciais considerando que você acumula os recursos em ordem linear de conquistas.", lblDevBy: "Desenvolvido por:",
-                apiKey: "Sincronizar Conta via GW2 API Key:", btnSync: "Sincronizar Inventário", apiLoading: "Buscando dados na Tyria..."
-            },
-            en: {
-                mainTitle: "Fractal God Timeline", subtitle: "Calculation based on exact drop values and conversions from your spreadsheet",
-                currentTitle: "Your current title", none: "None", secInventory: "Your Current Inventory", pristineCart: "Current Pristine Fractal Relics", relicsCart: "Current Fractal Relics", matricesCart: "Current Integrated Fractal Matrices", secRoutine: "Your Daily Farm Routine", subDailies: "Standard Dailies", recsCheck: "Recommended (Recs)", subCMs: "Challenge Modes (CMs)", secGains: "Calculated Daily Earnings (Real Data)", pristineDay: "Pristine Relics / day", matricesDay: "Integrated Matrices / day", relicsDay: "Normal Fractal Relics / day (Guaranteed + Melt)", resultTitle: "Total Time Remaining until Fractal God",
-                lblCompleted: "✓ Completed", lblAlreadyDone: "You already own this tier or have passed it!", lblNeedStock: "Missing resources in this step:", lblGate: "Bottleneck of this step:", lblReadyBuy: "Ready to buy", lblInfDays: "Infinite days (No active farm)", lblNoFarmActive: "You need to activate a farm source!", lblGateNone: "None", lblGateReady: "None (Ready!)", lblGateNormal: "Normal Fractal Relics", lblGateBoth: "Pristines and Matrices", lblGatePristine: "Pristine Relics", lblGateMatrix: "Integrated Matrices", lblReadyGod: "Ready to become God!", lblIsGod: "Fractal God!", lblUnfTime: "Undetermined Time", lblDays: "days", lblWeeks: "weeks",
-                lblFootnote: "*The master timer sums the partial bottlenecks assuming you accumulate resources in a linear order of achievements.", lblDevBy: "Developed by:",
-                apiKey: "Sync Account via GW2 API Key:", btnSync: "Sync Inventory", apiLoading: "Fetching data from Tyria..."
-            }
-        };
 
         window.addEventListener('DOMContentLoaded', () => {
             updateDailyInputs();
