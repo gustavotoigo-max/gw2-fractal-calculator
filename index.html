@@ -491,47 +491,46 @@ async function fetchFractalData() {
     if (!apiKey) return;
 
     try {
-        // IDs fornecidos por você
+        // IDs fixos que já confirmamos que funcionam
         const FRACTAL_RELIC_ID = 7;
         const PRISTINE_RELIC_ID = 24;
         const INTEGRATED_MATRIX_ID = 79230; 
+        const MIST_ATTUNEMENT_ACHIEVEMENT_ID = 2167;
 
-        // Consultas aos dois endpoints principais
-        const [walletRes, materialsRes] = await Promise.all([
+        // Chamadas paralelas: Wallet, Materials E Achievements
+        const [walletRes, materialsRes, achRes] = await Promise.all([
             fetch(`https://api.guildwars2.com/v2/account/wallet?access_token=${apiKey}`),
-            fetch(`https://api.guildwars2.com/v2/account/materials?access_token=${apiKey}`)
+            fetch(`https://api.guildwars2.com/v2/account/materials?access_token=${apiKey}`),
+            fetch(`https://api.guildwars2.com/v2/account/achievements?access_token=${apiKey}`)
         ]);
 
         const walletData = await walletRes.json();
         const materialsData = await materialsRes.json();
+        const achData = await achRes.json();
 
-        // --- Lógica de extração com depuração ---
-        
-        // 1. Pristine Fractal Relic (ID 24) - Geralmente na Wallet
+        // 1. Extração das Moedas (Wallet)
         const pristineObj = walletData.find(item => item.id === PRISTINE_RELIC_ID);
-        const pristineValue = pristineObj ? pristineObj.value : 0;
-        
-        // 2. Integrated Fractal Matrix (ID 59) - Geralmente nos Materiais
-        // Usamos .find() e verificamos tanto 'count' quanto 'value' por segurança
-        const matrixObj = materialsData.find(item => item.id === INTEGRATED_MATRIX_ID);
-        const matrixValue = matrixObj ? (matrixObj.count || matrixObj.value || 0) : 0;
-
-        // 3. Fractal Relic (ID 7) - Geralmente na Wallet
         const relicObj = walletData.find(item => item.id === FRACTAL_RELIC_ID);
-        const relicValue = relicObj ? relicObj.value : 0;
+        
+        document.getElementById('pristine').value = pristineObj ? pristineObj.value : 0;
+        document.getElementById('relics').value = relicObj ? relicObj.value : 0;
 
-        // --- Atribuição aos campos ---
-        document.getElementById('pristine').value = pristineValue;
-        document.getElementById('matrices').value = matrixValue;
-        document.getElementById('relics').value = relicValue;
+        // 2. Extração dos Materiais (Material Storage)
+        const matrixObj = materialsData.find(item => item.id === INTEGRATED_MATRIX_ID);
+        document.getElementById('matrices').value = matrixObj ? (matrixObj.count || 0) : 0;
 
-        // Debug no console para você verificar se o valor "chegou" da API
-        console.log("Valores recuperados da API:");
-        console.log("Pristine (24):", pristineValue);
-        console.log("Matrices (59):", matrixValue);
-        console.log("Relics (7):", relicValue);
+        // 3. Extração do Título (Achievements)
+        const mistAttunement = achData.find(a => a.id === MIST_ATTUNEMENT_ACHIEVEMENT_ID);
+        if (mistAttunement) {
+            // Se o seu HTML for um <select id="currentTitle">, 
+            // isso selecionará automaticamente a opção correspondente
+            const titleSelect = document.getElementById('currentTitle');
+            if (titleSelect) {
+                titleSelect.value = mistAttunement.current;
+            }
+        }
 
-        // Dispara o cálculo após preencher
+        // Executa o cálculo final com todos os campos preenchidos
         calculate();
 
     } catch (err) {
@@ -540,7 +539,6 @@ async function fetchFractalData() {
         errorDiv.style.display = 'block';
     }
 }
-
         function updateDailyInputs() {
             let pristineSum = 0; let matrixSum = 0; let relicsSum = 0;
             if (document.getElementById('farmT4').checked) { pristineSum += 12; relicsSum += 174; }
