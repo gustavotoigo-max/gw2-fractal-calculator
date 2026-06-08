@@ -273,6 +273,54 @@
             color: var(--text); 
             font-weight: 600; 
         }
+        .loading-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(4px);
+
+            display: none;
+            justify-content: center;
+            align-items: center;
+
+            z-index: 99999;
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+
+        .loading-box {
+            text-align: center;
+        }
+
+        .loading-text {
+            margin-top: 20px;
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .spinner {
+            width: 70px;
+            height: 70px;
+
+            border: 6px solid rgba(255,255,255,0.15);
+            border-top: 6px solid #e5a93c;
+
+            border-radius: 50%;
+
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
     </style>
 </head>
 <body>
@@ -481,12 +529,21 @@
             document.getElementById('btnSync').innerText = text.btnSync;
 
             calculate();
-        }
+}
 
+function showLoading(message = "Sincronizando dados da Tyria...") {
+    document.querySelector('.loading-text').innerText = message;
+    document.getElementById('loadingOverlay').classList.add('active');
+}
+
+function hideLoading() {
+    document.getElementById('loadingOverlay').classList.remove('active');
+}
         // A função deve ser específica na atribuição para evitar sobreposição
 async function fetchFractalData() {
     const apiKey = document.getElementById('apiKey').value.trim();
     if (!apiKey) return;
+    showLoading();
 
     try {
         console.log("Iniciando sincronização de wallet e materiais...");
@@ -532,8 +589,13 @@ async function fetchFractalData() {
         calculate();
         
         console.log("Dados sincronizados com sucesso.");
+        hideLoading();
     } catch (err) {
         console.error("Erro na sincronização:", err);
+
+        hideLoading();
+
+        alert("Falha ao sincronizar os dados da API.");
     }
 }
         function updateDailyInputs() {
@@ -620,5 +682,13 @@ async function fetchFractalData() {
             }
         }
     </script>
+   <div id="loadingOverlay" class="loading-overlay">
+    <div class="loading-box">
+        <div class="spinner"></div>
+        <div class="loading-text">
+            Sincronizando dados da Tyria...
+        </div>
+    </div>
+</div> 
 </body>
 </html>
