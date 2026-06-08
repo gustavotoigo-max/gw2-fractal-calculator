@@ -1,7 +1,6 @@
 const translations = {
     pt: {
         mainTitle: "Fractal God Timeline", 
-        subtitle: "Cálculo baseado nos valores exatos de drops e conversões da sua planilha",
         currentTitle: "Seu título atual", 
         none: "Nenhum", 
         secInventory: "Seu Inventário Atual", 

@@ -48,7 +48,6 @@ function changeLanguage() {
     const text = translations[lang] || translations['pt'];
 
     document.getElementById('lblMainTitle').innerText = text.mainTitle;
-    document.getElementById('lblSubtitle').innerHTML = text.subtitle;
     document.getElementById('lblCurrentTitle').innerText = text.currentTitle;
     document.getElementById('optNone').innerText = text.none;
     document.getElementById('lblSectionInventory').innerText = text.secInventory;
