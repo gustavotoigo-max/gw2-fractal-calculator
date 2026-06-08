@@ -19,7 +19,7 @@ async function fetchFractalData() {
         const accountData = await accountRes.json();
 
         // Atualização de Valores Numéricos
-        const pristineObj = walletData.find(i => i.id === 24);
+        const pristineObj = walletData.find(i => i.id === WALLET_IDS.PRISTINE_RELIC);
         const relicObj = walletData.find(i => i.id === 7);
         const matrixObj = materialsData.find(i => i.id === 79230);
 
