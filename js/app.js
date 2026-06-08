@@ -72,4 +72,6 @@ function changeLanguage() {
 
     document.getElementById('lblAccountTitle').innerText =
     text.title + ":";
+
+    calculate();
 }
