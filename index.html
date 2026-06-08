@@ -276,16 +276,22 @@
         .loading-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.85);
-            backdrop-filter: blur(4px);
+            z-index: 99999;
+
+            background:
+                linear-gradient(
+                    rgba(0,0,0,.75),
+                    rgba(0,0,0,.85)
+                ),
+                url("mistlock.jpg");
+
+            background-size: cover;
+            background-position: center;
 
             display: none;
             justify-content: center;
             align-items: center;
-
-            z-index: 99999;
-        }
-
+}
         .loading-overlay.active {
             display: flex;
         }
@@ -300,27 +306,98 @@
             font-size: 18px;
             font-weight: 600;
         }
+        .mist-core{
+            position: relative;
 
-        .spinner {
-            width: 70px;
-            height: 70px;
+            width:140px;
+            height:140px;
 
-            border: 6px solid rgba(255,255,255,0.15);
-            border-top: 6px solid #e5a93c;
+            border-radius:50%;
 
-            border-radius: 50%;
+            background:
+                radial-gradient(
+                    circle,
+                    rgba(229,169,60,.9),
+                    rgba(229,169,60,.25),
+                    transparent
+                );
 
-            animation: spin 1s linear infinite;
+            animation:
+                pulse 2s infinite ease-in-out,
+                rotate 12s infinite linear;
         }
 
-        @keyframes spin {
-            from {
-                transform: rotate(0deg);
+        .matrix{
+            position:absolute;
+
+            width:18px;
+            height:18px;
+
+            border-radius:50%;
+            background:#e5a93c;
+
+            top:50%;
+            left:50%;
+
+            margin-left:-9px;
+            margin-top:-9px;
+        }
+
+        .orbit1{
+            animation: orbit 3s infinite linear;
+        }
+
+        .orbit2{
+            animation: orbit 5s infinite linear reverse;
+        }
+
+        .orbit3{
+            animation: orbit 7s infinite linear;
+        }
+
+        @keyframes orbit{
+            from{
+                transform:
+                    rotate(0deg)
+                    translateX(90px)
+                    rotate(0deg);
             }
-            to {
-                transform: rotate(360deg);
+
+            to{
+                transform:
+                    rotate(360deg)
+                    translateX(90px)
+                    rotate(-360deg);
             }
         }
+
+        @keyframes pulse{
+            0%{
+                transform:scale(1);
+                box-shadow:0 0 15px rgba(229,169,60,.3);
+            }
+
+            50%{
+                transform:scale(1.08);
+                box-shadow:0 0 40px rgba(229,169,60,.7);
+            }
+
+            100%{
+                transform:scale(1);
+                box-shadow:0 0 15px rgba(229,169,60,.3);
+            }
+        }
+
+        @keyframes rotate{
+            from{
+                transform:rotate(0deg);
+            }
+
+            to{
+                transform:rotate(360deg);
+            }
+        }
+        
     </style>
 </head>
 <body>
@@ -531,13 +608,45 @@
             calculate();
 }
 
-function showLoading(message = "Sincronizando dados da Tyria...") {
-    document.querySelector('.loading-text').innerText = message;
-    document.getElementById('loadingOverlay').classList.add('active');
+const loadingMessages = [
+    "Entering the Mists...",
+    "Consulting Dessa...",
+    "Scanning Fractal Relics...",
+    "Analyzing Integrated Matrices...",
+    "Synchronizing Account..."
+];
+
+let loadingInterval;
+
+function showLoading() {
+
+    let index = 0;
+
+    document.querySelector('.loading-text').innerText =
+        loadingMessages[0];
+
+    loadingInterval = setInterval(() => {
+
+        index++;
+
+        if(index >= loadingMessages.length)
+            index = 0;
+
+        document.querySelector('.loading-text').innerText =
+            loadingMessages[index];
+
+    }, 1200);
+
+    document.getElementById('loadingOverlay')
+        .classList.add('active');
 }
 
 function hideLoading() {
-    document.getElementById('loadingOverlay').classList.remove('active');
+
+    clearInterval(loadingInterval);
+
+    document.getElementById('loadingOverlay')
+        .classList.remove('active');
 }
         // A função deve ser específica na atribuição para evitar sobreposição
 async function fetchFractalData() {
@@ -684,11 +793,18 @@ async function fetchFractalData() {
     </script>
    <div id="loadingOverlay" class="loading-overlay">
     <div class="loading-box">
-        <div class="spinner"></div>
-        <div class="loading-text">
-            Sincronizando dados da Tyria...
+
+        <div class="mist-core">
+            <div class="matrix orbit1"></div>
+            <div class="matrix orbit2"></div>
+            <div class="matrix orbit3"></div>
         </div>
+
+        <div class="loading-text">
+            Entering the Mists...
+        </div>
+
     </div>
-</div> 
+</div>
 </body>
 </html>
