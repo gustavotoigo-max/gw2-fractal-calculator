@@ -494,15 +494,17 @@ async function fetchFractalData() {
     try {
         const [walletRes, materialsRes, achRes] = await Promise.all([
             fetch(`https://api.guildwars2.com/v2/account/wallet?access_token=${apiKey}`),
-            fetch(`https://api.guildwars2.com/v2/account/materials?access_token=${apiKey}`),
-            fetch(`https://api.guildwars2.com/v2/account/achievements?access_token=${apiKey}`)
+            fetch(`https://api.guildwars2.com/v2/account/materials?access_token=${apiKey}`)
         ]);
 
+        // Buscamos os achievements em separado para não travar o restante
+        const achResRaw = await fetch(`https://api.guildwars2.com/v2/account/achievements?access_token=${apiKey}`);
+        
         const walletData = await walletRes.json();
         const materialsData = await materialsRes.json();
-        const achData = await achRes.json();
+        const achData = await achResRaw.json();
 
-        // 1. Atualização de Valores Numéricos
+        // 1. Atualização de Valores Numéricos (IDs corretos)
         const pristineObj = walletData.find(i => i.id === 24);
         const relicObj = walletData.find(i => i.id === 7);
         const matrixObj = materialsData.find(i => i.id === 79230);
@@ -511,27 +513,20 @@ async function fetchFractalData() {
         document.getElementById('relics').value = relicObj ? relicObj.value : 0;
         document.getElementById('matrices').value = matrixObj ? (matrixObj.count || 0) : 0;
 
-        // 2. Atualização Única e Forçada do Título
+        // 2. Atualização do Título (ID 2167)
         const mistAttunement = achData.find(a => a.id === 2167);
         const elTitle = document.getElementById('currentTitle');
 
-            if (elTitle && mistAttunement) {
-                const valorParaSelecionar = String(mistAttunement.current);
-                
-                // 1. Tenta definir o valor
-                elTitle.value = valorParaSelecionar;
-                
-                // 2. Tenta definir o valor na propriedade interna do React (se exposta)
-                const nativeSetter = Object.getOwnPropertyDescriptor(window.HTMLSelectElement.prototype, 'value').set;
-                nativeSetter.call(elTitle, valorParaSelecionar);
-                
-                // 3. Dispara a sequência de eventos de forma síncrona
-                elTitle.dispatchEvent(new Event('input', { bubbles: true }));
-                elTitle.dispatchEvent(new Event('change', { bubbles: true }));
-                elTitle.dispatchEvent(new Event('blur', { bubbles: true }));
+        if (elTitle && mistAttunement) {
+            // Define o valor diretamente
+            elTitle.value = String(mistAttunement.current);
+            // Dispara o evento de 'change' para garantir que qualquer listener capture a mudança
+            elTitle.dispatchEvent(new Event('change', { bubbles: true }));
         }
 
         console.log("Busca concluída. Chamando calculate()...");
+        // O calculate() já é chamado automaticamente pelo evento 'change' disparado acima
+        // ou você pode chamá-lo manualmente aqui:
         calculate();
 
     } catch (err) {
