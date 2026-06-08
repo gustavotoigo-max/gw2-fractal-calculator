@@ -515,19 +515,20 @@ async function fetchFractalData() {
         const mistAttunement = achData.find(a => a.id === 2167);
         const elTitle = document.getElementById('currentTitle');
 
-        if (elTitle && mistAttunement) {
-            const novoValor = String(mistAttunement.current);
-            
-            // Define o valor no DOM
-            elTitle.value = novoValor;
-
-            // Dispara eventos em sequência para tentar enganar o framework
-            const trackers = ['input', 'change', 'blur'];
-            trackers.forEach(eventType => {
-                elTitle.dispatchEvent(new Event(eventType, { bubbles: true }));
-            });
-            
-            console.log("Título atualizado e eventos disparados para:", novoValor);
+            if (elTitle && mistAttunement) {
+                const valorParaSelecionar = String(mistAttunement.current);
+                
+                // 1. Tenta definir o valor
+                elTitle.value = valorParaSelecionar;
+                
+                // 2. Tenta definir o valor na propriedade interna do React (se exposta)
+                const nativeSetter = Object.getOwnPropertyDescriptor(window.HTMLSelectElement.prototype, 'value').set;
+                nativeSetter.call(elTitle, valorParaSelecionar);
+                
+                // 3. Dispara a sequência de eventos de forma síncrona
+                elTitle.dispatchEvent(new Event('input', { bubbles: true }));
+                elTitle.dispatchEvent(new Event('change', { bubbles: true }));
+                elTitle.dispatchEvent(new Event('blur', { bubbles: true }));
         }
 
         console.log("Busca concluída. Chamando calculate()...");
