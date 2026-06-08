@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculadora Fractal God - GW2</title>
+    <link rel="icon" type="image/png" href="favicon.png">
     <style>
         :root {
             --bg-color: #121214;
@@ -135,6 +136,19 @@
             font-size: 13px; 
             margin-top: 10px; 
             text-align: center; 
+        }
+        .account-info {
+            margin-top: 15px;
+            padding: 12px;
+            background: rgba(46, 204, 113, 0.08);
+            border: 1px solid rgba(46, 204, 113, 0.25);
+            border-radius: 6px;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .account-info strong {
+            color: var(--primary);
         }
 
         .grid-inputs { 
@@ -417,6 +431,10 @@
             <button type="button" class="api-btn" id="btnSync">Sincronizar Inventário</button>
             <div id="apiStatus" class="api-status">Buscando dados na Tyria...</div>
             <div id="apiError" class="api-error"></div>
+            <div id="accountInfo" class="account-info" style="display:none;">
+            <div><strong>Conta:</strong> <span id="accountName">-</span></div>
+            <div><strong>Título:</strong> <span id="accountTitle">-</span></div>
+</div>
         </div>
 
         <div class="form-group">
@@ -657,15 +675,17 @@ async function fetchFractalData() {
     try {
         console.log("Iniciando sincronização de wallet e materiais...");
 
-    const [walletRes, materialsRes, achievementsRes] = await Promise.all([
+    const [walletRes, materialsRes, achievementsRes, accountRes] = await Promise.all([
         fetch(`https://api.guildwars2.com/v2/account/wallet?access_token=${apiKey}`),
         fetch(`https://api.guildwars2.com/v2/account/materials?access_token=${apiKey}`),
-        fetch(`https://api.guildwars2.com/v2/account/achievements?ids=4001,4015,3990,4018&access_token=${apiKey}`)
-    ]);
+        fetch(`https://api.guildwars2.com/v2/account/achievements?ids=4001,4015,3990,4018&access_token=${apiKey}`),
+        fetch(`https://api.guildwars2.com/v2/account?access_token=${apiKey}`)
+]);
 
         const walletData = await walletRes.json();
         const materialsData = await materialsRes.json();
         const achievementsData = await achievementsRes.json();
+        const accountData = await accountRes.json();
 
         // Atualização de Valores Numéricos
         const pristineObj = walletData.find(i => i.id === 24);
@@ -693,6 +713,21 @@ async function fetchFractalData() {
         }
 
         document.getElementById('currentTitle').value = detectedTitle;
+        const titleNames = {
+            0: "Nenhum",
+            1: "Fractal Savant",
+            2: "Fractal Prodigy",
+            3: "Fractal Champion",
+            4: "Fractal God"
+        };
+
+        document.getElementById('accountName').innerText =
+            accountData.name || "Desconhecida";
+
+        document.getElementById('accountTitle').innerText =
+            titleNames[detectedTitle];
+
+        document.getElementById('accountInfo').style.display = 'block';
 
         // Dispara o cálculo final após atualizar os campos
         calculate();
