@@ -489,35 +489,47 @@ async function fetchFractalData() {
     if (!apiKey) return;
 
     try {
-        // ... (seu código de fetch permanece igual)
+        console.log("Iniciando busca...");
+        
+        const [walletRes, materialsRes, achResRaw] = await Promise.all([
+            fetch(`https://api.guildwars2.com/v2/account/wallet?access_token=${apiKey}`),
+            fetch(`https://api.guildwars2.com/v2/account/materials?access_token=${apiKey}`),
+            fetch(`https://api.guildwars2.com/v2/account/achievements?access_token=${apiKey}`)
+        ]);
 
+        const walletData = await walletRes.json();
+        const materialsData = await materialsRes.json();
+        const achData = await achResRaw.json();
+
+        console.log("Wallet:", walletData); // Verifique no console se isso traz dados
+        console.log("Ach:", achData);       // Verifique se isso traz a lista
+
+        // 1. Atualização de Valores
+        const pristineObj = walletData.find(i => i.id === 24);
+        const relicObj = walletData.find(i => i.id === 7);
+        const matrixObj = materialsData.find(i => i.id === 79230);
+
+        if (pristineObj) document.getElementById('pristine').value = pristineObj.value;
+        if (relicObj) document.getElementById('relics').value = relicObj.value;
+        if (matrixObj) document.getElementById('matrices').value = matrixObj.count || 0;
+
+        // 2. Atualização do Título
         const mistAttunement = achData.find(a => a.id === 2167);
         const elTitle = document.getElementById('currentTitle');
 
         if (elTitle && mistAttunement) {
-            const valorCorreto = String(mistAttunement.current);
-
-            // Função para aplicar o valor de forma absoluta
-            const aplicarValor = () => {
-                elTitle.value = valorCorreto;
-                elTitle.dispatchEvent(new Event('change', { bubbles: true }));
-                elTitle.dispatchEvent(new Event('input', { bubbles: true }));
-                console.log("Forçando valor para:", valorCorreto);
-            };
-
-            // 1. Aplicação imediata
-            aplicarValor();
-
-            // 2. Aplicação tardia (para vencer qualquer script que limpe o form pós-sync)
-            setTimeout(aplicarValor, 300);
-            
-            // 3. Cálculo final após a "poeira baixar"
-            setTimeout(calculate, 500);
+            console.log("Achievement encontrado. Valor:", mistAttunement.current);
+            elTitle.value = String(mistAttunement.current);
+            elTitle.dispatchEvent(new Event('change', { bubbles: true }));
+        } else {
+            console.warn("Elemento elTitle ou achievement 2167 não encontrado!");
         }
-        
-        console.log("Dados sincronizados com sucesso.");
+
+        calculate();
+        console.log("Sincronização concluída.");
+
     } catch (err) {
-        console.error("Erro crítico:", err);
+        console.error("Erro na API:", err);
     }
 }
         function updateDailyInputs() {
