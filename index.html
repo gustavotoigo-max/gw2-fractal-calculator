@@ -486,7 +486,7 @@
         // A função deve ser específica na atribuição para evitar sobreposição
 async function fetchFractalData() {
     const apiKey = document.getElementById('apiKey').value.trim();
-    const errorDiv = document.getElementById('apiError');
+    //const errorDiv = document.getElementById('apiError');
 
     if (!apiKey) return;
 
@@ -517,26 +517,15 @@ async function fetchFractalData() {
         const elTitle = document.getElementById('currentTitle');
 
         if (elTitle && mistAttunement) {
-            const valorParaSelecionar = String(mistAttunement.current);
+            // Define o valor. O 'current' do achievement geralmente retorna o índice da opção
+            elTitle.value = String(mistAttunement.current);
             
-            const optionToSelect = elTitle.querySelector(`option[value="${valorParaSelecionar}"]`);
-            
-            if (elTitle && mistAttunement) {
-                    elTitle.value = String(mistAttunement.current);
-                    // Dispara apenas o change para atualizar o listener do calculate
-                    elTitle.dispatchEvent(new Event('change', { bubbles: true }));
+            // DISPARA O EVENTO MANUALMENTE
+            // Isso avisa ao seu sistema que o valor mudou, disparando o 'calculate' 
+            // que já está registrado no listener.
+            elTitle.dispatchEvent(new Event('change', { bubbles: true }));
         }
-
-            // Mantemos o setTimeout para o cálculo final
-            setTimeout(() => {
-                calculate();
-            }, 100);
-        } else {
-    // Se não encontrou o título, calcula direto
-            calculate();
-}
         console.log("Dados sincronizados com sucesso.");
-
     } catch (err) {
         console.error("Erro crítico:", err);
     }
