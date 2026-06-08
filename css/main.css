@@ -332,6 +332,13 @@
                 pulse 2s infinite ease-in-out,
                 rotate 12s infinite linear;
         }
+        .info-message {
+            font-size: 0.85rem;
+            color: #666; /* Um cinza suave */
+            margin-bottom: 5px;
+            font-style: italic;
+            text-align: center;
+        }
 
         .matrix{
             position:absolute;

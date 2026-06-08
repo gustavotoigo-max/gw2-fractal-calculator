@@ -43,6 +43,7 @@ const translations = {
         lblPristines: "Pristines",
         lblRelics: "Relics",
         lblMatrices: "Matrices",
+        relicConversionInfo: "O cálculo já inclui a conversão de Pristine Fractal Relics excedentes.",
 
         tier1: "Nenhum ➔ Fractal Savant",
         tier2: "Savant ➔ Fractal Prodigy",
@@ -95,6 +96,7 @@ const translations = {
         lblPristines: "Pristines",
         lblRelics: "Relics",
         lblMatrices: "Matrices",
+        relicConversionInfo: "The calculation already includes the conversion of excess Pristine Fractal Relics.",
 
         tier1: "None ➔ Fractal Savant",
         tier2: "Savant ➔ Fractal Prodigy",

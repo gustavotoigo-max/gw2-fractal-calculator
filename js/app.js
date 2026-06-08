@@ -65,6 +65,7 @@ function changeLanguage() {
     document.getElementById('lblResultTitle').innerText = text.resultTitle;
     document.getElementById('lblApiKey').innerText = text.apiKey;
     document.getElementById('btnSync').innerText = text.btnSync;
+    document.getElementById('relicConversionInfo').textContent = translations[currentLang].relicConversionInfo;
 
     document.getElementById('lblAccount').innerText =
     text.account + ":";
