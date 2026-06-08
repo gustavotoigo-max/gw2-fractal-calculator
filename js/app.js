@@ -32,8 +32,7 @@ window.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-function changeLanguage() {
-    function changeLanguage() {
+function changeLanguage() {    
     const lang = document.getElementById('langPicker').value;
 
     localStorage.setItem('preferredLanguage', lang);
