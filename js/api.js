@@ -21,7 +21,7 @@ async function fetchFractalData() {
         // Atualização de Valores Numéricos
         const pristineObj = walletData.find(i => i.id === WALLET_IDS.PRISTINE);
         const relicObj = walletData.find(i => i.id === WALLET_IDS.RELICS);
-        const matrixObj = materialsData.find(i => i.id === 79230);
+        const matrixObj = materialsData.find(i => i.id === MATERIAL_IDS.INTEGRATED_MATRIX);
 
         // Aplica os valores nos inputs
         document.getElementById('pristine').value = pristineObj ? pristineObj.value : 0;
