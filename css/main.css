@@ -355,6 +355,15 @@
             margin-left:-9px;
             margin-top:-9px;
         }
+        #relicConversionInfo {
+            display: block !important;
+            visibility: visible !important;
+            color: #333 !important; /* Cor escura para garantir contraste */
+            background: #f0f0f0;    /* Um fundo leve para testar */
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+}
 
         .orbit1{
             animation: orbit 3s infinite linear;
