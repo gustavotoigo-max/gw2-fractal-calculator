@@ -489,10 +489,7 @@ async function fetchFractalData() {
     const apiKey = document.getElementById('apiKey').value.trim();
     const errorDiv = document.getElementById('apiError');
 
-    if (!apiKey) {
-        console.error("API Key vazia");
-        return;
-    }
+    if (!apiKey) return;
 
     try {
         const [walletRes, materialsRes, achRes] = await Promise.all([
@@ -501,54 +498,36 @@ async function fetchFractalData() {
             fetch(`https://api.guildwars2.com/v2/account/achievements?access_token=${apiKey}`)
         ]);
 
-        if (!walletRes.ok || !materialsRes.ok || !achRes.ok) {
-            throw new Error("Erro na resposta da API (verifique sua Key)");
-        }
-
         const walletData = await walletRes.json();
         const materialsData = await materialsRes.json();
         const achData = await achRes.json();
 
-        // Substitua o bloco do título dentro da sua função fetchFractalData por este:
+        // 1. Atualização de Valores Numéricos
+        const pristineObj = walletData.find(i => i.id === 24);
+        const relicObj = walletData.find(i => i.id === 7);
+        const matrixObj = materialsData.find(i => i.id === 79230);
 
+        document.getElementById('pristine').value = pristineObj ? pristineObj.value : 0;
+        document.getElementById('relics').value = relicObj ? relicObj.value : 0;
+        document.getElementById('matrices').value = matrixObj ? (matrixObj.count || 0) : 0;
+
+        // 2. Atualização Única e Forçada do Título
         const mistAttunement = achData.find(a => a.id === 2167);
         const elTitle = document.getElementById('currentTitle');
 
         if (elTitle && mistAttunement) {
             const novoValor = String(mistAttunement.current);
+            
+            // Define o valor no DOM
             elTitle.value = novoValor;
-            
-            // GATILHO PARA REACT:
-            // Disparamos um evento de 'input' e 'change' que o React monitora
-            const event = new Event('input', { bubbles: true });
-            const eventChange = new Event('change', { bubbles: true });
-            
-            elTitle.dispatchEvent(event);
-            elTitle.dispatchEvent(eventChange);
-            
-            console.log("Título forçado para:", novoValor);
-        }
-        // --- ATUALIZAÇÃO DOS CAMPOS ---
-        
-        // 1. Pristine (ID 24)
-        const pristineObj = walletData.find(i => i.id === 24);
-        const elPristine = document.getElementById('pristine');
-        if (elPristine) elPristine.value = pristineObj ? pristineObj.value : 0;
 
-        // 2. Relics (ID 7)
-        const relicObj = walletData.find(i => i.id === 7);
-        const elRelics = document.getElementById('relics');
-        if (elRelics) elRelics.value = relicObj ? relicObj.value : 0;
-
-        // 3. Integrated Matrices (ID 79230)
-        const matrixObj = materialsData.find(i => i.id === 79230);
-        const elMatrices = document.getElementById('matrices');
-        if (elMatrices) elMatrices.value = matrixObj ? (matrixObj.count || 0) : 0;
-
-        // 4. Título (Achievement ID 2167)
-        if (elTitle && mistAttunement) {
-            elTitle.value = mistAttunement.current;
-            console.log("Título atualizado para:", mistAttunement.current);
+            // Dispara eventos em sequência para tentar enganar o framework
+            const trackers = ['input', 'change', 'blur'];
+            trackers.forEach(eventType => {
+                elTitle.dispatchEvent(new Event(eventType, { bubbles: true }));
+            });
+            
+            console.log("Título atualizado e eventos disparados para:", novoValor);
         }
 
         console.log("Busca concluída. Chamando calculate()...");
@@ -557,7 +536,7 @@ async function fetchFractalData() {
     } catch (err) {
         console.error("Erro crítico:", err);
         if (errorDiv) {
-            errorDiv.innerText = err.message;
+            errorDiv.innerText = "Erro ao buscar dados.";
             errorDiv.style.display = 'block';
         }
     }
