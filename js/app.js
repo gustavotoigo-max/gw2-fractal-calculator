@@ -66,4 +66,10 @@ function changeLanguage() {
     document.getElementById('lblResultTitle').innerText = text.resultTitle;
     document.getElementById('lblApiKey').innerText = text.apiKey;
     document.getElementById('btnSync').innerText = text.btnSync;
+
+    document.getElementById('lblAccount').innerText =
+    text.account + ":";
+
+    document.getElementById('lblAccountTitle').innerText =
+    text.title + ":";
 }
