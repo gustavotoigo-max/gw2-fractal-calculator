@@ -506,27 +506,23 @@ async function fetchFractalData() {
 
         const walletData = await walletRes.json();
         const materialsData = await materialsRes.json();
+        // ... após buscar os dados dos achievements ...
         const achData = await achRes.json();
 
-        // 1. Extração das Moedas (Wallet)
-        const pristineObj = walletData.find(item => item.id === PRISTINE_RELIC_ID);
-        const relicObj = walletData.find(item => item.id === FRACTAL_RELIC_ID);
-        
-        document.getElementById('pristine').value = pristineObj ? pristineObj.value : 0;
-        document.getElementById('relics').value = relicObj ? relicObj.value : 0;
+        // Busca a conquista de Mist Attunement (ID 2167)
+        const mistAttunement = achData.find(a => a.id === 2167);
 
-        // 2. Extração dos Materiais (Material Storage)
-        const matrixObj = materialsData.find(item => item.id === INTEGRATED_MATRIX_ID);
-        document.getElementById('matrices').value = matrixObj ? (matrixObj.count || 0) : 0;
-
-        // 3. Extração do Título (Achievements)
-        const mistAttunement = achData.find(a => a.id === MIST_ATTUNEMENT_ACHIEVEMENT_ID);
         if (mistAttunement) {
-            // Se o seu HTML for um <select id="currentTitle">, 
-            // isso selecionará automaticamente a opção correspondente
             const titleSelect = document.getElementById('currentTitle');
-            if (titleSelect) {
+            
+            // O valor de .current na API deve ser 1, 2, 3 ou 4
+            // Se o valor estiver dentro do esperado, atualizamos o select
+            if (titleSelect && mistAttunement.current >= 0 && mistAttunement.current <= 4) {
                 titleSelect.value = mistAttunement.current;
+                
+                // Opcional: dispara um evento de 'change' para garantir que 
+                // outros scripts (se houver) saibam que o valor mudou
+                titleSelect.dispatchEvent(new Event('change'));
             }
         }
 
