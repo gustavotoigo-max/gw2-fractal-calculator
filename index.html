@@ -289,7 +289,7 @@
         <div class="api-box">
             <label for="apiKey" id="lblApiKey">Sincronizar Conta via GW2 API Key:</label>
             <input type="text" id="apiKey" placeholder="AAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE...">
-            <button class="api-btn" id="btnSync">Sincronizar Inventário</button>
+            <button type="button" class="api-btn" id="btnSync">Sincronizar Inventário</button>
             <div id="apiStatus" class="api-status">Buscando dados na Tyria...</div>
             <div id="apiError" class="api-error"></div>
         </div>
@@ -485,7 +485,6 @@
 
         // A função deve ser específica na atribuição para evitar sobreposição
 async function fetchFractalData() {
-    console.log("Iniciando busca na API...");
     const apiKey = document.getElementById('apiKey').value.trim();
     const errorDiv = document.getElementById('apiError');
 
@@ -522,18 +521,11 @@ async function fetchFractalData() {
             
             const optionToSelect = elTitle.querySelector(`option[value="${valorParaSelecionar}"]`);
             
-            if (optionToSelect) {
-                elTitle.value = valorParaSelecionar;
-                
-                // Dispara os eventos necessários para o DOM e eventuais frameworks
-                ['input', 'change', 'blur'].forEach(evt => {
-                    elTitle.dispatchEvent(new Event(evt, { bubbles: true }));
-                });
-                
-                console.log("Título selecionado com sucesso via DOM:", valorParaSelecionar);
-            } else {
-                console.warn("API retornou valor " + valorParaSelecionar + ", mas não existe essa opção no seu SELECT.");
-            }
+            if (elTitle && mistAttunement) {
+                    elTitle.value = String(mistAttunement.current);
+                    // Dispara apenas o change para atualizar o listener do calculate
+                    elTitle.dispatchEvent(new Event('change', { bubbles: true }));
+        }
 
             // Mantemos o setTimeout para o cálculo final
             setTimeout(() => {
@@ -543,14 +535,10 @@ async function fetchFractalData() {
     // Se não encontrou o título, calcula direto
             calculate();
 }
-        console.log("Busca concluída. Chamando calculate()...");
+        console.log("Dados sincronizados com sucesso.");
 
     } catch (err) {
         console.error("Erro crítico:", err);
-        if (errorDiv) {
-            errorDiv.innerText = "Erro ao buscar dados.";
-            errorDiv.style.display = 'block';
-        }
     }
 }
         function updateDailyInputs() {
