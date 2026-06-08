@@ -418,8 +418,8 @@
 
     <script>
         const SITE_VERSION = "v2.2.0"; 
-        const USER_NICK    = "SeuNickAqui";       
-        const USER_EMAIL   = "seu@email.com";     
+        const USER_NICK    = "Nahar.5349";       
+        const USER_EMAIL   = "gustavo.toigo@gmail.com";     
 
         const translations = {
             pt: {
@@ -509,6 +509,26 @@ async function fetchFractalData() {
         const materialsData = await materialsRes.json();
         const achData = await achRes.json();
 
+        // ... dentro da sua função fetchFractalData, após receber achData ...
+
+        const mistAttunement = achData.find(a => a.id === 2167);
+        const elTitle = document.getElementById('currentTitle');
+
+        if (elTitle && mistAttunement) {
+            // Garantimos que o valor seja uma string, pois o value do select é string
+            const valorParaSelecionar = String(mistAttunement.current);
+            
+            // Atualiza o valor
+            elTitle.value = valorParaSelecionar;
+            
+            // IMPORTANTE: Disparar o evento para o React ou para o seu script de cálculo
+            // O 'change' avisa a página que o valor mudou
+            elTitle.dispatchEvent(new Event('change', { bubbles: true }));
+            
+            console.log("Título definido para:", valorParaSelecionar);
+        } else {
+            console.warn("Elemento 'currentTitle' não encontrado ou conquista não iniciada.");
+        }
         // --- ATUALIZAÇÃO DOS CAMPOS ---
         
         // 1. Pristine (ID 24)
@@ -527,8 +547,6 @@ async function fetchFractalData() {
         if (elMatrices) elMatrices.value = matrixObj ? (matrixObj.count || 0) : 0;
 
         // 4. Título (Achievement ID 2167)
-        const mistAttunement = achData.find(a => a.id === 2167);
-        const elTitle = document.getElementById('currentTitle');
         if (elTitle && mistAttunement) {
             elTitle.value = mistAttunement.current;
             console.log("Título atualizado para:", mistAttunement.current);
