@@ -33,13 +33,13 @@ async function fetchFractalData() {
         if (achievementsData.some(a => a.id === ACHIEVEMENTS.GOD && a.done)) {
             detectedTitle = 4; // Fractal God
         }
-        else if (achievementsData.some(a => a.id === 3990 && a.done)) {
+        else if (achievementsData.some(a => a.id === ACHIEVEMENTS.CHAMPION && a.done)) {
             detectedTitle = 3; // Fractal Champion
         }
-        else if (achievementsData.some(a => a.id === 4015 && a.done)) {
+        else if (achievementsData.some(a => a.id === ACHIEVEMENTS.PRODIGY && a.done)) {
             detectedTitle = 2; // Fractal Prodigy
         }
-        else if (achievementsData.some(a => a.id === 4001 && a.done)) {
+        else if (achievementsData.some(a => a.id === ACHIEVEMENTS.SAVANT && a.done)) {
             detectedTitle = 1; // Fractal Savant
         }
 
