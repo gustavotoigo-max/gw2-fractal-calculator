@@ -9,7 +9,7 @@ function detectLanguage() {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-
+    console.log("DOM carregou. O elemento existe?", document.getElementById('relicConversionInfo'));
     const savedLanguage =
         localStorage.getItem('preferredLanguage');
 
