@@ -19,7 +19,7 @@ const translations = {
         resultTitle: "Tempo Total Restante até o Fractal God",
         lblCompleted: "✓ Concluído", 
         lblAlreadyDone: "Você já domina este tier ou passou dele!", 
-        lblNeedStock: "Falta estocar nesta etapa:", 
+        lblNeedStock: "Falta nesta etapa:", 
         lblGate: "Gargalo desta etapa:", 
         lblReadyBuy: "Pronto para comprar", 
         lblInfDays: "Infinitos dias (Sem farm ativo)", 
