@@ -489,50 +489,32 @@ async function fetchFractalData() {
     if (!apiKey) return;
 
     try {
-        console.log("Iniciando busca...");
-        
-        const [walletRes, materialsRes, achResRaw] = await Promise.all([
+        console.log("Iniciando sincronização de wallet e materiais...");
+
+        const [walletRes, materialsRes] = await Promise.all([
             fetch(`https://api.guildwars2.com/v2/account/wallet?access_token=${apiKey}`),
-            fetch(`https://api.guildwars2.com/v2/account/materials?access_token=${apiKey}`),
-            fetch(`https://api.guildwars2.com/v2/account/achievements?access_token=${apiKey}`)
+            fetch(`https://api.guildwars2.com/v2/account/materials?access_token=${apiKey}`)
         ]);
 
         const walletData = await walletRes.json();
         const materialsData = await materialsRes.json();
-        const achData = await achResRaw.json();
 
-        console.log("Wallet:", walletData); // Verifique no console se isso traz dados
-        console.log("Ach:", achData);       // Verifique se isso traz a lista
-
-        // 1. Atualização de Valores
+        // Atualização de Valores Numéricos
         const pristineObj = walletData.find(i => i.id === 24);
         const relicObj = walletData.find(i => i.id === 7);
         const matrixObj = materialsData.find(i => i.id === 79230);
 
-        if (pristineObj) document.getElementById('pristine').value = pristineObj.value;
-        if (relicObj) document.getElementById('relics').value = relicObj.value;
-        if (matrixObj) document.getElementById('matrices').value = matrixObj.count || 0;
+        // Aplica os valores nos inputs
+        document.getElementById('pristine').value = pristineObj ? pristineObj.value : 0;
+        document.getElementById('relics').value = relicObj ? relicObj.value : 0;
+        document.getElementById('matrices').value = matrixObj ? (matrixObj.count || 0) : 0;
 
-        // 2. Atualização do Título
+        // Dispara o cálculo final após atualizar os campos
+        calculate();
         
-        const elTitle = document.getElementById('currentTitle');
-        const ETAPA_FORCADA = 2;
-
-        if (elTitle) {
-            const mistAttunement = achData.find(a => a.id === 1387);
-            const valorReal = (mistAttunement && mistAttunement.current > 0) ? mistAttunement.current : ETAPA_FORCADA;
-            // Se achou a conquista, usa o valor dela, senão força 0 ou o valor que você sabe que tem
-            
-            elTitle.value = String(valorReal);
-            
-            // Dispara os eventos para o seu sistema de cálculo processar
-            elTitle.dispatchEvent(new Event('change', { bubbles: true }));
-            elTitle.dispatchEvent(new Event('input', { bubbles: true }));
-            
-            console.log("Título processado. Valor aplicado:", valorReal);
-        }
+        console.log("Dados sincronizados com sucesso.");
     } catch (err) {
-        console.error("Erro na API:", err);
+        console.error("Erro na sincronização:", err);
     }
 }
         function updateDailyInputs() {
