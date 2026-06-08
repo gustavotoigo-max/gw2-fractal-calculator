@@ -518,12 +518,25 @@ async function fetchFractalData() {
         const elTitle = document.getElementById('currentTitle');
 
         if (elTitle && mistAttunement) {
-            // Define o valor diretamente
-            elTitle.value = String(mistAttunement.current);
-            // Dispara o evento de 'change' para garantir que qualquer listener capture a mudança
+            const valorParaSelecionar = String(mistAttunement.current);
+            
+            // 1. Muda o valor
+            elTitle.value = valorParaSelecionar;
+            
+            // 2. Dispara o evento
             elTitle.dispatchEvent(new Event('change', { bubbles: true }));
-        }
-
+            
+            console.log("Título alterado via script para:", valorParaSelecionar);
+            
+            // 3. O SEGREDO: Damos 50ms para o DOM processar a alteração antes de calcular
+            setTimeout(() => {
+                console.log("Executando cálculo após atualização do título...");
+                calculate();
+            }, 50);
+        } else {
+    // Se não encontrou o título, calcula direto
+    calculate();
+}
         console.log("Busca concluída. Chamando calculate()...");
         // O calculate() já é chamado automaticamente pelo evento 'change' disparado acima
         // ou você pode chamá-lo manualmente aqui:
