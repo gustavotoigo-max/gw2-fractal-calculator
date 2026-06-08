@@ -17,28 +17,28 @@ export default function handler(req, res) {
     const tierData = [
         {
             level: 1,
-            name: "Nenhum ➔ Fractal Savant",
+            name: "__TIER1__",
             pristine: 0,
             relics: 25000,
             matrices: 75
         },
         {
             level: 2,
-            name: "Savant ➔ Fractal Prodigy",
+            name: "__TIER2__",
             pristine: 1200,
             relics: 35000,
             matrices: 150
         },
         {
             level: 3,
-            name: "Prodigy ➔ Fractal Champion",
+            name: "__TIER3__",
             pristine: 0,
             relics: 45000,
             matrices: 225
         },
         {
             level: 4,
-            name: "Champion ➔ Fractal God",
+            name: "__TIER4__",
             pristine: 2000,
             relics: 55000,
             matrices: 400
@@ -285,17 +285,17 @@ export default function handler(req, res) {
 
                 <strong>__LBL_NEED_STOCK__</strong><br>
 
-                • Pristines:
+                • __LBL_PRISTINES__:
                 <span class="resource">
                     ${neededPristine.toLocaleString()}
                 </span> |
 
-                • Relics:
+                • __LBL_RELICS__:
                 <span class="resource">
                     ${neededRelics.toLocaleString()}
                 </span> |
 
-                • Matrices:
+                • __LBL_MATRICES__:
                 <span class="resource">
                     ${neededMatrices.toLocaleString()}
                 </span>

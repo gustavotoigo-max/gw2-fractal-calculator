@@ -24,6 +24,14 @@ async function calculate() {
         const data = await res.json();
 
         let finalHtml = data.htmlOutput
+            .replaceAll('__LBL_PRISTINES__', text.lblPristines)
+            .replaceAll('__LBL_RELICS__', text.lblRelics)
+            .replaceAll('__LBL_MATRICES__', text.lblMatrices)
+
+            .replaceAll('__TIER1__', text.tier1)
+            .replaceAll('__TIER2__', text.tier2)
+            .replaceAll('__TIER3__', text.tier3)
+            .replaceAll('__TIER4__', text.tier4)
             .replaceAll('__LBL_COMPLETED__', text.lblCompleted)
             .replaceAll('__LBL_ALREADY_DONE__', text.lblAlreadyDone)
             .replaceAll('__LBL_NEED_STOCK__', text.lblNeedStock)
