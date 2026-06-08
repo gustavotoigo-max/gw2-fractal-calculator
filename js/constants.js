@@ -13,23 +13,3 @@
             RELICS: 7,
             PRISTINE: 24
         };
-
-        const MATERIAL_IDS = {
-            MATRIX: 79230
-        };
-
-        const WALLET_IDS = {
-            FRACTAL_RELIC: 7,
-            PRISTINE_RELIC: 24
-        };
-
-        const MATERIAL_IDS = {
-            INTEGRATED_MATRIX: 79230
-        };
-
-        const ACHIEVEMENT_IDS = {
-            SAVANT: 4001,
-            PRODIGY: 4015,
-            CHAMPION: 3990,
-            GOD: 4018
-        };
