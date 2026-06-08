@@ -9,11 +9,20 @@ function detectLanguage() {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
+
     const savedLanguage =
         localStorage.getItem('preferredLanguage');
 
     document.getElementById('langPicker').value =
         savedLanguage || detectLanguage();
+
+    const savedApiKey =
+        localStorage.getItem('savedApiKey');
+
+    if (savedApiKey) {
+        document.getElementById('apiKey').value =
+            savedApiKey;
+    }
 
     updateDailyInputs();
     changeLanguage();

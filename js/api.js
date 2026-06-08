@@ -1,5 +1,6 @@
 async function fetchFractalData() {
     const apiKey = document.getElementById('apiKey').value.trim();
+    localStorage.setItem('savedApiKey', apiKey);
     if (!apiKey) return;
     showLoading();
 
@@ -65,6 +66,7 @@ async function fetchFractalData() {
 
         console.log("Dados sincronizados com sucesso.");
         hideLoading();
+        localStorage.setItem('savedApiKey', apiKey);
     } catch (err) {
         console.error("Erro na sincronização:", err);
 
