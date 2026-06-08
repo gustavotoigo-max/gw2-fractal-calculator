@@ -42,10 +42,10 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 function changeLanguage() {    
-    const lang = document.getElementById('langPicker').value;
+    const lang = document.getElementById('langPicker').value; // Aqui você pega o idioma atual
 
     localStorage.setItem('preferredLanguage', lang);
-    const text = translations[lang] || translations['pt'];
+    const text = translations[lang] || translations['pt']; // 'text' agora contém todas as traduções
 
     document.getElementById('lblMainTitle').innerText = text.mainTitle;
     document.getElementById('lblCurrentTitle').innerText = text.currentTitle;
@@ -67,11 +67,14 @@ function changeLanguage() {
     document.getElementById('btnSync').innerText = text.btnSync;
     document.getElementById('relicConversionInfo').textContent = translations[currentLang].relicConversionInfo;
 
-    document.getElementById('lblAccount').innerText =
-    text.account + ":";
+    const relicInfoElement = document.getElementById('relicConversionInfo');
+    if (relicInfoElement) {
+        // Use a variável 'text' que já foi definida acima com base no 'lang'
+        relicInfoElement.textContent = text.relicConversionInfo;
+    }
 
-    document.getElementById('lblAccountTitle').innerText =
-    text.title + ":";
+    document.getElementById('lblAccount').innerText = text.account + ":";
+    document.getElementById('lblAccountTitle').innerText = text.title + ":";
 
     calculate();
 }
