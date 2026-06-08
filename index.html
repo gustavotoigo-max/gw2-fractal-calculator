@@ -558,8 +558,10 @@
             <div class="details" id="missingResources"></div>
         </div>
     </div>
+    
     <script src="js/constants.js"></script>
     <script src="js/translations.js"></script>
+    <script src="js/loading.js"></script>
 
     <script>
         window.addEventListener('DOMContentLoaded', () => {
@@ -607,46 +609,6 @@
             calculate();
 }
 
-const loadingMessages = [
-    "Entering the Mists...",
-    "Consulting Dessa...",
-    "Scanning Fractal Relics...",
-    "Analyzing Integrated Matrices...",
-    "Synchronizing Account..."
-];
-
-let loadingInterval;
-
-function showLoading() {
-
-    let index = 0;
-
-    document.querySelector('.loading-text').innerText =
-        loadingMessages[0];
-
-    loadingInterval = setInterval(() => {
-
-        index++;
-
-        if(index >= loadingMessages.length)
-            index = 0;
-
-        document.querySelector('.loading-text').innerText =
-            loadingMessages[index];
-
-    }, 1200);
-
-    document.getElementById('loadingOverlay')
-        .classList.add('active');
-}
-
-function hideLoading() {
-
-    clearInterval(loadingInterval);
-
-    document.getElementById('loadingOverlay')
-        .classList.remove('active');
-}
         // A função deve ser específica na atribuição para evitar sobreposição
 async function fetchFractalData() {
     const apiKey = document.getElementById('apiKey').value.trim();
