@@ -11,6 +11,11 @@ function detectLanguage() {
 window.addEventListener('DOMContentLoaded', () => {
     const savedLanguage = localStorage.getItem('preferredLanguage');
     const langPicker = document.getElementById('langPicker');
+
+    langPickerEl.addEventListener('change', () => {
+    console.log("Evento change disparado");
+    changeLanguage();
+    });
     
     if (langPicker) {
         langPicker.value = savedLanguage || detectLanguage();
@@ -59,7 +64,7 @@ function changeLanguage() {
     const langPicker = document.getElementById('langPicker');
     const lang = langPicker ? langPicker.value : 'pt';
     console.log("Trocando idioma para:", lang);  // Debug
-    
+
     localStorage.setItem('preferredLanguage', lang);
     const text = translations[lang] || translations['pt'];
 
