@@ -33,11 +33,6 @@ window.addEventListener('DOMContentLoaded', () => {
         btnSync.addEventListener('click', fetchFractalData);
     }
     
-    const devBanner = document.querySelector('.dev-banner');
-    if (devBanner) {
-        devBanner.innerText = text.devBanner;
-    }
-
     const langPickerEl = document.getElementById('langPicker');
     if (langPickerEl) {
         langPickerEl.addEventListener('change', changeLanguage);
@@ -63,10 +58,12 @@ window.addEventListener('DOMContentLoaded', () => {
 function changeLanguage() {
     const langPicker = document.getElementById('langPicker');
     const lang = langPicker ? langPicker.value : 'pt';
-
+    console.log("Trocando idioma para:", lang);  // Debug
+    
     localStorage.setItem('preferredLanguage', lang);
     const text = translations[lang] || translations['pt'];
 
+    // Labels principais
     const labels = {
         'lblMainTitle': text.mainTitle,
         'lblCurrentTitle': text.currentTitle,
@@ -86,16 +83,9 @@ function changeLanguage() {
         'lblResultTitle': text.resultTitle,
         'lblApiKey': text.apiKey,
         'btnSync': text.btnSync,
-        'lblAccount': text.account + ":"
+        'lblAccount': text.account + ":",
+        'lblAccountTitle': text.title + ":"
     };
-
-    // Notas do site
-    document.getElementById('notesTitle').innerText = text.notesTitle;
-    document.getElementById('note1').innerText = text.note1;
-    document.getElementById('note2').innerText = text.note2;
-    document.getElementById('note3').innerText = text.note3;
-    document.getElementById('note4').innerText = text.note4;
-    document.getElementById('note5').innerText = text.note5;
 
     for (const [id, value] of Object.entries(labels)) {
         const element = document.getElementById(id);
@@ -104,10 +94,37 @@ function changeLanguage() {
         }
     }
 
+    // Mensagem de excedente (se houver algum elemento específico)
     const relicInfoElement = document.getElementById('relicConversionInfo');
     if (relicInfoElement) {
         relicInfoElement.textContent = text.relicConversionInfo || '';
     }
 
+    // Notas do site
+    const notesTitle = document.getElementById('notesTitle');
+    if (notesTitle) notesTitle.innerText = text.notesTitle;
+    
+    const note1 = document.getElementById('note1');
+    if (note1) note1.innerText = text.note1;
+    
+    const note2 = document.getElementById('note2');
+    if (note2) note2.innerText = text.note2;
+    
+    const note3 = document.getElementById('note3');
+    if (note3) note3.innerText = text.note3;
+    
+    const note4 = document.getElementById('note4');
+    if (note4) note4.innerText = text.note4;
+    
+    const note5 = document.getElementById('note5');
+    if (note5) note5.innerText = text.note5;
+
+    // Banner de desenvolvimento
+    const devBanner = document.querySelector('.dev-banner');
+    if (devBanner && text.devBanner) {
+        devBanner.innerText = text.devBanner;
+    }
+
+    // Recalcula para atualizar textos dinâmicos
     calculate();
 }
