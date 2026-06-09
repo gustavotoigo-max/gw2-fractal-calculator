@@ -167,8 +167,6 @@ export default function handler(req, res) {
             }
         }
 
-        let conversionLine = "";
-
         // =====================================================
         // EXECUTA COMPRA
         // =====================================================
@@ -220,26 +218,6 @@ export default function handler(req, res) {
         }
 
         // =====================================================
-        // LINHA DE CONVERSÃO (apenas próximo título)
-        // =====================================================
-
-        /*if (isNextTier && tierDays !== Infinity) {
-            const costThisTier = tier.pristine;
-            const surplusAfterThisTier = Math.max(0, originalPristine - costThisTier);
-            
-            if (surplusAfterThisTier > 0) {
-                const relicsFromConversion = surplusAfterThisTier * 15;
-                conversionLine = `
-                    <br><br>
-                    <span style="color: var(--primary); font-size: 12px;">
-                        ✨ Excedente seguro: ${surplusAfterThisTier.toLocaleString()} Pristines → +${relicsFromConversion.toLocaleString()} Relics disponíveis para conversão
-                    </span>
-                `;
-            }
-        }*/
-       conversionLine = "";
-
-        // =====================================================
         // TEXTO VISUAL DO CARD
         // =====================================================
 
@@ -274,7 +252,6 @@ export default function handler(req, res) {
                     ${neededMatrices.toLocaleString()}
                 </span>
 
-                ${conversionLine}
                 ${keepMessageHtml}
             </div>
         `;
