@@ -166,6 +166,7 @@ export default function handler(req, res) {
         }
 
         let stepGate = "__GATE_NONE__";
+        let conversionLine = "";
 
         // =====================================================
         // EXECUTA COMPRA
@@ -183,6 +184,17 @@ export default function handler(req, res) {
                     0,
                     wallet.pristine - futurePristineNeed
                 );
+
+            // Gera a linha de conversão para exibir no card
+            if (availablePristineForConversion > 0) {
+                const relicsFromConversion = availablePristineForConversion * 15;
+                conversionLine = `
+                    <br><br>
+                    <span style="color: var(--primary); font-size: 12px;">
+                        ✨ Converta ${availablePristineForConversion.toLocaleString()} Pristines → +${relicsFromConversion.toLocaleString()} Relics
+                    </span>
+                `;
+            }
 
             // Se faltar relic normal
             if (wallet.relics < tier.relics) {
@@ -299,6 +311,8 @@ export default function handler(req, res) {
                 <span class="resource">
                     ${neededMatrices.toLocaleString()}
                 </span>
+
+                ${conversionLine}
 
                 <br>
 
