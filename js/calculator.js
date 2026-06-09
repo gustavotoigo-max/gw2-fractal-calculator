@@ -61,12 +61,11 @@ async function calculate() {
         }
 
         document.getElementById('missingResources').innerHTML = finalHtml + `
-                    <small>${text.lblFootnote}</small>
-                    <div style="text-align: center; margin-top: 25px; font-size: 10px; color: var(--text-secondary); opacity: 0.4; letter-spacing: 0.5px; line-height: 1.5;">
-                        <div>${SITE_VERSION}</div>
-                        <div style="margin-top: 4px;">${text.lblDevBy} <strong>${USER_NICK}</strong> (${USER_EMAIL})</div>
-                    </div>
-                `;
+            <div style="text-align: center; margin-top: 25px; font-size: 10px; color: var(--text-secondary); opacity: 0.4; letter-spacing: 0.5px; line-height: 1.5;">
+                <div>${SITE_VERSION}</div>
+                <div style="margin-top: 4px;">${text.lblDevBy} <strong>${USER_NICK}</strong> (${USER_EMAIL})</div>
+            </div>
+        `;
     } catch (e) {
         console.error("Erro na comunicação com o backend.", e);
     }

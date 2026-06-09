@@ -1,4 +1,4 @@
-const SITE_VERSION = "v2.2.0";
+const SITE_VERSION = "v2.5.8";
 const USER_NICK = "Nahar.5349";
 const USER_EMAIL = "gustavo.toigo@gmail.com";
 
