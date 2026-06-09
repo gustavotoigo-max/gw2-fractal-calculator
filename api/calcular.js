@@ -223,7 +223,7 @@ export default function handler(req, res) {
         // LINHA DE CONVERSÃO (apenas próximo título)
         // =====================================================
 
-        if (isNextTier && tierDays !== Infinity) {
+        /*if (isNextTier && tierDays !== Infinity) {
             const costThisTier = tier.pristine;
             const surplusAfterThisTier = Math.max(0, originalPristine - costThisTier);
             
@@ -236,7 +236,8 @@ export default function handler(req, res) {
                     </span>
                 `;
             }
-        }
+        }*/
+       conversionLine = "";
 
         // =====================================================
         // TEXTO VISUAL DO CARD
