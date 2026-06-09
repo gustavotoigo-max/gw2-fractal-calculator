@@ -13,7 +13,6 @@ export default function handler(req, res) {
         dailyRelics
     } = req.body;
 
-    // Custos reais das etapas
     const tierData = [
         {
             level: 1,
@@ -45,12 +44,11 @@ export default function handler(req, res) {
         }
     ];
 
-    // Valores ORIGINAIS do usuário (para cálculo do excedente real)
+    // Valores ORIGINAIS do usuário
     const originalPristine = parseInt(pristine) || 0;
     const originalRelics = parseInt(relics) || 0;
     const originalMatrices = parseInt(matrices) || 0;
 
-    // Carteira viva (será modificada durante a simulação)
     let wallet = {
         pristine: originalPristine,
         relics: originalRelics,
@@ -64,10 +62,6 @@ export default function handler(req, res) {
     let totalDaysRemaining = 0;
     let htmlOutput = "";
 
-    // =========================================================
-    // CALCULA QUANTO PRISTINE AINDA SERÁ NECESSÁRIO NO FUTURO
-    // =========================================================
-
     function calculateFuturePristineNeed(tierData, currentIndex) {
         let total = 0;
         for (let j = currentIndex + 1; j < tierData.length; j++) {
@@ -78,11 +72,22 @@ export default function handler(req, res) {
 
     // =========================================================
     // FUNÇÃO PARA CALCULAR EXCEDENTE REAL DE PRISTINE
+    // Para um determinado tier, considerando os gastos anteriores
     // =========================================================
-    function calculateAvailablePristineForConversion(currentIndex) {
-        const futureNeed = calculateFuturePristineNeed(tierData, currentIndex);
-        // Usamos o valor ORIGINAL, não o modificado pela simulação
-        return Math.max(0, originalPristine - futureNeed);
+    function calculateAvailablePristineForConversion(tierIndex, currentTitleValue) {
+        // Soma todos os Pristines necessários para tiers já concluídos?
+        // Não, o jogador já gastou esses. Precisamos saber quantos Pristines ele tem HOJE
+        // e quantos ele vai precisar gastar neste tier + tiers futuros
+        
+        let totalFutureNeed = 0;
+        for (let j = tierIndex; j < tierData.length; j++) {
+            totalFutureNeed += tierData[j].pristine;
+        }
+        
+        // Excedente = Pristines atuais - total necessário para este tier + futuros
+        // Se for negativo, não há excedente
+        const surplus = originalPristine - totalFutureNeed;
+        return Math.max(0, surplus);
     }
 
     // =========================================================
@@ -90,11 +95,11 @@ export default function handler(req, res) {
     // =========================================================
 
     for (let i = 0; i < tierData.length; i++) {
-
         const tier = tierData[i];
-
+        const isCompleted = parseInt(currentTitle) >= tier.level;
+        
         // Etapa já concluída
-        if (parseInt(currentTitle) >= tier.level) {
+        if (isCompleted) {
             htmlOutput += `
                 <div class="tier-card completed">
                     <div class="tier-header">
@@ -107,17 +112,17 @@ export default function handler(req, res) {
             continue;
         }
 
-        // Recursos faltando (baseado na wallet atual - que pode já ter sido reduzida por tiers anteriores)
+        // Verifica se este é o PRIMEIRO tier não concluído
+        const isNextTier = parseInt(currentTitle) === tier.level - 1;
+        
+        // Recursos faltando
         let neededPristine = Math.max(0, tier.pristine - wallet.pristine);
         let neededRelics = Math.max(0, tier.relics - wallet.relics);
         let neededMatrices = Math.max(0, tier.matrices - wallet.matrices);
-
+        
         let tierDays = 0;
 
-        // =====================================================
-        // CHECA SE O FARM É IMPOSSÍVEL
-        // =====================================================
-
+        // Verifica se farm é impossível
         if (
             (neededPristine > 0 && dPristine === 0) ||
             (neededMatrices > 0 && dMatrices === 0) ||
@@ -125,32 +130,22 @@ export default function handler(req, res) {
         ) {
             tierDays = Infinity;
         } else {
-            // =================================================
-            // SIMULAÇÃO DIÁRIA
-            // =================================================
+            // Simulação diária
             while (true) {
-                // Quanto pristine ainda será necessário no futuro?
                 const futurePristineNeed = calculateFuturePristineNeed(tierData, i);
-                // Quanto pristine pode ser convertido sem prejudicar o futuro? (Usando wallet atual)
                 const availablePristineForConversion = Math.max(0, wallet.pristine - futurePristineNeed);
-                // Relics virtuais possíveis após melt
                 const effectiveRelics = wallet.relics + (availablePristineForConversion * 15);
 
-                // Verifica se já consegue comprar
                 const canBuy =
                     wallet.pristine >= tier.pristine &&
                     wallet.matrices >= tier.matrices &&
                     effectiveRelics >= tier.relics;
 
-                if (canBuy) {
-                    break;
-                }
+                if (canBuy) break;
 
-                // Acumula recursos do dia
                 wallet.pristine += dPristine;
                 wallet.matrices += dMatrices;
                 wallet.relics += dRelics;
-
                 tierDays++;
 
                 if (tierDays > 15000) {
@@ -164,29 +159,30 @@ export default function handler(req, res) {
         let conversionLine = "";
 
         // =====================================================
-        // CALCULA LINHA DE CONVERSÃO (usando valores ORIGINAIS)
+        // SÓ EXIBE LINHA DE CONVERSÃO se for o PRÓXIMO título
         // =====================================================
-        const availableForConversion = calculateAvailablePristineForConversion(i);
-        if (availableForConversion > 0 && tierDays !== Infinity) {
-            const relicsFromConversion = availableForConversion * 15;
-            conversionLine = `
-                <br><br>
-                <span style="color: var(--primary); font-size: 12px;">
-                    ✨ Excedente seguro: ${availableForConversion.toLocaleString()} Pristines → +${relicsFromConversion.toLocaleString()} Relics disponíveis para conversão
-                </span>
-            `;
+        if (isNextTier && tierDays !== Infinity) {
+            // Calcula o excedente REAL baseado nos Pristines originais
+            // Subtrai o custo deste tier
+            const costThisTier = tier.pristine;
+            const surplusAfterThisTier = Math.max(0, originalPristine - costThisTier);
+            
+            if (surplusAfterThisTier > 0) {
+                const relicsFromConversion = surplusAfterThisTier * 15;
+                conversionLine = `
+                    <br><br>
+                    <span style="color: var(--primary); font-size: 12px;">
+                        ✨ Excedente seguro: ${surplusAfterThisTier.toLocaleString()} Pristines → +${relicsFromConversion.toLocaleString()} Relics disponíveis para conversão
+                    </span>
+                `;
+            }
         }
 
-        // =====================================================
-        // EXECUTA COMPRA (se não for infinito)
-        // =====================================================
-
+        // Executa compra
         if (tierDays !== Infinity) {
-            // Quanto pristine ainda precisa reservar futuramente?
             const futurePristineNeed = calculateFuturePristineNeed(tierData, i);
             let availablePristineForConversion = Math.max(0, wallet.pristine - futurePristineNeed);
 
-            // Se faltar relic normal
             if (wallet.relics < tier.relics) {
                 const relicDeficit = tier.relics - wallet.relics;
                 const maxConvertibleRelics = availablePristineForConversion * 15;
@@ -201,18 +197,13 @@ export default function handler(req, res) {
                 }
             }
 
-            // Deduz custos
             wallet.pristine -= tier.pristine;
             wallet.relics -= tier.relics;
             wallet.matrices -= tier.matrices;
-
             totalDaysRemaining += tierDays;
         }
 
-        // =====================================================
-        // IDENTIFICA GARGALO (apenas se não for infinito)
-        // =====================================================
-
+        // Identifica gargalo
         if (tierDays === 0) {
             stepGate = "__GATE_READY__";
         } else if (tierDays !== Infinity && stepGate === "__GATE_NONE__") {
@@ -232,12 +223,8 @@ export default function handler(req, res) {
             }
         }
 
-        // =====================================================
-        // TEXTO VISUAL
-        // =====================================================
-
+        // Texto visual
         let daysLabel = `+${tierDays} __LBL_DAYS__`;
-
         if (tierDays === Infinity) {
             daysLabel = "__LBL_INF_DAYS__";
             stepGate = "__LBL_NO_FARM__";
@@ -273,17 +260,9 @@ export default function handler(req, res) {
 
                 <br>
 
-                <small style="
-                    text-align: left;
-                    margin-top: 5px;
-                    color: var(--text-secondary);
-                    font-size: 12px;
-                ">
+                <small style="text-align: left; margin-top: 5px; color: var(--text-secondary); font-size: 12px;">
                     __LBL_GATE__
-                    <span style="
-                        color: var(--primary);
-                        font-weight:600;
-                    ">
+                    <span style="color: var(--primary); font-weight:600;">
                         ${stepGate}
                     </span>
                 </small>
