@@ -81,8 +81,7 @@ function changeLanguage() {
         'lblResultTitle': text.resultTitle,
         'lblApiKey': text.apiKey,
         'btnSync': text.btnSync,
-        'lblAccount': text.account + ":",
-        'currencyReserveInfo': text.currencyReserveInfo
+        'lblAccount': text.account + ":"
     };
 
     for (const [id, value] of Object.entries(labels)) {
