@@ -430,6 +430,29 @@ small {
 .site-notes li:last-child {
     margin-bottom: 0;
 }
+/* BANNER DE DESENVOLVIMENTO */
+.dev-banner {
+    background: rgba(229, 169, 60, 0.15);
+    border-left: 4px solid var(--primary);
+    border-radius: 6px;
+    padding: 10px 15px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    color: var(--primary);
+    text-align: center;
+    font-weight: 500;
+}
+
+.dev-badge {
+    background: var(--primary);
+    color: #000;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 2px 8px;
+    border-radius: 20px;
+    margin-left: 10px;
+    vertical-align: middle;
+}
 
 @keyframes orbit {
     from {

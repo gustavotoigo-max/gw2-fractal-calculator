@@ -17,6 +17,7 @@ const translations = {
         matricesDay: "Integrated Matrices / dia", 
         relicsDay: "Fractal Relics Normais / dia (Garantidos + Conversões)", 
         resultTitle: "Tempo Total Restante até o Fractal God",
+        devBanner: "⚠️ Site under development - Some features may be in testing phase",
         
         // Status e mensagens dos cards
         lblCompleted: "✓ Concluído", 
@@ -85,6 +86,7 @@ const translations = {
         matricesDay: "Integrated Matrices / day", 
         relicsDay: "Normal Fractal Relics / day (Guaranteed + Melt)", 
         resultTitle: "Total Time Remaining until Fractal God",
+        devBanner: "⚠️ Site under development - Some features may be in testing phase",
         
         // Status e mensagens dos cards
         lblCompleted: "✓ Completed", 

@@ -33,6 +33,11 @@ window.addEventListener('DOMContentLoaded', () => {
         btnSync.addEventListener('click', fetchFractalData);
     }
     
+    const devBanner = document.querySelector('.dev-banner');
+    if (devBanner) {
+        devBanner.innerText = text.devBanner;
+    }
+
     const langPickerEl = document.getElementById('langPicker');
     if (langPickerEl) {
         langPickerEl.addEventListener('change', changeLanguage);
