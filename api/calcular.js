@@ -94,6 +94,9 @@ export default function handler(req, res) {
             </span>
         `;
 
+        // =====================================================
+        // CARDS CONCLUÍDOS - SEM MENSAGEM "MANTENHA"
+        // =====================================================
         if (isCompleted) {
             htmlOutput += `
                 <div class="tier-card completed ${futureClass}">
@@ -102,7 +105,6 @@ export default function handler(req, res) {
                         <span class="status">__LBL_COMPLETED__</span>
                     </div>
                     <div>__LBL_ALREADY_DONE__</div>
-                    ${keepMessageHtml}
                 </div>
             `;
             continue;
@@ -183,6 +185,9 @@ export default function handler(req, res) {
             daysLabel = "__LBL_READY_BUY__";
         }
 
+        // =====================================================
+        // CARDS NÃO CONCLUÍDOS - COM MENSAGEM "MANTENHA"
+        // =====================================================
         htmlOutput += `
             <div class="tier-card ${futureClass}">
                 <div class="tier-header">
