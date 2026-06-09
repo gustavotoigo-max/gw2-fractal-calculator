@@ -48,6 +48,10 @@ export default function handler(req, res) {
         }
     ];
 
+    // Configuração de conversão
+    const relicsPerMatrix = 15; // 15 Relics = 1 Integrated Matrix
+    
+    // Valores ORIGINAIS do usuário
     const originalPristine = parseInt(pristine) || 0;
     const originalRelics = parseInt(relics) || 0;
     const originalMatrices = parseInt(matrices) || 0;
@@ -59,7 +63,7 @@ export default function handler(req, res) {
     };
 
     const dPristine = parseInt(dailyPristine) || 0;
-    const dMatrices = parseInt(dailyMatrices) || 0;
+    const dMatricesFromCMs = parseInt(dailyMatrices) || 0; // Matrices grátis via CMs
     const dRelics = parseInt(dailyRelics) || 0;
 
     let totalDaysRemaining = 0;
@@ -71,6 +75,17 @@ export default function handler(req, res) {
             total += tierData[j].pristine;
         }
         return total;
+    }
+
+    // Função para calcular quantas Matrices podem ser obtidas por dia
+    function getDailyMatrices(relicsAvailable) {
+        // Prioriza Matrices grátis das CMs
+        let matricesGained = dMatricesFromCMs;
+        let remainingRelics = relicsAvailable;
+        
+        // Se ainda precisar de mais Matrices, compra com Relics
+        // Nota: isso é usado na simulação, não na compra real
+        return matricesGained;
     }
 
     for (let i = 0; i < tierData.length; i++) {
@@ -94,9 +109,6 @@ export default function handler(req, res) {
             </span>
         `;
 
-        // =====================================================
-        // CARDS CONCLUÍDOS - SEM MENSAGEM "MANTENHA"
-        // =====================================================
         if (isCompleted) {
             htmlOutput += `
                 <div class="tier-card completed ${futureClass}">
@@ -110,28 +122,78 @@ export default function handler(req, res) {
             continue;
         }
 
+        // =====================================================
+        // VERIFICA SE É POSSÍVEL PROGREDIR
+        // =====================================================
+        
+        // Pristine: só consegue se tiver ganho diário ou já tiver o suficiente
+        const canGetPristine = dPristine > 0 || wallet.pristine >= tier.pristine;
+        
+        // Matrices: consegue via CMs (grátis) OU comprando com Relics
+        const canGetMatrices = dMatricesFromCMs > 0 || dRelics > 0 || wallet.matrices >= tier.matrices;
+        
+        // Relics: consegue via ganho diário ou conversão de Pristine
+        const canGetRelics = dRelics > 0 || dPristine > 0 || wallet.relics >= tier.relics;
+        
         if (
-            (neededPristine > 0 && dPristine === 0) ||
-            (neededMatrices > 0 && dMatrices === 0) ||
-            (neededRelics > 0 && dRelics === 0 && dPristine === 0)
+            (neededPristine > 0 && !canGetPristine) ||
+            (neededMatrices > 0 && !canGetMatrices) ||
+            (neededRelics > 0 && !canGetRelics)
         ) {
             tierDays = Infinity;
         } else {
+            // =================================================
+            // SIMULAÇÃO DIÁRIA
+            // =================================================
             while (true) {
+                // Calcula Pristine disponível para conversão
                 const futurePristineNeed = calculateFuturePristineNeed(tierData, i);
                 const availablePristineForConversion = Math.max(0, wallet.pristine - futurePristineNeed);
+                
+                // Relics considerando conversão de Pristine excedente
                 const effectiveRelics = wallet.relics + (availablePristineForConversion * 15);
+                
+                // Matrices considerando compra com Relics
+                let effectiveMatrices = wallet.matrices;
+                
+                // Se faltar Matrices, verifica se pode comprar com Relics
+                if (effectiveMatrices < tier.matrices) {
+                    const matrixDeficit = tier.matrices - effectiveMatrices;
+                    const relicsNeededForMatrices = matrixDeficit * relicsPerMatrix;
+                    
+                    // Se tiver Relics suficientes (incluindo conversão), compra
+                    if (effectiveRelics >= relicsNeededForMatrices) {
+                        effectiveMatrices = tier.matrices;
+                    }
+                }
 
+                // Verifica se já consegue comprar
                 const canBuy =
                     wallet.pristine >= tier.pristine &&
-                    wallet.matrices >= tier.matrices &&
+                    effectiveMatrices >= tier.matrices &&
                     effectiveRelics >= tier.relics;
 
-                if (canBuy) break;
+                if (canBuy) {
+                    break;
+                }
 
+                // =============================================
+                // ACUMULA RECURSOS DO DIA
+                // =============================================
+                
+                // 1. Acumula Pristine (sempre, se tiver farm)
                 wallet.pristine += dPristine;
-                wallet.matrices += dMatrices;
+                
+                // 2. Acumula Relics base
                 wallet.relics += dRelics;
+                
+                // 3. Acumula Matrices grátis das CMs
+                wallet.matrices += dMatricesFromCMs;
+                
+                // 4. Se não tiver CM ativo mas precisa de Matrices, o jogador 
+                //    pode optar por converter Relics em Matrices.
+                //    Isso será feito no momento da compra, não na simulação diária.
+                
                 tierDays++;
 
                 if (tierDays > 15000) {
@@ -142,6 +204,64 @@ export default function handler(req, res) {
         }
 
         let conversionLine = "";
+
+        // =====================================================
+        // EXECUTA COMPRA (se não for infinito)
+        // =====================================================
+
+        if (tierDays !== Infinity) {
+            const futurePristineNeed = calculateFuturePristineNeed(tierData, i);
+            let availablePristineForConversion = Math.max(0, wallet.pristine - futurePristineNeed);
+
+            // 1. Primeiro, compra Matrices se necessário (usando Relics)
+            if (wallet.matrices < tier.matrices) {
+                const matrixDeficit = tier.matrices - wallet.matrices;
+                const relicsNeeded = matrixDeficit * relicsPerMatrix;
+                
+                // Verifica se tem Relics suficientes (incluindo conversão de Pristine)
+                let totalRelicsAvailable = wallet.relics + (availablePristineForConversion * 15);
+                
+                if (totalRelicsAvailable >= relicsNeeded) {
+                    // Precisa converter Pristine em Relics?
+                    let relicsToUse = Math.min(wallet.relics, relicsNeeded);
+                    let remainingRelicsNeeded = relicsNeeded - relicsToUse;
+                    
+                    if (remainingRelicsNeeded > 0) {
+                        // Converte Pristine para Relics
+                        const pristinesToConvert = Math.ceil(remainingRelicsNeeded / 15);
+                        wallet.pristine -= pristinesToConvert;
+                        wallet.relics += pristinesToConvert * 15;
+                        relicsToUse += pristinesToConvert * 15;
+                    }
+                    
+                    // Compra as Matrices
+                    wallet.relics -= relicsNeeded;
+                    wallet.matrices += matrixDeficit;
+                }
+            }
+
+            // 2. Depois, compra Relics se necessário (convertendo Pristine excedente)
+            if (wallet.relics < tier.relics) {
+                const relicDeficit = tier.relics - wallet.relics;
+                const maxConvertibleRelics = availablePristineForConversion * 15;
+                const relicsToCreate = Math.min(relicDeficit, maxConvertibleRelics);
+                const pristinesToConvert = Math.ceil(relicsToCreate / 15);
+
+                wallet.pristine -= pristinesToConvert;
+                wallet.relics += pristinesToConvert * 15;
+            }
+
+            // 3. Deduz custos do tier
+            wallet.pristine -= tier.pristine;
+            wallet.relics -= tier.relics;
+            wallet.matrices -= tier.matrices;
+            
+            totalDaysRemaining += tierDays;
+        }
+
+        // =====================================================
+        // GERAR LINHA DE CONVERSÃO (se for o próximo título)
+        // =====================================================
 
         if (isNextTier && tierDays !== Infinity) {
             const costThisTier = tier.pristine;
@@ -158,25 +278,9 @@ export default function handler(req, res) {
             }
         }
 
-        if (tierDays !== Infinity) {
-            const futurePristineNeed = calculateFuturePristineNeed(tierData, i);
-            let availablePristineForConversion = Math.max(0, wallet.pristine - futurePristineNeed);
-
-            if (wallet.relics < tier.relics) {
-                const relicDeficit = tier.relics - wallet.relics;
-                const maxConvertibleRelics = availablePristineForConversion * 15;
-                const relicsToCreate = Math.min(relicDeficit, maxConvertibleRelics);
-                const pristinesToConvert = Math.ceil(relicsToCreate / 15);
-
-                wallet.pristine -= pristinesToConvert;
-                wallet.relics += pristinesToConvert * 15;
-            }
-
-            wallet.pristine -= tier.pristine;
-            wallet.relics -= tier.relics;
-            wallet.matrices -= tier.matrices;
-            totalDaysRemaining += tierDays;
-        }
+        // =====================================================
+        // TEXTO VISUAL
+        // =====================================================
 
         let daysLabel = `+${tierDays} __LBL_DAYS__`;
         if (tierDays === Infinity) {
@@ -185,9 +289,6 @@ export default function handler(req, res) {
             daysLabel = "__LBL_READY_BUY__";
         }
 
-        // =====================================================
-        // CARDS NÃO CONCLUÍDOS - COM MENSAGEM "MANTENHA"
-        // =====================================================
         htmlOutput += `
             <div class="tier-card ${futureClass}">
                 <div class="tier-header">
