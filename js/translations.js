@@ -50,6 +50,20 @@ const translations = {
         account: "Conta",
         title: "Título",
         
+        // Mensagem de excedente (cards)
+        lblSurplus: "✨ Excedente seguro: {{pristines}} Pristines → +{{relics}} Relics disponíveis para conversão",
+        
+        // Mensagem de mantenha (cards) - já vem do backend, mas vamos manter como referência
+        // As mensagens "Mantenha" estão no backend (tierData.keepMessage) e não precisam de tradução separada
+        
+        // Notas do rodapé
+        notesTitle: "📝 Notas",
+        note1: "Primeiramente o site foi desenvolvido para uso pessoal/grupo local e não tem vínculo com nenhuma outra ferramenta já existente ou empresa;",
+        note2: "O site faz uma estimativa, ou seja, podem conter erros ou discrepâncias e não serve necessariamente como um guia. Use com atenção;",
+        note3: "O cálculo reserva automaticamente currencies necessárias para títulos futuros. Apenas o excedente pode ser convertido;",
+        note4: "A sua API deve conter minimamente as seguintes opções marcadas: account, inventories, characters, wallet e progression;",
+        note5: "Sem CMs ativas, você pode comprar Integrated Fractal Matrices por 15 Fractal Relics cada uma no vendor.",
+        
         // Rodapé
         lblDevBy: "Desenvolvido por:"
     },
@@ -103,6 +117,17 @@ const translations = {
         apiLoading: "Fetching data from Tyria...",
         account: "Account",
         title: "Title",
+        
+        // Mensagem de excedente (cards)
+        lblSurplus: "✨ Safe surplus: {{pristines}} Pristines → +{{relics}} Relics available for conversion",
+        
+        // Notas do rodapé
+        notesTitle: "📝 Notes",
+        note1: "This site was developed for personal/local group use and is not affiliated with any existing tool or company;",
+        note2: "This site provides an estimate, meaning it may contain errors or discrepancies and should not be used as a definitive guide. Use with caution;",
+        note3: "The calculator automatically reserves currencies needed for future titles. Only the surplus can be converted;",
+        note4: "Your API key must minimally have the following options enabled: account, inventories, characters, wallet, and progression;",
+        note5: "Without active CMs, you can buy Integrated Fractal Matrices for 15 Fractal Relics each from the vendor.",
         
         // Rodapé
         lblDevBy: "Developed by:"

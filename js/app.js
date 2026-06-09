@@ -84,6 +84,14 @@ function changeLanguage() {
         'lblAccount': text.account + ":"
     };
 
+    // Notas do site
+    document.getElementById('notesTitle').innerText = text.notesTitle;
+    document.getElementById('note1').innerText = text.note1;
+    document.getElementById('note2').innerText = text.note2;
+    document.getElementById('note3').innerText = text.note3;
+    document.getElementById('note4').innerText = text.note4;
+    document.getElementById('note5').innerText = text.note5;
+
     for (const [id, value] of Object.entries(labels)) {
         const element = document.getElementById(id);
         if (element) {
