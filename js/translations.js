@@ -43,7 +43,7 @@ const translations = {
         lblPristines: "Pristines",
         lblRelics: "Relics",
         lblMatrices: "Matrices",
-        relicConversionInfo: "O cálculo já inclui a conversão de Pristine Fractal Relics excedentes.",
+        currencyReserveInfo: "ℹ️ O cálculo reserva automaticamente currencies necessárias para títulos futuros. Apenas o excedente pode ser convertido",
 
         tier1: "Nenhum ➔ Fractal Savant",
         tier2: "Savant ➔ Fractal Prodigy",
@@ -53,7 +53,6 @@ const translations = {
     },
     en: {
         mainTitle: "Fractal God Timeline", 
-        subtitle: "Calculation based on exact drop values and conversions from your spreadsheet",
         currentTitle: "Your current title", 
         none: "None", 
         secInventory: "Your Current Inventory", 
@@ -96,7 +95,7 @@ const translations = {
         lblPristines: "Pristines",
         lblRelics: "Relics",
         lblMatrices: "Matrices",
-        relicConversionInfo: "The calculation already includes the conversion of excess Pristine Fractal Relics.",
+        currencyReserveInfo: "ℹ️ The calculator automatically reserves currencies required for future titles. Only the true excess is considered available.",
 
         tier1: "None ➔ Fractal Savant",
         tier2: "Savant ➔ Fractal Prodigy",

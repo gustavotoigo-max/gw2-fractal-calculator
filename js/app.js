@@ -65,12 +65,16 @@ function changeLanguage() {
     document.getElementById('lblResultTitle').innerText = text.resultTitle;
     document.getElementById('lblApiKey').innerText = text.apiKey;
     document.getElementById('btnSync').innerText = text.btnSync;
-    document.getElementById('relicConversionInfo').textContent = translations[currentLang].relicConversionInfo;
+   
 
     const relicInfoElement = document.getElementById('relicConversionInfo');
     if (relicInfoElement) {
-        // Use a variável 'text' que já foi definida acima com base no 'lang'
         relicInfoElement.textContent = text.relicConversionInfo;
+    }
+
+    const reserveInfoElement = document.getElementById('currencyReserveInfo');
+    if (reserveInfoElement) {
+        reserveInfoElement.textContent = text.currencyReserveInfo;
     }
 
     document.getElementById('lblAccount').innerText = text.account + ":";
