@@ -20,7 +20,7 @@ export default function handler(req, res) {
             pristine: 0,
             relics: 25000,
             matrices: 75,
-            keepMessage: "Mantenha 25.000 para o próximo título"
+            keepMessage: "Mantenha: 29.000 Fractal Relics (500 relics emp2 + 1.000 relics karmic2 + 2.500 relics agony imp2)"
         },
         {
             level: 2,
@@ -28,7 +28,7 @@ export default function handler(req, res) {
             pristine: 1200,
             relics: 35000,
             matrices: 150,
-            keepMessage: "Mantenha 1.200 Pristines e 35.000 Fractal Relics para o próximo título"
+            keepMessage: "Mantenha: 1.200 Pristines e 35.000 Fractal Relics"
         },
         {
             level: 3,
@@ -36,7 +36,7 @@ export default function handler(req, res) {
             pristine: 0,
             relics: 45000,
             matrices: 225,
-            keepMessage: "Mantenha 45.000 Fractal Relics para o próximo título"
+            keepMessage: "Mantenha: 45.000 Fractal Relics"
         },
         {
             level: 4,
@@ -44,7 +44,7 @@ export default function handler(req, res) {
             pristine: 2000,
             relics: 55000,
             matrices: 400,
-            keepMessage: "Mantenha 2.000 Pristines e 55.000 Fractal Relics para o próximo título"
+            keepMessage: "Mantenha: 2.000 Pristines e 55.000 Fractal Relics"
         }
     ];
 
@@ -150,7 +150,6 @@ export default function handler(req, res) {
             }
         }
 
-        let stepGate = "__GATE_NONE__";
         let conversionLine = "";
 
         // =====================================================
@@ -185,10 +184,6 @@ export default function handler(req, res) {
 
                 wallet.pristine -= pristinesToConvert;
                 wallet.relics += pristinesToConvert * 15;
-
-                if (pristinesToConvert > 0) {
-                    stepGate = "__GATE_NORMAL__";
-                }
             }
 
             wallet.pristine -= tier.pristine;
@@ -197,31 +192,10 @@ export default function handler(req, res) {
             totalDaysRemaining += tierDays;
         }
 
-        // Identifica gargalo
-        if (tierDays === 0) {
-            stepGate = "__GATE_READY__";
-        } else if (tierDays !== Infinity && stepGate === "__GATE_NONE__") {
-            const pDays = dPristine > 0 ? neededPristine / dPristine : 0;
-            const mDays = dMatrices > 0 ? neededMatrices / dMatrices : 0;
-            const rDays = dRelics > 0 ? neededRelics / dRelics : 0;
-            const maxDays = Math.max(pDays, mDays, rDays);
-
-            if (maxDays === rDays) {
-                stepGate = "__GATE_NORMAL__";
-            } else if (maxDays === pDays && maxDays === mDays) {
-                stepGate = "__GATE_BOTH__";
-            } else if (maxDays === pDays) {
-                stepGate = "__GATE_PRISTINE__";
-            } else if (maxDays === mDays) {
-                stepGate = "__GATE_MATRIX__";
-            }
-        }
-
         // Texto visual
         let daysLabel = `+${tierDays} __LBL_DAYS__`;
         if (tierDays === Infinity) {
             daysLabel = "__LBL_INF_DAYS__";
-            stepGate = "__LBL_NO_FARM__";
         } else if (tierDays === 0) {
             daysLabel = "__LBL_READY_BUY__";
         }
@@ -252,15 +226,6 @@ export default function handler(req, res) {
 
                 ${conversionLine}
                 ${keepMessageHtml}
-
-                <br>
-
-                <small style="text-align: left; margin-top: 5px; color: var(--text-secondary); font-size: 12px;">
-                    __LBL_GATE__
-                    <span style="color: var(--primary); font-weight:600;">
-                        ${stepGate}
-                    </span>
-                </small>
             </div>
         `;
     }
