@@ -19,28 +19,32 @@ export default function handler(req, res) {
             name: "__TIER1__",
             pristine: 0,
             relics: 25000,
-            matrices: 75
+            matrices: 75,
+            keepMessage: "Mantenha: 29.000 Fractal Relics (500 relics emp2 + 1.000 relics karmic2 + 2.500 relics agony imp2)"
         },
         {
             level: 2,
             name: "__TIER2__",
             pristine: 1200,
             relics: 35000,
-            matrices: 150
+            matrices: 150,
+            keepMessage: "Mantenha: 1.200 Pristines e 35.000 Fractal Relics"
         },
         {
             level: 3,
             name: "__TIER3__",
             pristine: 0,
             relics: 45000,
-            matrices: 225
+            matrices: 225,
+            keepMessage: "Mantenha: 45.000 Fractal Relics"
         },
         {
             level: 4,
             name: "__TIER4__",
             pristine: 2000,
             relics: 55000,
-            matrices: 400
+            matrices: 400,
+            keepMessage: "Mantenha: 2.000 Pristines e 55.000 Fractal Relics"
         }
     ];
 
@@ -71,26 +75,6 @@ export default function handler(req, res) {
     }
 
     // =========================================================
-    // FUNÇÃO PARA CALCULAR EXCEDENTE REAL DE PRISTINE
-    // Para um determinado tier, considerando os gastos anteriores
-    // =========================================================
-    function calculateAvailablePristineForConversion(tierIndex, currentTitleValue) {
-        // Soma todos os Pristines necessários para tiers já concluídos?
-        // Não, o jogador já gastou esses. Precisamos saber quantos Pristines ele tem HOJE
-        // e quantos ele vai precisar gastar neste tier + tiers futuros
-        
-        let totalFutureNeed = 0;
-        for (let j = tierIndex; j < tierData.length; j++) {
-            totalFutureNeed += tierData[j].pristine;
-        }
-        
-        // Excedente = Pristines atuais - total necessário para este tier + futuros
-        // Se for negativo, não há excedente
-        const surplus = originalPristine - totalFutureNeed;
-        return Math.max(0, surplus);
-    }
-
-    // =========================================================
     // LOOP DAS ETAPAS
     // =========================================================
 
@@ -98,20 +82,6 @@ export default function handler(req, res) {
         const tier = tierData[i];
         const isCompleted = parseInt(currentTitle) >= tier.level;
         
-        // Etapa já concluída
-        if (isCompleted) {
-            htmlOutput += `
-                <div class="tier-card completed">
-                    <div class="tier-header">
-                        <span>${tier.name}</span>
-                        <span class="status">__LBL_COMPLETED__</span>
-                    </div>
-                    <div>__LBL_ALREADY_DONE__</div>
-                </div>
-            `;
-            continue;
-        }
-
         // Verifica se este é o PRIMEIRO tier não concluído
         const isNextTier = parseInt(currentTitle) === tier.level - 1;
         
@@ -121,6 +91,31 @@ export default function handler(req, res) {
         let neededMatrices = Math.max(0, tier.matrices - wallet.matrices);
         
         let tierDays = 0;
+
+        // =====================================================
+        // GERAR MENSAGEM "MANTENHA" (para TODOS os cards)
+        // =====================================================
+        const keepMessageHtml = `
+            <br><br>
+            <span style="color: var(--text-secondary); font-size: 12px;">
+                📌 ${tier.keepMessage}
+            </span>
+        `;
+
+        // Etapa já concluída
+        if (isCompleted) {
+            htmlOutput += `
+                <div class="tier-card completed">
+                    <div class="tier-header">
+                        <span>${tier.name}</span>
+                        <span class="status">__LBL_COMPLETED__</span>
+                    </div>
+                    <div>__LBL_ALREADY_DONE__</div>
+                    ${keepMessageHtml}
+                </div>
+            `;
+            continue;
+        }
 
         // Verifica se farm é impossível
         if (
@@ -163,7 +158,6 @@ export default function handler(req, res) {
         // =====================================================
         if (isNextTier && tierDays !== Infinity) {
             // Calcula o excedente REAL baseado nos Pristines originais
-            // Subtrai o custo deste tier
             const costThisTier = tier.pristine;
             const surplusAfterThisTier = Math.max(0, originalPristine - costThisTier);
             
@@ -257,6 +251,7 @@ export default function handler(req, res) {
                 </span>
 
                 ${conversionLine}
+                ${keepMessageHtml}
 
                 <br>
 
