@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fractal God - GW2</title>
     <link rel="icon" type="image/png" href="images/favicon.ico">
+    <link rel="stylesheet" href="css/main.css">
 </head>
-<link rel="stylesheet" href="css/main.css">
 
 <body>
 
@@ -19,7 +19,6 @@
 
         <h1 id="lblMainTitle">Fractal God Timeline</h1>
 
-
         <div class="api-box">
             <label for="apiKey" id="lblApiKey">Sincronizar Conta via GW2 API Key:</label>
             <input type="text" id="apiKey" placeholder="AAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE...">
@@ -27,18 +26,24 @@
             <div id="apiStatus" class="api-status">Buscando dados na Tyria...</div>
             <div id="apiError" class="api-error"></div>
             <div id="accountInfo" class="account-info" style="display:none;">
-    <div>
-        <strong id="lblAccount">Conta:</strong>
-        <span id="accountName">-</span>
-    </div>
+                <div>
+                    <strong id="lblAccount">Conta:</strong>
+                    <span id="accountName">-</span>
+                </div>
+                <div>
+                    <strong id="lblAccountTitle">Título:</strong>
+                    <span id="accountTitle">-</span>
+                </div>
+            </div>
+        </div>
 
-    
-</div>
+        <div id="relicConversionInfo" class="info-message"></div>
+
         <div class="info-message">
-    <p id="currencyReserveInfo"></p>
-</div>
+            <p id="currencyReserveInfo"></p>
+        </div>
 
-<label for="currentTitle" id="lblCurrentTitle">Seu título atual</label>
+        <label for="currentTitle" id="lblCurrentTitle">Seu título atual</label>
         <div class="form-group">
             <select id="currentTitle">
                 <option value="0" id="optNone">Nenhum</option>
@@ -173,17 +178,14 @@
 
     <div id="loadingOverlay" class="loading-overlay">
         <div class="loading-box">
-
             <div class="mist-core">
                 <div class="matrix orbit1"></div>
                 <div class="matrix orbit2"></div>
                 <div class="matrix orbit3"></div>
             </div>
-
             <div class="loading-text">
                 Entering the Mists...
             </div>
-
         </div>
     </div>
 </body>

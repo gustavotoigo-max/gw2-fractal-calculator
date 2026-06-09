@@ -9,76 +9,93 @@ function detectLanguage() {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-    console.log("DOM carregou. O elemento existe?", document.getElementById('relicConversionInfo'));
-    const savedLanguage =
-        localStorage.getItem('preferredLanguage');
+    const savedLanguage = localStorage.getItem('preferredLanguage');
+    const langPicker = document.getElementById('langPicker');
+    
+    if (langPicker) {
+        langPicker.value = savedLanguage || detectLanguage();
+    }
 
-    document.getElementById('langPicker').value =
-        savedLanguage || detectLanguage();
-
-    const savedApiKey =
-        localStorage.getItem('savedApiKey');
+    const savedApiKey = localStorage.getItem('savedApiKey');
 
     if (savedApiKey) {
-        document.getElementById('apiKey').value =
-            savedApiKey;
+        const apiKeyInput = document.getElementById('apiKey');
+        if (apiKeyInput) {
+            apiKeyInput.value = savedApiKey;
+        }
     }
 
     updateDailyInputs();
     changeLanguage();
 
-    document.getElementById('btnSync').addEventListener('click', fetchFractalData);
-    document.getElementById('langPicker').addEventListener('change', changeLanguage);
+    const btnSync = document.getElementById('btnSync');
+    if (btnSync) {
+        btnSync.addEventListener('click', fetchFractalData);
+    }
+    
+    const langPickerEl = document.getElementById('langPicker');
+    if (langPickerEl) {
+        langPickerEl.addEventListener('change', changeLanguage);
+    }
 
     const inputsCalculo = ['currentTitle', 'pristine', 'relics', 'matrices', 'dailyPristine', 'dailyMatrices', 'dailyRelics'];
     inputsCalculo.forEach(id => {
-        document.getElementById(id).addEventListener('input', calculate);
+        const element = document.getElementById(id);
+        if (element) {
+            element.addEventListener('input', calculate);
+        }
     });
 
     const checkboxesFarm = ['farmT4', 'farmRecs', 'farmPotions', 'cmKinfall', 'cmNightmare', 'cmShattered', 'cmSunqua', 'cmSilent', 'cmLonely'];
     checkboxesFarm.forEach(id => {
-        document.getElementById(id).addEventListener('change', updateDailyInputs);
+        const element = document.getElementById(id);
+        if (element) {
+            element.addEventListener('change', updateDailyInputs);
+        }
     });
 });
 
-function changeLanguage() {    
-    const lang = document.getElementById('langPicker').value; // Aqui você pega o idioma atual
+function changeLanguage() {
+    const langPicker = document.getElementById('langPicker');
+    const lang = langPicker ? langPicker.value : 'pt';
 
     localStorage.setItem('preferredLanguage', lang);
-    const text = translations[lang] || translations['pt']; // 'text' agora contém todas as traduções
+    const text = translations[lang] || translations['pt'];
 
-    document.getElementById('lblMainTitle').innerText = text.mainTitle;
-    document.getElementById('lblCurrentTitle').innerText = text.currentTitle;
-    document.getElementById('optNone').innerText = text.none;
-    document.getElementById('lblSectionInventory').innerText = text.secInventory;
-    document.getElementById('lblPristineCart').innerText = text.pristineCart;
-    document.getElementById('lblRelicsCart').innerText = text.relicsCart;
-    document.getElementById('lblMatricesCart').innerText = text.matricesCart;
-    document.getElementById('lblSectionRoutine').innerText = text.secRoutine;
-    document.getElementById('lblSubDailies').innerText = text.subDailies;
-    document.getElementById('lblRecsCheck').innerText = text.recsCheck;
-    document.getElementById('lblSubCMs').innerText = text.subCMs;
-    document.getElementById('lblSectionGains').innerText = text.secGains;
-    document.getElementById('lblPristineDay').innerText = text.pristineDay;
-    document.getElementById('lblMatricesDay').innerText = text.matricesDay;
-    document.getElementById('lblRelicsDay').innerText = text.relicsDay;
-    document.getElementById('lblResultTitle').innerText = text.resultTitle;
-    document.getElementById('lblApiKey').innerText = text.apiKey;
-    document.getElementById('btnSync').innerText = text.btnSync;
-   
+    const labels = {
+        'lblMainTitle': text.mainTitle,
+        'lblCurrentTitle': text.currentTitle,
+        'optNone': text.none,
+        'lblSectionInventory': text.secInventory,
+        'lblPristineCart': text.pristineCart,
+        'lblRelicsCart': text.relicsCart,
+        'lblMatricesCart': text.matricesCart,
+        'lblSectionRoutine': text.secRoutine,
+        'lblSubDailies': text.subDailies,
+        'lblRecsCheck': text.recsCheck,
+        'lblSubCMs': text.subCMs,
+        'lblSectionGains': text.secGains,
+        'lblPristineDay': text.pristineDay,
+        'lblMatricesDay': text.matricesDay,
+        'lblRelicsDay': text.relicsDay,
+        'lblResultTitle': text.resultTitle,
+        'lblApiKey': text.apiKey,
+        'btnSync': text.btnSync,
+        'lblAccount': text.account + ":",
+        'currencyReserveInfo': text.currencyReserveInfo
+    };
+
+    for (const [id, value] of Object.entries(labels)) {
+        const element = document.getElementById(id);
+        if (element) {
+            element.innerText = value;
+        }
+    }
 
     const relicInfoElement = document.getElementById('relicConversionInfo');
     if (relicInfoElement) {
-        relicInfoElement.textContent = text.relicConversionInfo;
+        relicInfoElement.textContent = text.relicConversionInfo || '';
     }
-
-    const reserveInfoElement = document.getElementById('currencyReserveInfo');
-    if (reserveInfoElement) {
-        reserveInfoElement.textContent = text.currencyReserveInfo;
-    }
-
-    document.getElementById('lblAccount').innerText = text.account + ":";
-    document.getElementById('lblAccountTitle').innerText = text.title + ":";
 
     calculate();
 }
