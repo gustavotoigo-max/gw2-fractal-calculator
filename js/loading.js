@@ -15,10 +15,12 @@ const loadingMessages = {
     ]
 };
 
-let loadingInterval;
+let loadingInterval = null;
 
 function showLoading() {
-    const lang = document.getElementById('langPicker')?.value || 'en';
+    // Pega o idioma atual
+    const langPicker = document.getElementById('langPicker');
+    const lang = langPicker ? langPicker.value : 'en';
     const messages = loadingMessages[lang] || loadingMessages['en'];
     
     let index = 0;
@@ -28,15 +30,25 @@ function showLoading() {
         loadingTextElement.innerText = messages[0];
     }
     
+    // Limpa intervalo anterior se existir
+    if (loadingInterval) {
+        clearInterval(loadingInterval);
+        loadingInterval = null;
+    }
+    
+    // Inicia novo intervalo
     loadingInterval = setInterval(() => {
         index++;
-        if (index >= messages.length) index = 0;
+        if (index >= messages.length) {
+            index = 0;
+        }
         
         if (loadingTextElement) {
             loadingTextElement.innerText = messages[index];
         }
     }, 1200);
     
+    // Mostra o overlay
     const overlay = document.getElementById('loadingOverlay');
     if (overlay) {
         overlay.classList.add('active');
@@ -44,10 +56,13 @@ function showLoading() {
 }
 
 function hideLoading() {
+    // Limpa o intervalo
     if (loadingInterval) {
         clearInterval(loadingInterval);
+        loadingInterval = null;
     }
     
+    // Esconde o overlay
     const overlay = document.getElementById('loadingOverlay');
     if (overlay) {
         overlay.classList.remove('active');
