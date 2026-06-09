@@ -388,6 +388,17 @@ small {
     animation: orbit 7s infinite linear;
 }
 
+.tier-card.future-tier {
+    opacity: 0.6;
+    filter: grayscale(0.3);
+    transition: opacity 0.2s ease;
+}
+
+.tier-card.future-tier:hover {
+    opacity: 0.85;
+    filter: grayscale(0.1);
+}
+
 @keyframes orbit {
     from {
         transform: rotate(0deg) translateX(90px) rotate(0deg);
