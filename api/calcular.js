@@ -20,7 +20,7 @@ export default function handler(req, res) {
             pristine: 0,
             relics: 25000,
             matrices: 75,
-            keepMessage: "Mantenha: 29.000 Fractal Relics (500 relics emp2 + 1.000 relics karmic2 + 2.500 relics agony imp2)"
+            keepMessage: "Mantenha 25.000 para o próximo título"
         },
         {
             level: 2,
@@ -28,7 +28,7 @@ export default function handler(req, res) {
             pristine: 1200,
             relics: 35000,
             matrices: 150,
-            keepMessage: "Mantenha: 1.200 Pristines e 35.000 Fractal Relics"
+            keepMessage: "Mantenha 1.200 Pristines e 35.000 Fractal Relics para o próximo título"
         },
         {
             level: 3,
@@ -36,7 +36,7 @@ export default function handler(req, res) {
             pristine: 0,
             relics: 45000,
             matrices: 225,
-            keepMessage: "Mantenha: 45.000 Fractal Relics"
+            keepMessage: "Mantenha 45.000 Fractal Relics para o próximo título"
         },
         {
             level: 4,
@@ -44,7 +44,7 @@ export default function handler(req, res) {
             pristine: 2000,
             relics: 55000,
             matrices: 400,
-            keepMessage: "Mantenha: 2.000 Pristines e 55.000 Fractal Relics"
+            keepMessage: "Mantenha 2.000 Pristines e 55.000 Fractal Relics para o próximo título"
         }
     ];
 
