@@ -9,13 +9,10 @@ function detectLanguage() {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
+    console.log("DOM carregado");
+    
     const savedLanguage = localStorage.getItem('preferredLanguage');
     const langPicker = document.getElementById('langPicker');
-
-    langPickerEl.addEventListener('change', () => {
-    console.log("Evento change disparado");
-    changeLanguage();
-    });
     
     if (langPicker) {
         langPicker.value = savedLanguage || detectLanguage();
@@ -30,42 +27,81 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    updateDailyInputs();
-    changeLanguage();
-
-    const btnSync = document.getElementById('btnSync');
-    if (btnSync) {
-        btnSync.addEventListener('click', fetchFractalData);
+    // Inicializa os ganhos diários
+    if (typeof updateDailyInputs === 'function') {
+        updateDailyInputs();
     }
     
-    const langPickerEl = document.getElementById('langPicker');
-    if (langPickerEl) {
-        langPickerEl.addEventListener('change', changeLanguage);
+    // Aplica traduções
+    if (typeof changeLanguage === 'function') {
+        changeLanguage();
     }
 
+    // Botão de sincronização
+    const btnSync = document.getElementById('btnSync');
+    if (btnSync) {
+        btnSync.addEventListener('click', function() {
+            if (typeof fetchFractalData === 'function') {
+                fetchFractalData();
+            } else {
+                console.error("fetchFractalData não está definida");
+            }
+        });
+    }
+    
+    // Seletor de idioma
+    const langPickerEl = document.getElementById('langPicker');
+    if (langPickerEl) {
+        langPickerEl.addEventListener('change', function() {
+            if (typeof changeLanguage === 'function') {
+                changeLanguage();
+            }
+        });
+    }
+
+    // Inputs de cálculo
     const inputsCalculo = ['currentTitle', 'pristine', 'relics', 'matrices', 'dailyPristine', 'dailyMatrices', 'dailyRelics'];
     inputsCalculo.forEach(id => {
         const element = document.getElementById(id);
         if (element) {
-            element.addEventListener('input', calculate);
+            element.addEventListener('input', function() {
+                if (typeof calculate === 'function') {
+                    calculate();
+                }
+            });
         }
     });
 
+    // Checkboxes de farm
     const checkboxesFarm = ['farmT4', 'farmRecs', 'farmPotions', 'cmKinfall', 'cmNightmare', 'cmShattered', 'cmSunqua', 'cmSilent', 'cmLonely'];
     checkboxesFarm.forEach(id => {
         const element = document.getElementById(id);
         if (element) {
-            element.addEventListener('change', updateDailyInputs);
+            element.addEventListener('change', function() {
+                if (typeof updateDailyInputs === 'function') {
+                    updateDailyInputs();
+                }
+            });
         }
     });
+    
+    console.log("Eventos registrados com sucesso!");
 });
 
 function changeLanguage() {
+    console.log("changeLanguage chamado");
+    
     const langPicker = document.getElementById('langPicker');
     const lang = langPicker ? langPicker.value : 'pt';
-    console.log("Trocando idioma para:", lang);  // Debug
 
     localStorage.setItem('preferredLanguage', lang);
+    
+    // Verifica se translations existe
+    if (typeof translations === 'undefined') {
+        console.error("translations não está definido");
+        return;
+    }
+    
     const text = translations[lang] || translations['pt'];
 
     // Labels principais
@@ -99,12 +135,6 @@ function changeLanguage() {
         }
     }
 
-    // Mensagem de excedente (se houver algum elemento específico)
-    const relicInfoElement = document.getElementById('relicConversionInfo');
-    if (relicInfoElement) {
-        relicInfoElement.textContent = text.relicConversionInfo || '';
-    }
-
     // Notas do site
     const notesTitle = document.getElementById('notesTitle');
     if (notesTitle) notesTitle.innerText = text.notesTitle;
@@ -124,12 +154,10 @@ function changeLanguage() {
     const note5 = document.getElementById('note5');
     if (note5) note5.innerText = text.note5;
 
-    // Banner de desenvolvimento
-    const devBanner = document.querySelector('.dev-banner');
-    if (devBanner && text.devBanner) {
-        devBanner.innerText = text.devBanner;
-    }
-
     // Recalcula para atualizar textos dinâmicos
-    calculate();
+    if (typeof calculate === 'function') {
+        calculate();
+    }
+    
+    console.log("Idioma alterado para:", lang);
 }
