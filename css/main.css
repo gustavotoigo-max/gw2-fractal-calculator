@@ -454,6 +454,47 @@ small {
     vertical-align: middle;
 }
 
+/* Aviso de API */
+.api-warning {
+    background: rgba(229, 169, 60, 0.1);
+    border-left: 4px solid var(--primary);
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    color: var(--text-secondary);
+}
+
+.warning-icon {
+    font-size: 18px;
+    margin-right: 4px;
+}
+
+#apiWarningText {
+    flex: 1;
+}
+
+#apiWarningLink {
+    background: var(--primary);
+    color: #000;
+    padding: 4px 10px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 12px;
+    transition: opacity 0.2s;
+    white-space: nowrap;
+}
+
+#apiWarningLink:hover {
+    opacity: 0.8;
+    text-decoration: none;
+}
+
 @keyframes orbit {
     from {
         transform: rotate(0deg) translateX(90px) rotate(0deg);

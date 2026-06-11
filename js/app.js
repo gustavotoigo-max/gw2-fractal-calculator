@@ -135,6 +135,17 @@ function changeLanguage() {
         }
     }
 
+
+    // Aviso da API
+    const apiWarningTextSpan = document.getElementById('apiWarningText');
+    if (apiWarningTextSpan) {
+        apiWarningTextSpan.innerText = text.apiWarningText;
+    }
+
+    const apiWarningLink = document.getElementById('apiWarningLink');
+    if (apiWarningLink) {
+        apiWarningLink.innerText = text.apiWarningLink;
+    }
     // Notas do site
     const notesTitle = document.getElementById('notesTitle');
     if (notesTitle) notesTitle.innerText = text.notesTitle;

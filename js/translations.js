@@ -64,7 +64,8 @@ const translations = {
         note3: "O cálculo reserva automaticamente currencies necessárias para títulos futuros. Apenas o excedente pode ser convertido;",
         note4: "A sua API deve conter minimamente as seguintes opções marcadas: account, inventories, characters, wallet e progression;",
         note5: "Sem CMs ativas, você pode comprar Integrated Fractal Matrices por 15 Fractal Relics cada uma no vendor.",
-        
+        apiWarningText: "Crie uma API key exclusiva para este site com ao menos estas permissões: account, inventories, wallet, progression",
+        apiWarningLink: "🔑 Criar API key",
         // Rodapé
         lblDevBy: "Desenvolvido por:"
     },
@@ -87,7 +88,8 @@ const translations = {
         relicsDay: "Normal Fractal Relics / day (Guaranteed + Melt)", 
         resultTitle: "Total Time Remaining until Fractal God",
         devBanner: "⚠️ Site under development - Some features may be in testing phase",
-        
+        apiWarningText: "Create a dedicated API key for this site with at least these permissions: account, inventories, wallet, progression",
+        apiWarningLink: "🔑 Create API key",
         // Status e mensagens dos cards
         lblCompleted: "✓ Completed", 
         lblAlreadyDone: "You already own this tier or have passed it!", 
