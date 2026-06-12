@@ -48,10 +48,8 @@ export default function handler(req, res) {
         }
     ];
 
-    // Configuração de conversão
-    const relicsPerMatrix = 15; // 15 Relics = 1 Integrated Matrix
+    const relicsPerMatrix = 15;
     
-    // Valores ORIGINAIS do usuário
     const originalPristine = parseInt(pristine) || 0;
     const originalRelics = parseInt(relics) || 0;
     const originalMatrices = parseInt(matrices) || 0;
@@ -111,10 +109,6 @@ export default function handler(req, res) {
             continue;
         }
 
-        // =====================================================
-        // VERIFICA SE É POSSÍVEL PROGREDIR
-        // =====================================================
-        
         const canGetPristine = dPristine > 0 || wallet.pristine >= tier.pristine;
         const canGetMatrices = dMatricesFromCMs > 0 || dRelics > 0 || wallet.matrices >= tier.matrices;
         const canGetRelics = dRelics > 0 || dPristine > 0 || wallet.relics >= tier.relics;
@@ -126,9 +120,6 @@ export default function handler(req, res) {
         ) {
             tierDays = Infinity;
         } else {
-            // =================================================
-            // SIMULAÇÃO DIÁRIA
-            // =================================================
             while (true) {
                 const futurePristineNeed = calculateFuturePristineNeed(tierData, i);
                 const availablePristineForConversion = Math.max(0, wallet.pristine - futurePristineNeed);
@@ -167,15 +158,10 @@ export default function handler(req, res) {
             }
         }
 
-        // =====================================================
-        // EXECUTA COMPRA
-        // =====================================================
-
         if (tierDays !== Infinity) {
             const futurePristineNeed = calculateFuturePristineNeed(tierData, i);
             let availablePristineForConversion = Math.max(0, wallet.pristine - futurePristineNeed);
 
-            // 1. Comprar Matrices se necessário (usando Relics)
             if (wallet.matrices < tier.matrices) {
                 const matrixDeficit = tier.matrices - wallet.matrices;
                 const relicsNeeded = matrixDeficit * relicsPerMatrix;
@@ -198,7 +184,6 @@ export default function handler(req, res) {
                 }
             }
 
-            // 2. Converter Pristine em Relics se necessário
             if (wallet.relics < tier.relics) {
                 const relicDeficit = tier.relics - wallet.relics;
                 const maxConvertibleRelics = availablePristineForConversion * 15;
@@ -209,7 +194,6 @@ export default function handler(req, res) {
                 wallet.relics += pristinesToConvert * 15;
             }
 
-            // 3. Deduzir custos do tier
             wallet.pristine -= tier.pristine;
             wallet.relics -= tier.relics;
             wallet.matrices -= tier.matrices;
@@ -218,8 +202,22 @@ export default function handler(req, res) {
         }
 
         // =====================================================
-        // TEXTO VISUAL DO CARD
+        // GERAR AVISO DE CONVERSÃO (excedente seguro) - apenas para o próximo título
         // =====================================================
+        let convertWarningPlaceholder = "";
+        if (isNextTier && tierDays !== Infinity) {
+            // Soma dos Pristine necessários para os próximos tiers (depois deste)
+            let futurePristineNeed = 0;
+            for (let k = i + 1; k < tierData.length; k++) {
+                futurePristineNeed += tierData[k].pristine;
+            }
+            // Excedente seguro = o que sobra de Pristine após pagar este tier e reservar para os futuros
+            const safeSurplus = Math.max(0, wallet.pristine - futurePristineNeed);
+            if (safeSurplus > 0) {
+                const relicsFromSurplus = safeSurplus * 15;
+                convertWarningPlaceholder = `__CONVERT_WARNING_${safeSurplus}_${relicsFromSurplus}__`;
+            }
+        }
 
         let daysLabel = `+${tierDays} __LBL_DAYS__`;
         if (tierDays === Infinity) {
@@ -253,6 +251,7 @@ export default function handler(req, res) {
                 </span>
 
                 ${keepMessageHtml}
+                ${convertWarningPlaceholder}
             </div>
         `;
     }

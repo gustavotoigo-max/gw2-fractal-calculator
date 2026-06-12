@@ -47,6 +47,13 @@ async function calculate() {
             .replaceAll('__LBL_NO_FARM__', text.lblNoFarmActive)
             .replaceAll('__LBL_READY_BUY__', text.lblReadyBuy);
 
+        // Substitui placeholders de aviso de conversão (excedente seguro)
+        finalHtml = finalHtml.replace(/__CONVERT_WARNING_(\d+)_(\d+)__/g, (match, pristines, relics) => {
+            return text.lblSurplus
+                .replace('{{pristines}}', parseInt(pristines).toLocaleString())
+                .replace('{{relics}}', parseInt(relics).toLocaleString());
+        });
+
         const totalDays = data.totalDaysRemaining;
         const totalWeeks = (totalDays / 7).toFixed(1);
 
