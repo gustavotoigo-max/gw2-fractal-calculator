@@ -48,14 +48,13 @@ async function calculate() {
             .replaceAll('__LBL_NO_FARM__', text.lblNoFarmActive)
             .replaceAll('__LBL_READY_BUY__', text.lblReadyBuy);
 
-        // Substitui placeholders de aviso de conversão (excedente seguro)
-        // Substitui placeholders de aviso de conversão (excedente seguro) - agora em nova linha
-finalHtml = finalHtml.replace(/__CONVERT_WARNING_(\d+)_(\d+)__/g, (match, pristines, relics) => {
-    const message = text.lblSurplus
-        .replace('{{pristines}}', parseInt(pristines).toLocaleString())
-        .replace('{{relics}}', parseInt(relics).toLocaleString());
-    return `<br><div style="margin-top: 4px;">${message}</div>`;
-});
+        let finalHtml = data.htmlOutput
+            .replaceAll('__LBL_PRISTINES__', text.lblPristines)
+            // ... todos os outros replaces ...
+            .replaceAll('__KEEP_MSG_1__', text.keepMsg1 || "📌 Mantenha 25.000 Fractal Relics para próximo título")
+            .replaceAll('__KEEP_MSG_2__', text.keepMsg2 || "📌 Mantenha 1.200 Pristines e 35.000 Fractal Relics para próximo título")
+            .replaceAll('__KEEP_MSG_3__', text.keepMsg3 || "📌 Mantenha 45.000 Fractal Relics para próximo título")
+            .replaceAll('__KEEP_MSG_4__', text.keepMsg4 || "📌 Mantenha 2.000 Pristines e 55.000 Fractal Relics para próximo título");
 
         const totalDays = data.totalDaysRemaining;
         const totalWeeks = (totalDays / 7).toFixed(1);

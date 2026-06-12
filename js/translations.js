@@ -66,6 +66,10 @@ const translations = {
         note5: "Sem CMs ativas, você pode comprar Integrated Fractal Matrices por 15 Fractal Relics cada uma no vendor.",
         apiWarningText: "Crie uma nova API key exclusiva para este site com ao menos estas permissões: account, inventories, wallet, progression",
         apiWarningLink: "🔑 Criar API key",
+        keepMsg1: "📌 Mantenha 25.000 Fractal Relics para próximo título",
+        keepMsg2: "📌 Mantenha 1.200 Pristines e 35.000 Fractal Relics para próximo título",
+        keepMsg3: "📌 Mantenha 45.000 Fractal Relics para próximo título",
+        keepMsg4: "📌 Mantenha 2.000 Pristines e 55.000 Fractal Relics para próximo título",
         // Rodapé
         lblDevBy: "Desenvolvido por:"
     },
@@ -124,7 +128,10 @@ const translations = {
         
         // Mensagem de excedente (cards)
         lblSurplus: "✨ Safe surplus: {{pristines}} Pristines → +{{relics}} Relics available for conversion",
-        
+        keepMsg1: "📌 Keep 25,000 Fractal Relics for the next title",
+        keepMsg2: "📌 Keep 1,200 Pristines and 35,000 Fractal Relics for the next title",
+        keepMsg3: "📌 Keep 45,000 Fractal Relics for the next title",
+        keepMsg4: "📌 Keep 2,000 Pristines and 55,000 Fractal Relics for the next title",
         // Notas do rodapé
         notesTitle: "📝 Notes",
         note1: "This site was developed for personal/local group use and is not affiliated with any existing tool or company;",

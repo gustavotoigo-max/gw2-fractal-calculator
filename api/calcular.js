@@ -4,7 +4,6 @@ export default function handler(req, res) {
     }
 
     const {
-        lang,
         currentTitle,
         pristine,
         relics,
@@ -16,36 +15,36 @@ export default function handler(req, res) {
 
     const tierData = [
         {
-            level: i = 1,
+            level: 1,
             name: "__TIER1__",
             pristine: 0,
             relics: 25000,
             matrices: 75,
-            keepMessage: keepMessages[selectedLang][i]
+            keepMessage: "__KEEP_MSG_1__"
         },
         {
-            level: i = 2,
+            level: 2,
             name: "__TIER2__",
             pristine: 1200,
             relics: 35000,
             matrices: 150,
-            keepMessage: keepMessages[selectedLang][i]
+            keepMessage: "__KEEP_MSG_2__"
         },
         {
-            level: i = 3,
+            level: 3,
             name: "__TIER3__",
             pristine: 0,
             relics: 45000,
             matrices: 225,
-            keepMessage: keepMessages[selectedLang][i]
+            keepMessage: "__KEEP_MSG_3__"
         },
         {
-            level: i = 4,
+            level: 4,
             name: "__TIER4__",
             pristine: 2000,
             relics: 55000,
             matrices: 300,
-            keepMessage: keepMessages[selectedLang][i]
+            keepMessage: "__KEEP_MSG_4__"
         }
     ];
 
@@ -90,22 +89,12 @@ export default function handler(req, res) {
         
         let tierDays = 0;
 
-        const keepMessages = {
-    pt: [
-        "Mantenha 25.000 Fractal Relics para próximo título",
-        "Mantenha 1.200 Pristines e 35.000 Fractal Relics para próximo título",
-        "Mantenha 45.000 Fractal Relics para próximo título",
-        "Mantenha 2.000 Pristines e 55.000 Fractal Relics para próximo título"
-    ],
-    en: [
-        "Keep 25,000 Fractal Relics for the next title",
-        "Keep 1,200 Pristines and 35,000 Fractal Relics for the next title",
-        "Keep 45,000 Fractal Relics for the next title",
-        "Keep 2,000 Pristines and 55,000 Fractal Relics for the next title"
-    ]
-};
-
-const selectedLang = (lang === 'pt' ? 'pt' : 'en');
+        const keepMessageHtml = `
+            <br><br>
+            <span style="color: var(--text-secondary); font-size: 12px;">
+                📌 ${tier.keepMessage}
+            </span>
+        `;
 
         if (isCompleted) {
             htmlOutput += `
@@ -212,17 +201,13 @@ const selectedLang = (lang === 'pt' ? 'pt' : 'en');
             totalDaysRemaining += tierDays;
         }
 
-        // =====================================================
-        // GERAR AVISO DE CONVERSÃO (excedente seguro) - apenas para o próximo título
-        // =====================================================
+        // Geração do aviso de conversão (excedente seguro)
         let convertWarningPlaceholder = "";
         if (isNextTier && tierDays !== Infinity) {
-            // Soma dos Pristine necessários para os próximos tiers (depois deste)
             let futurePristineNeed = 0;
             for (let k = i + 1; k < tierData.length; k++) {
                 futurePristineNeed += tierData[k].pristine;
             }
-            // Excedente seguro = o que sobra de Pristine após pagar este tier e reservar para os futuros
             const safeSurplus = Math.max(0, wallet.pristine - futurePristineNeed);
             if (safeSurplus > 0) {
                 const relicsFromSurplus = safeSurplus * 15;
