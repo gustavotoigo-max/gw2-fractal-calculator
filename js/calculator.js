@@ -28,7 +28,6 @@ async function calculate() {
             .replaceAll('__LBL_PRISTINES__', text.lblPristines)
             .replaceAll('__LBL_RELICS__', text.lblRelics)
             .replaceAll('__LBL_MATRICES__', text.lblMatrices)
-
             .replaceAll('__TIER1__', text.tier1)
             .replaceAll('__TIER2__', text.tier2)
             .replaceAll('__TIER3__', text.tier3)
@@ -46,15 +45,20 @@ async function calculate() {
             .replaceAll('__LBL_DAYS__', text.lblDays)
             .replaceAll('__LBL_INF_DAYS__', text.lblInfDays)
             .replaceAll('__LBL_NO_FARM__', text.lblNoFarmActive)
-            .replaceAll('__LBL_READY_BUY__', text.lblReadyBuy);
-
-        let finalHtml = data.htmlOutput
-            .replaceAll('__LBL_PRISTINES__', text.lblPristines)
-            // ... todos os outros replaces ...
+            .replaceAll('__LBL_READY_BUY__', text.lblReadyBuy)
+            // Placeholders das mensagens "Mantenha"
             .replaceAll('__KEEP_MSG_1__', text.keepMsg1 || "📌 Mantenha 25.000 Fractal Relics para próximo título")
             .replaceAll('__KEEP_MSG_2__', text.keepMsg2 || "📌 Mantenha 1.200 Pristines e 35.000 Fractal Relics para próximo título")
             .replaceAll('__KEEP_MSG_3__', text.keepMsg3 || "📌 Mantenha 45.000 Fractal Relics para próximo título")
             .replaceAll('__KEEP_MSG_4__', text.keepMsg4 || "📌 Mantenha 2.000 Pristines e 55.000 Fractal Relics para próximo título");
+
+        // Substitui placeholders de aviso de conversão (excedente seguro) em nova linha
+        finalHtml = finalHtml.replace(/__CONVERT_WARNING_(\d+)_(\d+)__/g, (match, pristines, relics) => {
+            const message = text.lblSurplus
+                .replace('{{pristines}}', parseInt(pristines).toLocaleString())
+                .replace('{{relics}}', parseInt(relics).toLocaleString());
+            return `<br><div style="margin-top: 4px;">${message}</div>`;
+        });
 
         const totalDays = data.totalDaysRemaining;
         const totalWeeks = (totalDays / 7).toFixed(1);
