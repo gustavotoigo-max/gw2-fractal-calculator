@@ -19,8 +19,8 @@ async function fetchFractalData() {
             fetch(`https://api.guildwars2.com/v2/account?access_token=${apiKey}`)
         ]);
 
-        // Verifica se as requisições foram bem sucedidas
-        if (!walletRes.ok || !materialsRes.ok || !achievementsRes.ok || !accountRes.ok) {
+        // Verifica se as requisições foram bem sucedidas (ignorando achievements, pois pode retornar erro 200 com conteúdo de erro)
+        if (!walletRes.ok || !materialsRes.ok || !accountRes.ok) {
             throw new Error("Erro na autenticação da API. Verifique sua API Key.");
         }
 
@@ -55,14 +55,23 @@ async function fetchFractalData() {
         // Detecta título atual
         let detectedTitle = 0;
 
-        if (achievementsData.some(a => a.id === ACHIEVEMENTS.GOD && a.done)) {
-            detectedTitle = 4; // Fractal God
-        } else if (achievementsData.some(a => a.id === ACHIEVEMENTS.CHAMPION && a.done)) {
-            detectedTitle = 3; // Fractal Champion
-        } else if (achievementsData.some(a => a.id === ACHIEVEMENTS.PRODIGY && a.done)) {
-            detectedTitle = 2; // Fractal Prodigy
-        } else if (achievementsData.some(a => a.id === ACHIEVEMENTS.SAVANT && a.done)) {
-            detectedTitle = 1; // Fractal Savant
+        // TRATAMENTO ESPECIAL: Se a API retornar erro de IDs inválidos, significa que o jogador não tem nenhuma conquista
+        if (achievementsData && achievementsData.text === "all ids provided are invalid") {
+            console.log("Nenhuma conquista encontrada (all ids invalid). Assumindo título 'Nenhum'.");
+            detectedTitle = 0;
+        } else if (Array.isArray(achievementsData)) {
+            // Verificação normal
+            if (achievementsData.some(a => a.id === ACHIEVEMENTS.GOD && a.done)) {
+                detectedTitle = 4; // Fractal God
+            } else if (achievementsData.some(a => a.id === ACHIEVEMENTS.CHAMPION && a.done)) {
+                detectedTitle = 3; // Fractal Champion
+            } else if (achievementsData.some(a => a.id === ACHIEVEMENTS.PRODIGY && a.done)) {
+                detectedTitle = 2; // Fractal Prodigy
+            } else if (achievementsData.some(a => a.id === ACHIEVEMENTS.SAVANT && a.done)) {
+                detectedTitle = 1; // Fractal Savant
+            }
+        } else {
+            console.warn("Resposta inesperada das conquistas:", achievementsData);
         }
 
         const currentTitleSelect = document.getElementById('currentTitle');
