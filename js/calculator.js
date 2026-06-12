@@ -4,6 +4,7 @@ async function calculate() {
     const currentTitle = parseInt(document.getElementById('currentTitle').value);
 
     const payload = {
+        lang,
         currentTitle,
         pristine: parseInt(document.getElementById('pristine').value) || 0,
         relics: parseInt(document.getElementById('relics').value) || 0,

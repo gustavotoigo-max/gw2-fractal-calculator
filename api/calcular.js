@@ -4,6 +4,7 @@ export default function handler(req, res) {
     }
 
     const {
+        lang,
         currentTitle,
         pristine,
         relics,
@@ -20,7 +21,7 @@ export default function handler(req, res) {
             pristine: 0,
             relics: 25000,
             matrices: 75,
-            keepMessage: "Mantenha 25.000 Fractal Relics para próximo título"
+            keepMessage: keepMessages[selectedLang][i]
         },
         {
             level: 2,
@@ -28,7 +29,7 @@ export default function handler(req, res) {
             pristine: 1200,
             relics: 35000,
             matrices: 150,
-            keepMessage: "Mantenha 1.200 Pristines e 35.000 Fractal Relics para próximo título"
+            keepMessage: keepMessages[selectedLang][i]
         },
         {
             level: 3,
@@ -36,7 +37,7 @@ export default function handler(req, res) {
             pristine: 0,
             relics: 45000,
             matrices: 225,
-            keepMessage: "Mantenha 45.000 Fractal Relics para próximo título"
+            keepMessage: keepMessages[selectedLang][i]
         },
         {
             level: 4,
@@ -44,7 +45,7 @@ export default function handler(req, res) {
             pristine: 2000,
             relics: 55000,
             matrices: 300,
-            keepMessage: "Mantenha 2.000 Pristines e 55.000 Fractal Relics para próximo título"
+            keepMessage: keepMessages[selectedLang][i]
         }
     ];
 
@@ -89,12 +90,22 @@ export default function handler(req, res) {
         
         let tierDays = 0;
 
-        const keepMessageHtml = `
-            <br><br>
-            <span style="color: var(--text-secondary); font-size: 12px;">
-                📌 ${tier.keepMessage}
-            </span>
-        `;
+        const keepMessages = {
+    pt: [
+        "Mantenha 25.000 Fractal Relics para próximo título",
+        "Mantenha 1.200 Pristines e 35.000 Fractal Relics para próximo título",
+        "Mantenha 45.000 Fractal Relics para próximo título",
+        "Mantenha 2.000 Pristines e 55.000 Fractal Relics para próximo título"
+    ],
+    en: [
+        "Keep 25,000 Fractal Relics for the next title",
+        "Keep 1,200 Pristines and 35,000 Fractal Relics for the next title",
+        "Keep 45,000 Fractal Relics for the next title",
+        "Keep 2,000 Pristines and 55,000 Fractal Relics for the next title"
+    ]
+};
+
+const selectedLang = (lang === 'pt' ? 'pt' : 'en');
 
         if (isCompleted) {
             htmlOutput += `
