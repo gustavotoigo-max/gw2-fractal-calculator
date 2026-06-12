@@ -16,7 +16,7 @@ export default function handler(req, res) {
 
     const tierData = [
         {
-            level: 1,
+            level: i = 1,
             name: "__TIER1__",
             pristine: 0,
             relics: 25000,
@@ -24,7 +24,7 @@ export default function handler(req, res) {
             keepMessage: keepMessages[selectedLang][i]
         },
         {
-            level: 2,
+            level: i = 2,
             name: "__TIER2__",
             pristine: 1200,
             relics: 35000,
@@ -32,7 +32,7 @@ export default function handler(req, res) {
             keepMessage: keepMessages[selectedLang][i]
         },
         {
-            level: 3,
+            level: i = 3,
             name: "__TIER3__",
             pristine: 0,
             relics: 45000,
@@ -40,7 +40,7 @@ export default function handler(req, res) {
             keepMessage: keepMessages[selectedLang][i]
         },
         {
-            level: 4,
+            level: i = 4,
             name: "__TIER4__",
             pristine: 2000,
             relics: 55000,
