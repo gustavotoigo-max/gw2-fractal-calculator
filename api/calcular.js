@@ -92,7 +92,7 @@ export default function handler(req, res) {
         const keepMessageHtml = `
             <br><br>
             <span style="color: var(--text-secondary); font-size: 12px;">
-                📌 ${tier.keepMessage}
+                ${tier.keepMessage}
             </span>
         `;
 
