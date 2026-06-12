@@ -48,11 +48,13 @@ async function calculate() {
             .replaceAll('__LBL_READY_BUY__', text.lblReadyBuy);
 
         // Substitui placeholders de aviso de conversão (excedente seguro)
-        finalHtml = finalHtml.replace(/__CONVERT_WARNING_(\d+)_(\d+)__/g, (match, pristines, relics) => {
-            return text.lblSurplus
-                .replace('{{pristines}}', parseInt(pristines).toLocaleString())
-                .replace('{{relics}}', parseInt(relics).toLocaleString());
-        });
+        // Substitui placeholders de aviso de conversão (excedente seguro) - agora em nova linha
+finalHtml = finalHtml.replace(/__CONVERT_WARNING_(\d+)_(\d+)__/g, (match, pristines, relics) => {
+    const message = text.lblSurplus
+        .replace('{{pristines}}', parseInt(pristines).toLocaleString())
+        .replace('{{relics}}', parseInt(relics).toLocaleString());
+    return `<br><div style="margin-top: 4px;">${message}</div>`;
+});
 
         const totalDays = data.totalDaysRemaining;
         const totalWeeks = (totalDays / 7).toFixed(1);
