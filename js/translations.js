@@ -128,7 +128,7 @@ const translations = {
         
         // Mensagem de excedente (cards)
         lblSurplus: "✨ Safe surplus: {{pristines}} Pristines → +{{relics}} Relics available for conversion",
-        keepMsg1: "📌 Keep 25,000 Fractal Relics for the next title",
+        keepMsg1: "Keep 25,000 Fractal Relics for the next title",
         keepMsg2: "📌 Keep 1,200 Pristines and 35,000 Fractal Relics for the next title",
         keepMsg3: "📌 Keep 45,000 Fractal Relics for the next title",
         keepMsg4: "📌 Keep 2,000 Pristines and 55,000 Fractal Relics for the next title",
