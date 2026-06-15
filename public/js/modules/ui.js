@@ -1,25 +1,9 @@
+// public/js/modules/ui.js
 import { translations } from './translations.js';
-import { calculate } from './calculator.js';
 import { SITE_VERSION, USER_NICK, USER_EMAIL } from './constants.js';
-import { translations } from './translations.js';
+import { calculate } from './calculator.js';
 
-// ... outras funções (updateDailyInputs, changeLanguage, initUI) ...
-
-export function updateVersionFooter() {
-    const langPicker = document.getElementById('langPicker');
-    const lang = langPicker ? langPicker.value : 'pt';
-    const text = translations[lang] || translations['pt'];
-    const versionFooter = document.getElementById('versionFooter');
-    if (versionFooter) {
-        versionFooter.innerHTML = `
-            <div style="text-align: center; margin-top: 25px; font-size: 10px; color: var(--text-secondary); opacity: 0.4; letter-spacing: 0.5px; line-height: 1.5;">
-                <div>${SITE_VERSION}</div>
-                <div style="margin-top: 4px;">${text.lblDevBy} <strong>${USER_NICK}</strong> (${USER_EMAIL})</div>
-            </div>
-        `;
-    }
-}
-
+// Atualiza os ganhos diários com base nos checkboxes selecionados
 export function updateDailyInputs() {
     let pristineSum = 0, matrixSum = 0, relicsSum = 0;
     if (document.getElementById('farmT4').checked) { pristineSum += 12; relicsSum += 174; }
@@ -38,6 +22,7 @@ export function updateDailyInputs() {
     calculate();
 }
 
+// Aplica as traduções em todos os elementos textuais da página
 export function changeLanguage() {
     const langPicker = document.getElementById('langPicker');
     const lang = langPicker ? langPicker.value : 'pt';
@@ -81,17 +66,30 @@ export function changeLanguage() {
         if (element) element.innerText = value;
     }
 
+    // Recalcula para atualizar textos dinâmicos dos cards
     calculate();
-    export function changeLanguage() {
-    // ... código existente (aplicar traduções nos labels) ...
     
-    if (typeof calculate === 'function') calculate();
-    
-    // Atualiza o rodapé com o novo idioma
+    // Atualiza o rodapé com o idioma correto
     updateVersionFooter();
 }
+
+// Atualiza o rodapé com versão e dados do desenvolvedor (sempre visível)
+export function updateVersionFooter() {
+    const langPicker = document.getElementById('langPicker');
+    const lang = langPicker ? langPicker.value : 'pt';
+    const text = translations[lang] || translations['pt'];
+    const versionFooter = document.getElementById('versionFooter');
+    if (versionFooter) {
+        versionFooter.innerHTML = `
+            <div style="text-align: center; margin-top: 25px; font-size: 10px; color: var(--text-secondary); opacity: 0.4; letter-spacing: 0.5px; line-height: 1.5;">
+                <div>${SITE_VERSION}</div>
+                <div style="margin-top: 4px;">${text.lblDevBy} <strong>${USER_NICK}</strong> (${USER_EMAIL})</div>
+            </div>
+        `;
+    }
 }
 
+// Inicialização da interface (idioma, API key salva, rodapé)
 export function initUI() {
     // Detecta idioma salvo ou do navegador
     const savedLanguage = localStorage.getItem('preferredLanguage');
@@ -109,7 +107,6 @@ export function initUI() {
         apiKeyInput.value = savedApiKey;
     }
 
-    // Aplica traduções iniciais
+    // Aplica traduções iniciais (inclui rodapé)
     changeLanguage();
-    updateVersionFooter();
 }
