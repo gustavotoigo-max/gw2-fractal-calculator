@@ -72,19 +72,10 @@ export async function calculate() {
             timeResultEl.innerText = `${totalDays} ${text.lblDays} (~${totalWeeks} ${text.lblWeeks})`;
         }
 
-                // Preenche os cards dos tiers (sem o rodapé)
+        // Preenche os cards dos tiers (sem o rodapé)
         document.getElementById('missingResources').innerHTML = finalHtml;
 
-        // Preenche o rodapé com versão e créditos
-        const versionFooter = document.getElementById('versionFooter');
-        if (versionFooter) {
-            versionFooter.innerHTML = `
-                <div style="text-align: center; margin-top: 25px; font-size: 10px; color: var(--text-secondary); opacity: 0.4; letter-spacing: 0.5px; line-height: 1.5;">
-                    <div>${SITE_VERSION}</div>
-                    <div style="margin-top: 4px;">${text.lblDevBy} <strong>${USER_NICK}</strong> (${USER_EMAIL})</div>
-                </div>
-            `;
-        }
+       
     } catch (e) {
         console.error("Erro na comunicação com o backend.", e);
     }

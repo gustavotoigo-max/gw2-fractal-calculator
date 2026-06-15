@@ -1,5 +1,24 @@
 import { translations } from './translations.js';
 import { calculate } from './calculator.js';
+import { SITE_VERSION, USER_NICK, USER_EMAIL } from './constants.js';
+import { translations } from './translations.js';
+
+// ... outras funções (updateDailyInputs, changeLanguage, initUI) ...
+
+export function updateVersionFooter() {
+    const langPicker = document.getElementById('langPicker');
+    const lang = langPicker ? langPicker.value : 'pt';
+    const text = translations[lang] || translations['pt'];
+    const versionFooter = document.getElementById('versionFooter');
+    if (versionFooter) {
+        versionFooter.innerHTML = `
+            <div style="text-align: center; margin-top: 25px; font-size: 10px; color: var(--text-secondary); opacity: 0.4; letter-spacing: 0.5px; line-height: 1.5;">
+                <div>${SITE_VERSION}</div>
+                <div style="margin-top: 4px;">${text.lblDevBy} <strong>${USER_NICK}</strong> (${USER_EMAIL})</div>
+            </div>
+        `;
+    }
+}
 
 export function updateDailyInputs() {
     let pristineSum = 0, matrixSum = 0, relicsSum = 0;
@@ -63,6 +82,14 @@ export function changeLanguage() {
     }
 
     calculate();
+    export function changeLanguage() {
+    // ... código existente (aplicar traduções nos labels) ...
+    
+    if (typeof calculate === 'function') calculate();
+    
+    // Atualiza o rodapé com o novo idioma
+    updateVersionFooter();
+}
 }
 
 export function initUI() {
@@ -84,4 +111,5 @@ export function initUI() {
 
     // Aplica traduções iniciais
     changeLanguage();
+    updateVersionFooter();
 }
