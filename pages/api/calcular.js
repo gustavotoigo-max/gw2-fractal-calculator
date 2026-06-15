@@ -201,7 +201,6 @@ export default function handler(req, res) {
             totalDaysRemaining += tierDays;
         }
 
-        // Geração do aviso de conversão (excedente seguro)
         let convertWarningPlaceholder = "";
         if (isNextTier && tierDays !== Infinity) {
             let futurePristineNeed = 0;

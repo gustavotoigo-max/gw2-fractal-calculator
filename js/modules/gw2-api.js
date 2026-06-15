@@ -1,4 +1,8 @@
-async function fetchFractalData() {
+import { ACHIEVEMENTS, WALLET_IDS, MATERIAL_IDS } from './constants.js';
+import { showLoading, hideLoading } from './loading.js';
+import { calculate } from './calculator.js';
+
+export async function fetchFractalData() {
     const apiKey = document.getElementById('apiKey').value.trim();
     localStorage.setItem('savedApiKey', apiKey);
     
@@ -9,7 +13,6 @@ async function fetchFractalData() {
     
     showLoading();
 
-    // Timeout de 20 segundos para evitar loading eterno
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 20000);
 
@@ -25,7 +28,6 @@ async function fetchFractalData() {
 
         clearTimeout(timeoutId);
 
-        // Verifica se as requisições foram bem sucedidas (exceto achievements que pode retornar erro 200 com conteúdo)
         if (!walletRes.ok || !materialsRes.ok || !accountRes.ok) {
             throw new Error(`Erro na API: Wallet=${walletRes.status}, Materials=${materialsRes.status}, Account=${accountRes.status}`);
         }
@@ -35,9 +37,6 @@ async function fetchFractalData() {
         const achievementsData = await achievementsRes.json();
         const accountData = await accountRes.json();
 
-        console.log("Dados recebidos:", { walletData, materialsData, achievementsData, accountData });
-
-        // Atualiza campos
         const pristineObj = walletData.find(i => i.id === WALLET_IDS.PRISTINE);
         const pristineInput = document.getElementById('pristine');
         if (pristineInput) pristineInput.value = pristineObj ? pristineObj.value : 0;
@@ -50,10 +49,8 @@ async function fetchFractalData() {
         const matricesInput = document.getElementById('matrices');
         if (matricesInput) matricesInput.value = matrixObj ? (matrixObj.count || 0) : 0;
 
-        // Detecta título
         let detectedTitle = 0;
         if (achievementsData && achievementsData.text === "all ids provided are invalid") {
-            console.log("Nenhuma conquista encontrada.");
             detectedTitle = 0;
         } else if (Array.isArray(achievementsData)) {
             if (achievementsData.some(a => a.id === ACHIEVEMENTS.GOD && a.done)) detectedTitle = 4;
@@ -73,7 +70,7 @@ async function fetchFractalData() {
         const accountInfoDiv = document.getElementById('accountInfo');
         if (accountInfoDiv) accountInfoDiv.style.display = 'block';
 
-        if (typeof calculate === 'function') calculate();
+        calculate();
 
         const apiStatus = document.getElementById('apiStatus');
         if (apiStatus) {
@@ -92,11 +89,8 @@ async function fetchFractalData() {
             apiError.style.display = 'block';
             apiError.innerText = `❌ ${errorMsg}`;
             setTimeout(() => apiError.style.display = 'none', 8000);
-        } else {
-            alert(errorMsg);
         }
     } finally {
-        // GARANTE QUE O LOADING SEJA REMOVIDO
         hideLoading();
     }
 }

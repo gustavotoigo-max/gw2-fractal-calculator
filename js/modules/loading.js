@@ -17,8 +17,7 @@ const loadingMessages = {
 
 let loadingInterval = null;
 
-function showLoading() {
-    // Pega o idioma atual
+export function showLoading() {
     const langPicker = document.getElementById('langPicker');
     const lang = langPicker ? langPicker.value : 'en';
     const messages = loadingMessages[lang] || loadingMessages['en'];
@@ -30,41 +29,24 @@ function showLoading() {
         loadingTextElement.innerText = messages[0];
     }
     
-    // Limpa intervalo anterior se existir
-    if (loadingInterval) {
-        clearInterval(loadingInterval);
-        loadingInterval = null;
-    }
+    if (loadingInterval) clearInterval(loadingInterval);
     
-    // Inicia novo intervalo
     loadingInterval = setInterval(() => {
-        index++;
-        if (index >= messages.length) {
-            index = 0;
-        }
-        
+        index = (index + 1) % messages.length;
         if (loadingTextElement) {
             loadingTextElement.innerText = messages[index];
         }
     }, 1200);
     
-    // Mostra o overlay
     const overlay = document.getElementById('loadingOverlay');
-    if (overlay) {
-        overlay.classList.add('active');
-    }
+    if (overlay) overlay.classList.add('active');
 }
 
-function hideLoading() {
-    // Limpa o intervalo
+export function hideLoading() {
     if (loadingInterval) {
         clearInterval(loadingInterval);
         loadingInterval = null;
     }
-    
-    // Esconde o overlay
     const overlay = document.getElementById('loadingOverlay');
-    if (overlay) {
-        overlay.classList.remove('active');
-    }
+    if (overlay) overlay.classList.remove('active');
 }

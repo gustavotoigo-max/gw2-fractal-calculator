@@ -1,4 +1,7 @@
-async function calculate() {
+import { translations } from './translations.js';
+import { SITE_VERSION, USER_NICK, USER_EMAIL } from './constants.js';
+
+export async function calculate() {
     const lang = document.getElementById('langPicker').value;
     const text = translations[lang] || translations['pt'];
     const currentTitle = parseInt(document.getElementById('currentTitle').value);
@@ -35,24 +38,14 @@ async function calculate() {
             .replaceAll('__LBL_COMPLETED__', text.lblCompleted)
             .replaceAll('__LBL_ALREADY_DONE__', text.lblAlreadyDone)
             .replaceAll('__LBL_NEED_STOCK__', text.lblNeedStock)
-            .replaceAll('__LBL_GATE__', text.lblGate)
-            .replaceAll('__GATE_NONE__', text.lblGateNone)
-            .replaceAll('__GATE_READY__', text.lblGateReady)
-            .replaceAll('__GATE_NORMAL__', text.lblGateNormal)
-            .replaceAll('__GATE_BOTH__', text.lblGateBoth)
-            .replaceAll('__GATE_PRISTINE__', text.lblGatePristine)
-            .replaceAll('__GATE_MATRIX__', text.lblGateMatrix)
             .replaceAll('__LBL_DAYS__', text.lblDays)
             .replaceAll('__LBL_INF_DAYS__', text.lblInfDays)
-            .replaceAll('__LBL_NO_FARM__', text.lblNoFarmActive)
             .replaceAll('__LBL_READY_BUY__', text.lblReadyBuy)
-            // Placeholders das mensagens "Mantenha"
             .replaceAll('__KEEP_MSG_1__', text.keepMsg1 || "📌 Mantenha 25.000 Fractal Relics para próximo título")
             .replaceAll('__KEEP_MSG_2__', text.keepMsg2 || "📌 Mantenha 1.200 Pristines e 35.000 Fractal Relics para próximo título")
             .replaceAll('__KEEP_MSG_3__', text.keepMsg3 || "📌 Mantenha 45.000 Fractal Relics para próximo título")
             .replaceAll('__KEEP_MSG_4__', text.keepMsg4 || "📌 Mantenha 2.000 Pristines e 55.000 Fractal Relics para próximo título");
 
-        // Substitui placeholders de aviso de conversão (excedente seguro) em nova linha
         finalHtml = finalHtml.replace(/__CONVERT_WARNING_(\d+)_(\d+)__/g, (match, pristines, relics) => {
             const message = text.lblSurplus
                 .replace('{{pristines}}', parseInt(pristines).toLocaleString())
@@ -63,14 +56,15 @@ async function calculate() {
         const totalDays = data.totalDaysRemaining;
         const totalWeeks = (totalDays / 7).toFixed(1);
 
+        const timeResultEl = document.getElementById('timeResult');
         if (totalDays === 0 && currentTitle < 4) {
-            document.getElementById('timeResult').innerText = text.lblReadyGod;
+            timeResultEl.innerText = text.lblReadyGod;
         } else if (currentTitle === 4) {
-            document.getElementById('timeResult').innerText = text.lblIsGod;
+            timeResultEl.innerText = text.lblIsGod;
         } else if (totalDays === Infinity || isNaN(totalDays)) {
-            document.getElementById('timeResult').innerText = text.lblUnfTime;
+            timeResultEl.innerText = text.lblUnfTime;
         } else {
-            document.getElementById('timeResult').innerText = `${totalDays} ${text.lblDays} (~${totalWeeks} ${text.lblWeeks})`;
+            timeResultEl.innerText = `${totalDays} ${text.lblDays} (~${totalWeeks} ${text.lblWeeks})`;
         }
 
         document.getElementById('missingResources').innerHTML = finalHtml + `
@@ -82,22 +76,4 @@ async function calculate() {
     } catch (e) {
         console.error("Erro na comunicação com o backend.", e);
     }
-}
-
-function updateDailyInputs() {
-    let pristineSum = 0; let matrixSum = 0; let relicsSum = 0;
-    if (document.getElementById('farmT4').checked) { pristineSum += 12; relicsSum += 174; }
-    if (document.getElementById('farmRecs').checked) { pristineSum += 3; relicsSum += 36; }
-    if (document.getElementById('farmPotions').checked) { relicsSum += 16; }
-    if (document.getElementById('cmKinfall').checked) { pristineSum += 2; matrixSum += 1; relicsSum += 119; }
-    if (document.getElementById('cmNightmare').checked) { pristineSum += 2; matrixSum += 1; relicsSum += 159; }
-    if (document.getElementById('cmShattered').checked) { pristineSum += 2; matrixSum += 1; relicsSum += 159; }
-    if (document.getElementById('cmSunqua').checked) { pristineSum += 2; matrixSum += 1; relicsSum += 139; }
-    if (document.getElementById('cmSilent').checked) { pristineSum += 2; matrixSum += 1; relicsSum += 119; }
-    if (document.getElementById('cmLonely').checked) { pristineSum += 2; matrixSum += 1; relicsSum += 139; }
-
-    document.getElementById('dailyPristine').value = pristineSum;
-    document.getElementById('dailyMatrices').value = matrixSum;
-    document.getElementById('dailyRelics').value = relicsSum;
-    calculate();
 }
