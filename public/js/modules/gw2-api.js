@@ -43,43 +43,83 @@ export async function fetchFractalData() {
 
         clearTimeout(timeoutId);
 
-        // Array para armazenar quais endpoints falharam
-        const failedEndpoints = [];
-        const requiredScopes = ['account', 'inventories', 'wallet', 'progression'];
+        // Coleta informações de erro de cada endpoint
+        const errors = [];
 
-        // Verifica cada resposta
-        if (!accountRes.ok) failedEndpoints.push('account');
-        if (!walletRes.ok) failedEndpoints.push('wallet');
-        if (!materialsRes.ok) failedEndpoints.push('inventories');
-        if (!progressionRes.ok) failedEndpoints.push('progression');
-        // Achievements pode falhar se o usuário não tiver permissão (mas é menos crítico)
-
-        if (failedEndpoints.length > 0) {
-            // Tenta obter a mensagem de erro de uma das respostas (ex.: 403)
-            let sampleRes = null;
-            if (!accountRes.ok) sampleRes = accountRes;
-            else if (!walletRes.ok) sampleRes = walletRes;
-            else if (!materialsRes.ok) sampleRes = materialsRes;
-            else if (!progressionRes.ok) sampleRes = progressionRes;
-
-            let errorDetail = "";
-            if (sampleRes && sampleRes.status === 403) {
-                const errorMsg = await getErrorMessage(sampleRes, "Permissão negada. Verifique os escopos da sua API Key.");
-                if (errorMsg.includes("permission") || errorMsg.includes("scope")) {
-                    errorDetail = ` Permissões necessárias: ${requiredScopes.join(', ')}. A sua chave não possui: ${failedEndpoints.join(', ')}.`;
-                } else {
-                    errorDetail = ` ${errorMsg}`;
-                }
-            } else if (sampleRes && sampleRes.status === 401) {
-                errorDetail = " API Key inválida ou expirada. Gere uma nova chave no site da ArenaNet.";
-            } else {
-                errorDetail = ` Status ${sampleRes?.status}: ${sampleRes?.statusText || 'Erro desconhecido'}.`;
+        // Verifica account
+        if (!accountRes.ok) {
+            let detail = `Account (${accountRes.status} ${accountRes.statusText})`;
+            if (accountRes.status === 403) {
+                const msg = await getErrorMessage(accountRes, "Permissão negada. Escopo 'account' necessário.");
+                detail += ` - ${msg}`;
             }
-
-            throw new Error(`Falha ao acessar os seguintes endpoints: ${failedEndpoints.join(', ')}.${errorDetail}`);
+            errors.push({ endpoint: "account", detail });
         }
 
-        // Se chegou aqui, todas as respostas estão OK (status 2xx)
+        // Verifica wallet
+        if (!walletRes.ok) {
+            let detail = `Wallet (${walletRes.status} ${walletRes.statusText})`;
+            if (walletRes.status === 403) {
+                const msg = await getErrorMessage(walletRes, "Permissão negada. Escopo 'wallet' necessário.");
+                detail += ` - ${msg}`;
+            }
+            errors.push({ endpoint: "wallet", detail });
+        }
+
+        // Verifica materials (inventories)
+        if (!materialsRes.ok) {
+            let detail = `Inventários (Materials) (${materialsRes.status} ${materialsRes.statusText})`;
+            if (materialsRes.status === 403) {
+                const msg = await getErrorMessage(materialsRes, "Permissão negada. Escopo 'inventories' necessário.");
+                detail += ` - ${msg}`;
+            }
+            errors.push({ endpoint: "inventories", detail });
+        }
+
+        // Verifica progression
+        if (!progressionRes.ok) {
+            let detail = `Progressão (Progression) (${progressionRes.status} ${progressionRes.statusText})`;
+            if (progressionRes.status === 403) {
+                const msg = await getErrorMessage(progressionRes, "Permissão negada. Escopo 'progression' necessário.");
+                detail += ` - ${msg}`;
+            }
+            errors.push({ endpoint: "progression", detail });
+        }
+
+        // Achievements é opcional (pode falhar sem quebrar tudo, mas se falhar, avisamos)
+        if (!achievementsRes.ok && achievementsRes.status !== 200) {
+            let detail = `Conquistas (Achievements) (${achievementsRes.status} ${achievementsRes.statusText})`;
+            if (achievementsRes.status === 403) {
+                const msg = await getErrorMessage(achievementsRes, "Permissão negada. Escopo 'progression'? Talvez necessário.");
+                detail += ` - ${msg}`;
+            }
+            errors.push({ endpoint: "achievements", detail });
+        }
+
+        // Se houver qualquer erro, interrompe e exibe mensagem detalhada
+        if (errors.length > 0) {
+            let errorHtml = "<strong>❌ Falha ao sincronizar com a API do Guild Wars 2</strong><br><br>";
+            errorHtml += "Os seguintes endpoints retornaram erro:<br><ul>";
+            for (const err of errors) {
+                errorHtml += `<li><strong>${err.endpoint}</strong>: ${err.detail}</li>`;
+            }
+            errorHtml += "</ul><br>";
+            errorHtml += "🔑 <strong>Permissões necessárias para esta ferramenta:</strong> account, inventories, wallet, progression.<br>";
+            errorHtml += "👉 <a href='https://account.arena.net/applications' target='_blank' style='color: #e5a93c;'>Clique aqui para criar uma nova API Key com essas permissões</a>";
+
+            const apiError = document.getElementById('apiError');
+            if (apiError) {
+                apiError.style.display = 'block';
+                apiError.innerHTML = errorHtml;
+                setTimeout(() => apiError.style.display = 'none', 12000);
+            } else {
+                alert(errorHtml.replace(/<[^>]*>/g, ''));
+            }
+            hideLoading();
+            return;
+        }
+
+        // Se tudo OK, processa os dados
         const walletData = await walletRes.json();
         const materialsData = await materialsRes.json();
         const achievementsData = await achievementsRes.json();
@@ -102,7 +142,7 @@ export async function fetchFractalData() {
             agony: agonyLevel
         };
 
-        // Atualiza campos
+        // Atualiza campos do inventário
         const pristineObj = walletData.find(i => i.id === WALLET_IDS.PRISTINE);
         const pristineInput = document.getElementById('pristine');
         if (pristineInput) pristineInput.value = pristineObj ? pristineObj.value : 0;
@@ -115,9 +155,9 @@ export async function fetchFractalData() {
         const matricesInput = document.getElementById('matrices');
         if (matricesInput) matricesInput.value = matrixObj ? (matrixObj.count || 0) : 0;
 
-        // Detecta título
+        // Detecta título atual (conquistas)
         let detectedTitle = 0;
-        if (achievementsData && achievementsData.text !== "all ids provided are invalid") {
+        if (achievementsData && achievementsData.text !== "all ids provided is invalid" && !achievementsData.text?.includes("invalid")) {
             if (Array.isArray(achievementsData)) {
                 if (achievementsData.some(a => a.id === ACHIEVEMENTS.GOD && a.done)) detectedTitle = 4;
                 else if (achievementsData.some(a => a.id === ACHIEVEMENTS.CHAMPION && a.done)) detectedTitle = 3;
@@ -146,8 +186,8 @@ export async function fetchFractalData() {
             setTimeout(() => apiStatus.style.display = 'none', 3000);
         }
     } catch (err) {
-        console.error("Erro detalhado:", err);
-        let errorMsg = "❌ Falha ao sincronizar. ";
+        console.error("Erro geral:", err);
+        let errorMsg = "❌ Falha inesperada ao sincronizar. ";
 
         if (err.name === 'AbortError') {
             errorMsg = "⏱️ Tempo limite excedido. Verifique sua conexão com a internet e tente novamente.";
@@ -157,21 +197,11 @@ export async function fetchFractalData() {
             errorMsg += err.message;
         }
 
-        // Adiciona dica sobre as permissões necessárias, se o erro mencionar 403 ou permissão
-        if (err.message.includes("403") || err.message.includes("permission") || err.message.includes("scope")) {
-            errorMsg += "<br><br>🔑 <strong>Permissões necessárias para esta ferramenta:</strong> account, inventories, wallet, progression.<br>"
-                + "👉 <a href='https://account.arena.net/applications' target='_blank' style='color: #e5a93c;'>Clique aqui para criar uma nova API Key com essas permissões</a>";
-        } else if (err.message.includes("401")) {
-            errorMsg += "<br><br>🔑 Sua API Key parece inválida. Gere uma nova chave no site da ArenaNet.";
-        }
-
         const apiError = document.getElementById('apiError');
         if (apiError) {
             apiError.style.display = 'block';
-            apiError.innerHTML = errorMsg; // innerHTML para permitir link
-            setTimeout(() => apiError.style.display = 'none', 10000); // aumenta tempo para leitura
-        } else {
-            alert(errorMsg);
+            apiError.innerHTML = errorMsg;
+            setTimeout(() => apiError.style.display = 'none', 10000);
         }
     } finally {
         hideLoading();
