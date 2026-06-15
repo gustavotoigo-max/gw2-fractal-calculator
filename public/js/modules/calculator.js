@@ -14,7 +14,12 @@ export async function calculate() {
         matrices: parseInt(document.getElementById('matrices').value) || 0,
         dailyPristine: parseInt(document.getElementById('dailyPristine').value) || 0,
         dailyMatrices: parseInt(document.getElementById('dailyMatrices').value) || 0,
-        dailyRelics: parseInt(document.getElementById('dailyRelics').value) || 0
+        dailyRelics: parseInt(document.getElementById('dailyRelics').value) || 0,
+        upgrades: {
+            empowerment: window.upgradesOwned.fractal_empowerment || 0,
+            karmic: window.upgradesOwned.fractal_karmic_retribution || 0,
+            agony: window.upgradesOwned.fractal_agony_impedance || 0
+        }
     };
 
     try {
