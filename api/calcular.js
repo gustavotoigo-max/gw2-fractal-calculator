@@ -4,13 +4,13 @@ export default function handler(req, res) {
     }
 
     const {
-        currentTitle,
-        pristine,
-        relics,
-        matrices,
-        dailyPristine,
-        dailyMatrices,
-        dailyRelics
+            currentTitle,
+            pristine,
+            relics,
+            matrices,
+            dailyPristine,
+            dailyMatrices,
+            dailyRelics
     } = req.body;
 
     const tierData = [
