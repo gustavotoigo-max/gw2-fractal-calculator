@@ -63,7 +63,7 @@ export const translations = {
         upgradeAgony1: "Agony Impedance 1",
         upgradeAgony2: "Agony Impedance 2",
         upgradeWarningTitle: "⚠️ Upgrades obrigatórios pendentes (necessários para Fractal Savant):",
-        upgradeDaysEstimate: "⏱️ Tempo estimado para concluir upgrades",
+        upgradeDaysEstimate: "Tempo estimado para concluir upgrades",
         upgradeAllDone: "✅ Você já possui todos os upgrades obrigatórios! Agora só falta acumular os recursos para o título.",
     },
 
