@@ -4,13 +4,52 @@ import { showLoading, hideLoading } from './loading.js';
 import { calculate } from './calculator.js';
 import { translations } from './translations.js';
 
-// Função auxiliar para obter texto traduzido
 function getText(lang, key, fallback) {
     return (translations[lang] && translations[lang][key]) || fallback || key;
 }
 
 function isOk(response) {
     return response && response.ok;
+}
+
+// Função para resetar todos os campos do inventário e interface
+function resetUICampos() {
+    // Resetar campos numéricos
+    const pristineInput = document.getElementById('pristine');
+    if (pristineInput) pristineInput.value = '0';
+    const relicsInput = document.getElementById('relics');
+    if (relicsInput) relicsInput.value = '0';
+    const matricesInput = document.getElementById('matrices');
+    if (matricesInput) matricesInput.value = '0';
+
+    // Resetar título manual (não mexe no select, mas podemos deixar como está? O ideal é não resetar o select, pois o usuário pode ter escolhido manualmente. Mas a detecção automática vai sobrescrever se bem-sucedida)
+    // Deixamos o select como está, pois após sincronização bem-sucedida ele será atualizado.
+
+    // Limpar informações da conta
+    const accountNameSpan = document.getElementById('accountName');
+    if (accountNameSpan) accountNameSpan.innerText = '-';
+    const accountTitleSpan = document.getElementById('accountTitle');
+    if (accountTitleSpan) accountTitleSpan.innerText = '-';
+    const accountInfoDiv = document.getElementById('accountInfo');
+    if (accountInfoDiv) accountInfoDiv.style.display = 'none';
+
+    // Limpar mensagens de erro e status
+    const apiError = document.getElementById('apiError');
+    if (apiError) {
+        apiError.style.display = 'none';
+        apiError.innerHTML = '';
+    }
+    const apiStatus = document.getElementById('apiStatus');
+    if (apiStatus) {
+        apiStatus.style.display = 'none';
+        apiStatus.innerText = '';
+    }
+
+    // Limpar upgrades armazenados globalmente
+    window.upgradesOwned = { empowerment: 0, karmic: 0, agony: 0 };
+
+    // Opcional: forçar recálculo para zerar os cards? Melhor chamar calculate depois que os dados forem preenchidos.
+    // Por ora, apenas resetamos os campos.
 }
 
 export async function fetchFractalData() {
@@ -20,6 +59,9 @@ export async function fetchFractalData() {
         alert("Por favor, insira uma API Key válida.");
         return;
     }
+
+    // Resetar todos os campos antes de iniciar nova sincronização
+    resetUICampos();
 
     showLoading();
     const controller = new AbortController();
@@ -101,7 +143,7 @@ export async function fetchFractalData() {
             agony: agonyLevel
         };
 
-        // Atualiza UI
+        // Atualiza UI com novos dados
         document.getElementById('pristine').value = walletData.find(i => i.id === WALLET_IDS.PRISTINE)?.value || 0;
         document.getElementById('relics').value = walletData.find(i => i.id === WALLET_IDS.RELICS)?.value || 0;
         document.getElementById('matrices').value = materialsData.find(i => i.id === MATERIAL_IDS.INTEGRATED_MATRIX)?.count || 0;
@@ -112,6 +154,7 @@ export async function fetchFractalData() {
         document.getElementById('accountTitle').innerText = titleNames[currentTitle];
         document.getElementById('accountInfo').style.display = 'block';
 
+        // Após preencher, recalcula
         calculate();
 
         const apiStatus = document.getElementById('apiStatus');
@@ -122,6 +165,9 @@ export async function fetchFractalData() {
         }
     } catch (err) {
         console.error("Erro na sincronização:", err);
+        // Em caso de erro, garantir que os campos não fiquem com dados parciais
+        // Já resetamos no início, então está ok. Mas podemos forçar um recálculo com zeros?
+        // Melhor: mostrar erro e deixar os campos zerados (já foram resetados)
         const lang = document.getElementById('langPicker').value;
         const t = translations[lang] || translations['pt'];
         let missingScope = "";
@@ -132,16 +178,15 @@ export async function fetchFractalData() {
 
         let errorMsg = "";
         if (missingScope) {
-            const scopes = missingScope;
             errorMsg = lang === 'pt'
-                ? `Erro (Marcar ${scopes} na criação da API)`
-                : `Error (Mark ${scopes} when creating the API)`;
+                ? `Erro (Marcar ${missingScope} na criação da API)`
+                : `Error (Mark ${missingScope} when creating the API)`;
         } else if (err.name === 'AbortError') {
             errorMsg = t.apiErrorTimeout || (lang === 'pt' ? "⏱️ Tempo limite excedido." : "⏱️ Timeout exceeded.");
         } else if (err.message.includes("Failed to fetch")) {
             errorMsg = t.apiErrorNetwork || (lang === 'pt'
                 ? "🌐 Não foi possível conectar à API do GW2. Verifique sua internet, firewall ou extensões."
-                : "🌐 Unable to connect to GW2 API. Check your internet, firewall or extensions.");
+                : "🌐 Unable to connect to GW2 API.");
         } else {
             errorMsg = (lang === 'pt' ? "❌ Falha inesperada: " : "❌ Unexpected failure: ") + err.message;
         }
@@ -152,6 +197,9 @@ export async function fetchFractalData() {
             apiError.innerHTML = errorMsg;
             setTimeout(() => apiError.style.display = 'none', 10000);
         }
+
+        // Recalcular com os valores atuais (que estão zerados ou mantidos? Como resetamos, o cálculo mostrará 0 dias)
+        calculate();
     } finally {
         hideLoading();
     }
