@@ -62,9 +62,13 @@ export const translations = {
         upgradeKarmic2: "Karmic Retribution 2",
         upgradeAgony1: "Agony Impedance 1",
         upgradeAgony2: "Agony Impedance 2",
-        upgradeWarningTitle: "⚠️ Upgrades obrigatórios pendentes (necessários para Fractal Savant):",
+        upgradeWarningTitle: "Upgrades obrigatórios pendentes (necessários para Fractal Savant):",
         upgradeDaysEstimate: "Tempo estimado para concluir upgrades",
         upgradeAllDone: "✅ Você já possui todos os upgrades obrigatórios! Agora só falta acumular os recursos para o título.",
+        apiErrorTimeout: "⏱️ Tempo limite excedido. Verifique sua conexão.",
+        apiErrorMissingScope: (scopes) => `Erro (Marcar ${scopes} na criação da API)`, // em pt
+        apiErrorNetwork: "🌐 Não foi possível conectar à API do GW2. Verifique sua internet, firewall ou extensões.",
+        apiErrorDefault: "❌ Falha inesperada: ",
     },
 
     en: {
@@ -155,17 +159,17 @@ export const translations = {
         upgradeKarmic2: "Karmic Retribution 2",
         upgradeAgony1: "Agony Impedance 1",
         upgradeAgony2: "Agony Impedance 2",
-        upgradeWarningTitle: "⚠️ Mandatory upgrades required (necessary for Fractal Savant):",
-        upgradeDaysEstimate: "⏱️ Estimated time to complete upgrades",
+        upgradeWarningTitle: "Mandatory upgrades required (necessary for Fractal Savant):",
+        upgradeDaysEstimate: "Estimated time to complete upgrades",
         upgradeAllDone: "✅ You already have all mandatory upgrades! Now just need to accumulate resources for the title.",
         // Mensagens de erro da API
-        apiErrorMissingScope: (scopes) => `Erro (Marcar ${scopes} na criação da API)`, // em pt
+        
         apiErrorMissingScopeEn: (scopes) => `Error (Mark ${scopes} when creating the API)`,
-        apiErrorTimeout: "⏱️ Tempo limite excedido. Verifique sua conexão.",
+        
         apiErrorTimeoutEn: "⏱️ Timeout exceeded. Check your connection.",
-        apiErrorNetwork: "🌐 Não foi possível conectar à API do GW2. Verifique sua internet, firewall ou extensões.",
+        
         apiErrorNetworkEn: "🌐 Unable to connect to GW2 API. Check your internet, firewall or extensions.",
-        apiErrorDefault: "❌ Falha inesperada: ",
+        
         apiErrorDefaultEn: "❌ Unexpected failure: ",
             }
 };
