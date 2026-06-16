@@ -31,7 +31,6 @@ export async function fetchFractalData() {
     const timeoutId = setTimeout(() => controller.abort(), 20000);
 
     try {
-        // Todas as 5 requisições (uma pode falhar sem abortar as outras)
         const results = await Promise.allSettled([
             fetch(`https://api.guildwars2.com/v2/account/wallet?access_token=${apiKey}`, { signal: controller.signal }),
             fetch(`https://api.guildwars2.com/v2/account/materials?access_token=${apiKey}`, { signal: controller.signal }),
@@ -41,54 +40,67 @@ export async function fetchFractalData() {
         ]);
         clearTimeout(timeoutId);
 
-        // Helper para saber se uma requisição foi bem-sucedida (rede + HTTP ok)
         const isSuccess = (result) => result.status === 'fulfilled' && result.value && isOk(result.value);
 
-        // 1. Account (obrigatório)
+        // Account (obrigatório)
         const accountResult = results[3];
         if (!isSuccess(accountResult)) {
-            throw new Error("account: falha ao obter dados da conta");
+            throw new Error("account");
         }
 
-        // 2. Wallet (obrigatório)
+        // Wallet (obrigatório)
         const walletResult = results[0];
         if (!isSuccess(walletResult)) {
-            throw new Error("wallet: falha ao obter dados da carteira");
+            throw new Error("wallet");
         }
 
-        // 3. Materials (obrigatório)
+        // Materials (obrigatório)
         const materialsResult = results[1];
         if (!isSuccess(materialsResult)) {
-            throw new Error("materials: falha ao obter materiais");
+            throw new Error("inventories");
         }
 
-        // 4. Achievements (não obrigatório – se falhar, apenas não atualiza título)
-        let currentTitle = parseInt(document.getElementById('currentTitle').value) || 0; // valor manual atual
+        // Achievements (tentativa de obter título, mas não obrigatório)
+        let currentTitle = parseInt(document.getElementById('currentTitle').value) || 0;
         const achievementsResult = results[2];
         if (isSuccess(achievementsResult)) {
             try {
-                const achievementsData = await achievementsResult.value.json();
-                if (Array.isArray(achievementsData)) {
-                    if (achievementsData.some(a => a.id === ACHIEVEMENTS.GOD && a.done)) currentTitle = 4;
-                    else if (achievementsData.some(a => a.id === ACHIEVEMENTS.CHAMPION && a.done)) currentTitle = 3;
-                    else if (achievementsData.some(a => a.id === ACHIEVEMENTS.PRODIGY && a.done)) currentTitle = 2;
-                    else if (achievementsData.some(a => a.id === ACHIEVEMENTS.SAVANT && a.done)) currentTitle = 1;
+                const data = await achievementsResult.value.json();
+                // Se a resposta for um array e não for uma mensagem de erro
+                if (Array.isArray(data) && data.length > 0 && !data.text) {
+                    let hasSavant = false, hasProdigy = false, hasChampion = false, hasGod = false;
+                    for (const ach of data) {
+                        if (ach.id === ACHIEVEMENTS.SAVANT && ach.done === true) hasSavant = true;
+                        if (ach.id === ACHIEVEMENTS.PRODIGY && ach.done === true) hasProdigy = true;
+                        if (ach.id === ACHIEVEMENTS.CHAMPION && ach.done === true) hasChampion = true;
+                        if (ach.id === ACHIEVEMENTS.GOD && ach.done === true) hasGod = true;
+                    }
+                    if (hasGod) currentTitle = 4;
+                    else if (hasChampion) currentTitle = 3;
+                    else if (hasProdigy) currentTitle = 2;
+                    else if (hasSavant) currentTitle = 1;
+                    else currentTitle = 0;
+                } else {
+                    // Resposta vazia ou inválida -> nenhum título
+                    currentTitle = 0;
                 }
             } catch (e) {
                 console.warn("Erro ao parsear achievements", e);
+                currentTitle = 0;
             }
         } else {
-            console.warn("Achievements não disponível (possível falta do escopo 'progression'). Título mantido como selecionado manualmente.");
+            // Achievements falhou, mantém o título manual
+            console.warn("Achievements não disponível, mantendo título selecionado manualmente");
         }
 
-        // 5. Progression (obrigatório apenas se currentTitle == 0)
+        // Progression (obrigatório apenas se currentTitle == 0)
         const progressionResult = results[4];
-        let progressionOk = isSuccess(progressionResult);
+        const progressionOk = isSuccess(progressionResult);
         if (currentTitle === 0 && !progressionOk) {
-            throw new Error("progression: necessário para usuários sem título");
+            throw new Error("progression");
         }
 
-        // Se chegou aqui, temos todos os dados obrigatórios
+        // Agora lemos todos os dados necessários
         const walletData = await walletResult.value.json();
         const materialsData = await materialsResult.value.json();
         const accountData = await accountResult.value.json();
@@ -101,7 +113,6 @@ export async function fetchFractalData() {
             }
         }
 
-        // Atualiza upgrades
         const empowermentLevel = progressionData[PROGRESSION_IDS.FRACTAL_EMPOWERMENT] || 0;
         const karmicLevel = progressionData[PROGRESSION_IDS.KARMIC_RETRIBUTION] || 0;
         const agonyLevel = progressionData[PROGRESSION_IDS.AGONY_IMPEDANCE] || 0;
@@ -111,7 +122,7 @@ export async function fetchFractalData() {
             agony: agonyLevel
         };
 
-        // Preenche os campos da UI
+        // Atualiza campos da UI
         document.getElementById('pristine').value = walletData.find(i => i.id === WALLET_IDS.PRISTINE)?.value || 0;
         document.getElementById('relics').value = walletData.find(i => i.id === WALLET_IDS.RELICS)?.value || 0;
         document.getElementById('matrices').value = materialsData.find(i => i.id === MATERIAL_IDS.INTEGRATED_MATRIX)?.count || 0;
@@ -132,11 +143,10 @@ export async function fetchFractalData() {
         }
     } catch (err) {
         console.error("Erro durante sincronização:", err);
-        // Extrai qual escopo faltou baseado na mensagem
         let missingScope = "";
         if (err.message.includes("account")) missingScope = "account";
         else if (err.message.includes("wallet")) missingScope = "wallet";
-        else if (err.message.includes("materials")) missingScope = "inventories";
+        else if (err.message.includes("inventories")) missingScope = "inventories";
         else if (err.message.includes("progression")) missingScope = "progression";
 
         let errorMsg = "";
