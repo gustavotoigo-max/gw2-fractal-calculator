@@ -99,7 +99,7 @@ module.exports = async function handler(req, res) {
             else if (up.type === "karmic" && up.level === 2) placeholder = "__UPGRADE_KARMIC_2__";
             else if (up.type === "agony" && up.level === 1) placeholder = "__UPGRADE_AGONY_1__";
             else if (up.type === "agony" && up.level === 2) placeholder = "__UPGRADE_AGONY_2__";
-            return `• ${placeholder}: ${up.matrices} Matrizes + ${up.relics} Relics`;
+            return `• ${placeholder}: ${up.matrices} Matrix + ${up.relics} Relics`;
         }).join('<br>');
 
         upgradeMessage = `
