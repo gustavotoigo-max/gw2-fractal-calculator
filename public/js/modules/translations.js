@@ -52,7 +52,9 @@ export const translations = {
         keepMsg2: "📌 Mantenha 1.200 Pristines e 35.000 Fractal Relics para próximo título",
         keepMsg3: "📌 Mantenha 45.000 Fractal Relics para próximo título",
         keepMsg4: "📌 Mantenha 2.000 Pristines e 55.000 Fractal Relics para próximo título",
-        lblDevBy: "Desenvolvido por:"
+        lblDevBy: "Desenvolvido por:",
+        // dentro do objeto pt:
+        devBanner: "⚠️ Site em desenvolvimento - Algumas funcionalidades podem estar em fase de teste"
     },
     en: {
         mainTitle: "Fractal God Timeline",
@@ -107,6 +109,43 @@ export const translations = {
         note3: "The calculator automatically reserves currencies needed for future titles. Only the surplus can be converted;",
         note4: "Your API key must minimally have the following options enabled: account, inventories, characters, wallet, and progression;",
         note5: "Without active CMs, you can buy Integrated Fractal Matrices for 15 Fractal Relics each from the vendor.",
-        lblDevBy: "Developed by:"
-    }
+        lblDevBy: "Developed by:",
+        // Textos dos checkboxes (pt)
+        chkFractalsT4: "Fractals T4",
+        chkFractalsT4Desc: "+12 Pristines | +174 Relics",
+        chkRecs: "Recomendadas (Recs)",
+        chkRecsDesc: "+3 Pristines | +36 Relics",
+        chkPotions: "Extra Potions Melt",
+        chkPotionsDesc: "+0 Pristines | +16 Relics",
+        chkCmKinfall: "95 - Kinfall",
+        chkCmKinfallDesc: "+2 Pristines | +1 Matrix | +119 Relics",
+        chkCmNightmare: "96 - Nightmare",
+        chkCmNightmareDesc: "+2 Pristines | +1 Matrix | +159 Relics",
+        chkCmShattered: "97 - Shattered Obs.",
+        chkCmShatteredDesc: "+2 Pristines | +1 Matrix | +159 Relics",
+        chkCmSunqua: "98 - Sunqua Peak",
+        chkCmSunquaDesc: "+2 Pristines | +1 Matrix | +139 Relics",
+        chkCmSilent: "99 - Silent Surf",
+        chkCmSilentDesc: "+2 Pristines | +1 Matrix | +119 Relics",
+        chkCmLonely: "100 - Lonely Tower",
+        chkCmLonelyDesc: "+2 Pristines | +1 Matrix | +139 Relics",
+
+        // Textos para os upgrades (pendentes)
+        upgradeEmpowerment1: "Fractal Empowerment 1",
+        upgradeEmpowerment2: "Fractal Empowerment 2",
+        upgradeKarmic1: "Karmic Retribution 1",
+        upgradeKarmic2: "Karmic Retribution 2",
+        upgradeAgony1: "Agony Impedance 1",
+        upgradeAgony2: "Agony Impedance 2",
+
+        // Mensagens de erro da API
+        apiErrorMissingScope: (scopes) => `Erro (Marcar ${scopes} na criação da API)`, // em pt
+        apiErrorMissingScopeEn: (scopes) => `Error (Mark ${scopes} when creating the API)`,
+        apiErrorTimeout: "⏱️ Tempo limite excedido. Verifique sua conexão.",
+        apiErrorTimeoutEn: "⏱️ Timeout exceeded. Check your connection.",
+        apiErrorNetwork: "🌐 Não foi possível conectar à API do GW2. Verifique sua internet, firewall ou extensões.",
+        apiErrorNetworkEn: "🌐 Unable to connect to GW2 API. Check your internet, firewall or extensions.",
+        apiErrorDefault: "❌ Falha inesperada: ",
+        apiErrorDefaultEn: "❌ Unexpected failure: ",
+            }
 };

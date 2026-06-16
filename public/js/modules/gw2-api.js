@@ -2,18 +2,13 @@
 import { ACHIEVEMENTS, WALLET_IDS, MATERIAL_IDS, PROGRESSION_IDS } from './constants.js';
 import { showLoading, hideLoading } from './loading.js';
 import { calculate } from './calculator.js';
+import { translations } from './translations.js';
 
-// Função para extrair mensagem de erro de uma resposta HTTP
-async function getErrorMessage(response, defaultMsg) {
-    try {
-        const errorData = await response.json();
-        return errorData.text || errorData.error || defaultMsg;
-    } catch {
-        return defaultMsg;
-    }
+// Função auxiliar para obter texto traduzido
+function getText(lang, key, fallback) {
+    return (translations[lang] && translations[lang][key]) || fallback || key;
 }
 
-// Função para verificar se a resposta é ok (status 2xx)
 function isOk(response) {
     return response && response.ok;
 }
@@ -40,40 +35,33 @@ export async function fetchFractalData() {
         ]);
         clearTimeout(timeoutId);
 
-        const isSuccess = (result) => result.status === 'fulfilled' && result.value && isOk(result.value);
+        const isSuccess = (r) => r.status === 'fulfilled' && r.value && isOk(r.value);
+        const lang = document.getElementById('langPicker').value;
 
         // Account (obrigatório)
-        const accountResult = results[3];
-        if (!isSuccess(accountResult)) {
-            throw new Error("account");
-        }
-
+        if (!isSuccess(results[3])) throw new Error("account");
         // Wallet (obrigatório)
-        const walletResult = results[0];
-        if (!isSuccess(walletResult)) {
-            throw new Error("wallet");
-        }
-
+        if (!isSuccess(results[0])) throw new Error("wallet");
         // Materials (obrigatório)
-        const materialsResult = results[1];
-        if (!isSuccess(materialsResult)) {
-            throw new Error("inventories");
-        }
+        if (!isSuccess(results[1])) throw new Error("inventories");
 
-        // Achievements (tentativa de obter título, mas não obrigatório)
+        // Lê dados essenciais
+        const walletData = await results[0].value.json();
+        const materialsData = await results[1].value.json();
+        const accountData = await results[3].value.json();
+
+        // Achievements (tentativa de título, não obrigatório)
         let currentTitle = parseInt(document.getElementById('currentTitle').value) || 0;
-        const achievementsResult = results[2];
-        if (isSuccess(achievementsResult)) {
+        if (isSuccess(results[2])) {
             try {
-                const data = await achievementsResult.value.json();
-                // Se a resposta for um array e não for uma mensagem de erro
-                if (Array.isArray(data) && data.length > 0 && !data.text) {
+                const achData = await results[2].value.json();
+                if (Array.isArray(achData) && achData.length > 0 && !achData.text) {
                     let hasSavant = false, hasProdigy = false, hasChampion = false, hasGod = false;
-                    for (const ach of data) {
-                        if (ach.id === ACHIEVEMENTS.SAVANT && ach.done === true) hasSavant = true;
-                        if (ach.id === ACHIEVEMENTS.PRODIGY && ach.done === true) hasProdigy = true;
-                        if (ach.id === ACHIEVEMENTS.CHAMPION && ach.done === true) hasChampion = true;
-                        if (ach.id === ACHIEVEMENTS.GOD && ach.done === true) hasGod = true;
+                    for (const a of achData) {
+                        if (a.id === ACHIEVEMENTS.SAVANT && a.done === true) hasSavant = true;
+                        if (a.id === ACHIEVEMENTS.PRODIGY && a.done === true) hasProdigy = true;
+                        if (a.id === ACHIEVEMENTS.CHAMPION && a.done === true) hasChampion = true;
+                        if (a.id === ACHIEVEMENTS.GOD && a.done === true) hasGod = true;
                     }
                     if (hasGod) currentTitle = 4;
                     else if (hasChampion) currentTitle = 3;
@@ -81,34 +69,25 @@ export async function fetchFractalData() {
                     else if (hasSavant) currentTitle = 1;
                     else currentTitle = 0;
                 } else {
-                    // Resposta vazia ou inválida -> nenhum título
                     currentTitle = 0;
                 }
             } catch (e) {
                 console.warn("Erro ao parsear achievements", e);
                 currentTitle = 0;
             }
-        } else {
-            // Achievements falhou, mantém o título manual
-            console.warn("Achievements não disponível, mantendo título selecionado manualmente");
         }
 
-        // Progression (obrigatório apenas se currentTitle == 0)
+        // Progression só obrigatório se título == 0
         const progressionResult = results[4];
         const progressionOk = isSuccess(progressionResult);
         if (currentTitle === 0 && !progressionOk) {
             throw new Error("progression");
         }
 
-        // Agora lemos todos os dados necessários
-        const walletData = await walletResult.value.json();
-        const materialsData = await materialsResult.value.json();
-        const accountData = await accountResult.value.json();
-
         let progressionData = {};
         if (progressionOk) {
-            const progressionArray = await progressionResult.value.json();
-            for (const item of progressionArray) {
+            const progArray = await progressionResult.value.json();
+            for (const item of progArray) {
                 progressionData[item.id] = item.value;
             }
         }
@@ -122,7 +101,7 @@ export async function fetchFractalData() {
             agony: agonyLevel
         };
 
-        // Atualiza campos da UI
+        // Atualiza UI
         document.getElementById('pristine').value = walletData.find(i => i.id === WALLET_IDS.PRISTINE)?.value || 0;
         document.getElementById('relics').value = walletData.find(i => i.id === WALLET_IDS.RELICS)?.value || 0;
         document.getElementById('matrices').value = materialsData.find(i => i.id === MATERIAL_IDS.INTEGRATED_MATRIX)?.count || 0;
@@ -142,7 +121,9 @@ export async function fetchFractalData() {
             setTimeout(() => apiStatus.style.display = 'none', 3000);
         }
     } catch (err) {
-        console.error("Erro durante sincronização:", err);
+        console.error("Erro na sincronização:", err);
+        const lang = document.getElementById('langPicker').value;
+        const t = translations[lang] || translations['pt'];
         let missingScope = "";
         if (err.message.includes("account")) missingScope = "account";
         else if (err.message.includes("wallet")) missingScope = "wallet";
@@ -151,13 +132,18 @@ export async function fetchFractalData() {
 
         let errorMsg = "";
         if (missingScope) {
-            errorMsg = `Erro (Marcar ${missingScope} na criacao da API)`;
+            const scopes = missingScope;
+            errorMsg = lang === 'pt'
+                ? `Erro (Marcar ${scopes} na criação da API)`
+                : `Error (Mark ${scopes} when creating the API)`;
         } else if (err.name === 'AbortError') {
-            errorMsg = "⏱️ Tempo limite excedido. Verifique sua conexão.";
+            errorMsg = t.apiErrorTimeout || (lang === 'pt' ? "⏱️ Tempo limite excedido." : "⏱️ Timeout exceeded.");
         } else if (err.message.includes("Failed to fetch")) {
-            errorMsg = "🌐 Não foi possível conectar à API do GW2. Verifique sua internet, firewall ou extensões.";
+            errorMsg = t.apiErrorNetwork || (lang === 'pt'
+                ? "🌐 Não foi possível conectar à API do GW2. Verifique sua internet, firewall ou extensões."
+                : "🌐 Unable to connect to GW2 API. Check your internet, firewall or extensions.");
         } else {
-            errorMsg = `❌ Falha inesperada: ${err.message}`;
+            errorMsg = (lang === 'pt' ? "❌ Falha inesperada: " : "❌ Unexpected failure: ") + err.message;
         }
 
         const apiError = document.getElementById('apiError');

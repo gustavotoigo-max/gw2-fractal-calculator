@@ -50,6 +50,13 @@ export async function calculate() {
             .replaceAll('__KEEP_MSG_2__', text.keepMsg2 || "📌 Mantenha 1.200 Pristines e 35.000 Fractal Relics para próximo título")
             .replaceAll('__KEEP_MSG_3__', text.keepMsg3 || "📌 Mantenha 45.000 Fractal Relics para próximo título")
             .replaceAll('__KEEP_MSG_4__', text.keepMsg4 || "📌 Mantenha 2.000 Pristines e 55.000 Fractal Relics para próximo título");
+            finalHtml = finalHtml
+                .replaceAll('__UPGRADE_EMPOWERMENT_1__', text.upgradeEmpowerment1)
+                .replaceAll('__UPGRADE_EMPOWERMENT_2__', text.upgradeEmpowerment2)
+                .replaceAll('__UPGRADE_KARMIC_1__', text.upgradeKarmic1)
+                .replaceAll('__UPGRADE_KARMIC_2__', text.upgradeKarmic2)
+                .replaceAll('__UPGRADE_AGONY_1__', text.upgradeAgony1)
+                .replaceAll('__UPGRADE_AGONY_2__', text.upgradeAgony2);
 
         finalHtml = finalHtml.replace(/__CONVERT_WARNING_(\d+)_(\d+)__/g, (match, pristines, relics) => {
             const message = text.lblSurplus

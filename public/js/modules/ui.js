@@ -60,7 +60,7 @@ export function changeLanguage() {
         'note4': text.note4,
         'note5': text.note5
     };
-
+    translateDynamicElements();
     for (const [id, value] of Object.entries(labels)) {
         const element = document.getElementById(id);
         if (element) element.innerText = value;
@@ -109,4 +109,19 @@ export function initUI() {
 
     // Aplica traduções iniciais (inclui rodapé)
     changeLanguage();
+}
+
+export function translateDynamicElements() {
+    const lang = document.getElementById('langPicker').value;
+    const text = translations[lang] || translations['pt'];
+
+    // Dev banner
+    const devBanner = document.getElementById('devBanner');
+    if (devBanner) devBanner.innerText = text.devBanner;
+
+    // Elementos com data-i18n
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (text[key]) el.innerText = text[key];
+    });
 }
