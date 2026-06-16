@@ -54,8 +54,19 @@ export const translations = {
         keepMsg4: "📌 Mantenha 2.000 Pristines e 55.000 Fractal Relics para próximo título",
         lblDevBy: "Desenvolvido por:",
         // dentro do objeto pt:
-        devBanner: "⚠️ Site em desenvolvimento - Algumas funcionalidades podem estar em fase de teste"
+        devBanner: "⚠️ Site em desenvolvimento - Algumas funcionalidades podem estar em fase de teste",
+        // Dentro do objeto `pt`:
+        upgradeEmpowerment1: "Fractal Empowerment 1",
+        upgradeEmpowerment2: "Fractal Empowerment 2",
+        upgradeKarmic1: "Karmic Retribution 1",
+        upgradeKarmic2: "Karmic Retribution 2",
+        upgradeAgony1: "Agony Impedance 1",
+        upgradeAgony2: "Agony Impedance 2",
+        upgradeWarningTitle: "⚠️ Upgrades obrigatórios pendentes (necessários para Fractal Savant):",
+        upgradeDaysEstimate: "⏱️ Tempo estimado para concluir upgrades",
+        upgradeAllDone: "✅ Você já possui todos os upgrades obrigatórios! Agora só falta acumular os recursos para o título.",
     },
+
     en: {
         mainTitle: "Fractal God Timeline",
         currentTitle: "Your current title",
@@ -137,7 +148,16 @@ export const translations = {
         upgradeKarmic2: "Karmic Retribution 2",
         upgradeAgony1: "Agony Impedance 1",
         upgradeAgony2: "Agony Impedance 2",
-
+            // Dentro do objeto `en`:
+        upgradeEmpowerment1: "Fractal Empowerment 1",
+        upgradeEmpowerment2: "Fractal Empowerment 2",
+        upgradeKarmic1: "Karmic Retribution 1",
+        upgradeKarmic2: "Karmic Retribution 2",
+        upgradeAgony1: "Agony Impedance 1",
+        upgradeAgony2: "Agony Impedance 2",
+        upgradeWarningTitle: "⚠️ Mandatory upgrades required (necessary for Fractal Savant):",
+        upgradeDaysEstimate: "⏱️ Estimated time to complete upgrades",
+        upgradeAllDone: "✅ You already have all mandatory upgrades! Now just need to accumulate resources for the title.",
         // Mensagens de erro da API
         apiErrorMissingScope: (scopes) => `Erro (Marcar ${scopes} na criação da API)`, // em pt
         apiErrorMissingScopeEn: (scopes) => `Error (Mark ${scopes} when creating the API)`,
