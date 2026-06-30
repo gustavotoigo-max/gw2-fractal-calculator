@@ -126,12 +126,16 @@ export default function handler(req, res) {
         ) {
             tierDays = Infinity;
         } else {
-            // =================================================
+           // =================================================
 // SIMULAÇÃO DIÁRIA
 // =================================================
 while (true) {
     const futurePristineNeed = calculateFuturePristineNeed(tierData, i);
-    const availablePristineForConversion = Math.max(0, wallet.pristine - futurePristineNeed);
+    
+    // CORREÇÃO: Descontar também o custo do próprio Tier atual da conversão
+    const pristineReserved = tier.pristine + futurePristineNeed;
+    const availablePristineForConversion = Math.max(0, wallet.pristine - pristineReserved);
+    
     const effectiveRelics = wallet.relics + (availablePristineForConversion * 15);
     
     let effectiveMatrices = wallet.matrices;
@@ -145,7 +149,7 @@ while (true) {
         }
     }
 
-    // CORREÇÃO AQUI: Mudado de tier.relics para tier.pristine
+    // Validação correta das três moedas puras + conversões permitidas
     const canBuy =
         wallet.pristine >= tier.pristine && 
         effectiveMatrices >= tier.matrices &&
