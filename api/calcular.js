@@ -127,44 +127,45 @@ export default function handler(req, res) {
             tierDays = Infinity;
         } else {
             // =================================================
-            // SIMULAÇÃO DIÁRIA
-            // =================================================
-            while (true) {
-                const futurePristineNeed = calculateFuturePristineNeed(tierData, i);
-                const availablePristineForConversion = Math.max(0, wallet.pristine - futurePristineNeed);
-                const effectiveRelics = wallet.relics + (availablePristineForConversion * 15);
-                
-                let effectiveMatrices = wallet.matrices;
-                
-                if (effectiveMatrices < tier.matrices) {
-                    const matrixDeficit = tier.matrices - effectiveMatrices;
-                    const relicsNeededForMatrices = matrixDeficit * relicsPerMatrix;
-                    
-                    if (effectiveRelics >= relicsNeededForMatrices) {
-                        effectiveMatrices = tier.matrices;
-                    }
-                }
+// SIMULAÇÃO DIÁRIA
+// =================================================
+while (true) {
+    const futurePristineNeed = calculateFuturePristineNeed(tierData, i);
+    const availablePristineForConversion = Math.max(0, wallet.pristine - futurePristineNeed);
+    const effectiveRelics = wallet.relics + (availablePristineForConversion * 15);
+    
+    let effectiveMatrices = wallet.matrices;
+    
+    if (effectiveMatrices < tier.matrices) {
+        const matrixDeficit = tier.matrices - effectiveMatrices;
+        const relicsNeededForMatrices = matrixDeficit * relicsPerMatrix;
+        
+        if (effectiveRelics >= relicsNeededForMatrices) {
+            effectiveMatrices = tier.matrices;
+        }
+    }
 
-                const canBuy =
-                    wallet.pristine >= tier.pristine &&
-                    effectiveMatrices >= tier.matrices &&
-                    effectiveRelics >= tier.relics;
+    // CORREÇÃO AQUI: Mudado de tier.relics para tier.pristine
+    const canBuy =
+        wallet.pristine >= tier.pristine && 
+        effectiveMatrices >= tier.matrices &&
+        effectiveRelics >= tier.relics;
 
-                if (canBuy) {
-                    break;
-                }
+    if (canBuy) {
+        break;
+    }
 
-                wallet.pristine += dPristine;
-                wallet.relics += dRelics;
-                wallet.matrices += dMatricesFromCMs;
-                
-                tierDays++;
+    wallet.pristine += dPristine;
+    wallet.relics += dRelics;
+    wallet.matrices += dMatricesFromCMs;
+    
+    tierDays++;
 
-                if (tierDays > 15000) {
-                    tierDays = Infinity;
-                    break;
-                }
-            }
+    if (tierDays > 15000) {
+        tierDays = Infinity;
+        break;
+    }
+}
         }
 
         // =====================================================
